@@ -9,8 +9,8 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Initializing submodules...${LOG_END}"
 
-#git submodule init
-#git submodule update
+git submodule init
+git submodule update
 
 # KEEP-CORE
 
