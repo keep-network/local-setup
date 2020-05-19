@@ -4,6 +4,8 @@ set -e
 
 LOG_START='\n\e[1;36m' # new line + bold + color
 LOG_END='\n\e[0m' # new line + reset color
+DONE_START='\n\e[1;32m' # new line + bold + green
+DONE_END='\n\n\e[0m'    # new line + reset
 
 WORKDIR=$PWD
 
@@ -12,7 +14,7 @@ printf "${LOG_START}Initializing submodules...${LOG_END}"
 git submodule init
 git submodule update
 
-# KEEP-CORE
+# Install KEEP-CORE
 
 printf "${LOG_START}Starting keep-core deployment...${LOG_END}"
 
@@ -37,9 +39,9 @@ cd keep-core
 
 ./scripts/install.sh
 
-printf "${LOG_START}keep-core deployed successfully!${LOG_END}"
+printf "${DONE_START}keep-core deployed successfully!${DONE_END}"
 
-# KEEP-ECDSA
+# Install KEEP-ECDSA
 
 printf "${LOG_START}Starting keep-ecdsa deployment...${LOG_END}"
 
@@ -76,6 +78,37 @@ cd ..
 
 ./scripts/install.sh
 
+printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"
+
+# Install TBTC
+
+printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
+
+cd "$WORKDIR/tbtc"
+
+./scripts/install.sh
+
+printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
+
+# Initialize KEEP-ECDSA
+
+printf "${LOG_START}Initializing keep-ecdsa...${LOG_END}"
+
+cd solidity
+
+NETWORK_ID_OUTPUT=$(truffle exec ./scripts/get-network-id.js)
+NETWORK_ID=$(echo "$NETWORK_ID_OUTPUT" | tail -1)
+
+JSON_QUERY=".networks.\"${NETWORK_ID}\".address"
+TBTC_SYSTEM_CONTRACT="$WORKDIR/tbtc/solidity/build/contracts/TBTCSystem.json"
+TBTC_SYSTEM_CONTRACT_ADDRESS=$(cat ${TBTC_SYSTEM_CONTRACT} | jq "${JSON_QUERY}" | tr -d '"')
+
+# TODO: Automatic prompt response.
+printf "${LOG_START}TBTCSystem contract address is: ${TBTC_SYSTEM_CONTRACT_ADDRESS}
+Paste it below when prompted for client application address\n${LOG_END}"
+
+cd "$WORKDIR/keep-ecdsa"
+
 ./scripts/initialize.sh
 
-printf "${LOG_START}keep-ecdsa deployed successfully!${LOG_END}"
+printf "${DONE_START}keep-ecdsa initialized successfully!${DONE_END}"
