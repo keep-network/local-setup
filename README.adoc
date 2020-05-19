@@ -1,0 +1,18 @@
+= KEEP & tBTC local setup
+
+== Prerequisites
+- Geth 1.9.9-stable+
+- Go 1.12+
+- NPM 6.7.0+
+
+== Deploy from scratch
+. Run local geth node using:
++
+```
+./run_geth.sh
+```
+. Run the deployment script. Hit `ENTER` in response to all prompts:
++
+```
+./deploy.sh
+```
