@@ -37,7 +37,7 @@ printf "${LOG_START}Running install script...${LOG_END}"
 
 cd keep-core
 
-./scripts/install.sh
+printf '\n\n' | ./scripts/install.sh
 
 printf "${DONE_START}keep-core deployed successfully!${DONE_END}"
 
@@ -76,7 +76,7 @@ sed -i .OLD 's:8545:8546:' truffle.js
 rm *.OLD
 cd ..
 
-./scripts/install.sh
+printf '\n\n' | ./scripts/install.sh
 
 printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"
 
@@ -86,7 +86,7 @@ printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
 cd "$WORKDIR/tbtc"
 
-./scripts/install.sh
+printf '\n' | ./scripts/install.sh
 
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
@@ -103,12 +103,10 @@ JSON_QUERY=".networks.\"${NETWORK_ID}\".address"
 TBTC_SYSTEM_CONTRACT="$WORKDIR/tbtc/solidity/build/contracts/TBTCSystem.json"
 TBTC_SYSTEM_CONTRACT_ADDRESS=$(cat ${TBTC_SYSTEM_CONTRACT} | jq "${JSON_QUERY}" | tr -d '"')
 
-# TODO: Automatic prompt response.
-printf "${LOG_START}TBTCSystem contract address is: ${TBTC_SYSTEM_CONTRACT_ADDRESS}
-Paste it below when prompted for client application address\n${LOG_END}"
+printf "${LOG_START}TBTCSystem contract address is: ${TBTC_SYSTEM_CONTRACT_ADDRESS}${LOG_END}"
 
 cd "$WORKDIR/keep-ecdsa"
 
-./scripts/initialize.sh
+printf '\n'${TBTC_SYSTEM_CONTRACT_ADDRESS}'\n' | ./scripts/initialize.sh
 
 printf "${DONE_START}keep-ecdsa initialized successfully!${DONE_END}"

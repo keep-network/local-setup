@@ -10,7 +10,7 @@ to setup all necessary tools.
 ```
 ./run_geth.sh
 ```
-. Run the deployment script. Hit `ENTER` in response to all prompts:
+. Run Keep & tBTC installation script:
 +
 ```
 ./install.sh
