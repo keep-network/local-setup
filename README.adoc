@@ -8,7 +8,7 @@ to setup all necessary tools.
 . Run local geth node using:
 +
 ```
-./run_geth.sh
+./run-geth.sh
 ```
 . Run Keep & tBTC installation script:
 +
