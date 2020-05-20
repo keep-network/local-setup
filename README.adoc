@@ -84,15 +84,12 @@ cd keep-core
 KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.toml relay request
 ```
 
-= How to use it
+= How to interact with the system
 
 == tBTC dApp
 
 WORK IN PROGRESS
 
-== Opening keeps manually
-
-It is possible to interact with Bonded ECDSA keep factory manually using a smoke test from `keep-ecdsa/solidity/integration/smoke_test.js`. This test simulates a part of `tBTC` behavior but requires a manual setup.
 
 
 
