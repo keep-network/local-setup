@@ -4,7 +4,7 @@
 Run https://github.com/keep-network/keep-core/blob/master/scripts/macos-setup.sh[macos-setup.sh] script
 to setup all necessary tools.
 
-== Deploy from scratch
+== Install from scratch
 . Run local geth node using:
 +
 ```
@@ -14,4 +14,26 @@ to setup all necessary tools.
 +
 ```
 ./install.sh
+```
+
+== Run clients
+The above installation script will configure:
+
+- 1 `keep-core` client
+- 3 `keep-ecdsa` clients
+
+To run the `keep-core` client use:
+```
+./run-core-1.sh
+```
+
+To run `keep-ecdsa` clients use:
+```
+./run-ecdsa-1.sh
+```
+```
+./run-ecdsa-2.sh
+```
+```
+./run-ecdsa-3.sh
 ```
