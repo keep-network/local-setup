@@ -1,0 +1,18 @@
+[ethereum]
+    URL = "ws://127.0.0.1:8546"
+    URLRPC = "http://127.0.0.1:8545"
+
+[ethereum.account]
+    Address = "0x52aa72262c904281c49765499f85a774c4598850"
+    KeyFile = "WORKDIR/ethereum/data/keystore/UTC--2019-08-01T13-19-20.147796000Z--52aa72262c904281c49765499f85a774c4598850"
+
+[ethereum.ContractAddresses]
+    KeepRandomBeaconOperator = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    TokenStaking = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    KeepRandomBeaconService = "0xCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+
+[LibP2P]
+    Port = 3919
+
+[Storage]
+    DataDir = "WORKDIR/storage/keep-core/1"
