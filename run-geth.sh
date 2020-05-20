@@ -9,14 +9,6 @@ ETHEREUM_DIR="$PWD/ethereum"
 GETH_DATA_DIR="$ETHEREUM_DIR/data"
 GETH_ETHEREUM_ACCOUNT="0x3d373d872b7ba29d92ed47caa8605b4dd6ec84ef"
 
-printf "${LOG_START}Removing old chain data...${LOG_END}"
-
-rm -rf "$GETH_DATA_DIR/geth"
-
-printf "${LOG_START}Initializing geth...${LOG_END}"
-
-geth --datadir=$GETH_DATA_DIR init $ETHEREUM_DIR/genesis/genesis.json
-
 printf "${LOG_START}Starting geth...${LOG_END}"
 
 geth --port 3000 --networkid 1101 --identity "somerandomidentity" \

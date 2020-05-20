@@ -5,7 +5,12 @@ Run https://github.com/keep-network/keep-core/blob/master/scripts/macos-setup.sh
 to setup all necessary tools.
 
 == Install from scratch
-. Run local geth node using:
+. Initialize local Geth using:
++
+```
+./initialize-geth.sh
+```
+. Run local Geth node using:
 +
 ```
 ./run-geth.sh
