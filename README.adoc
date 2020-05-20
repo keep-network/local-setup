@@ -11,6 +11,7 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 - Truffle, at least 5.1.18
 - Protobuf compiler, at least 3.11.4
 - `protoc-gen-gogoslick` toolchain
+- `jq`
 
 
 == Installing the system
@@ -89,9 +90,3 @@ KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.to
 == tBTC dApp
 
 WORK IN PROGRESS
-
-
-
-
-
-
