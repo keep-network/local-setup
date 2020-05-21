@@ -16,14 +16,14 @@ printf "${LOG_START}Preparing keep-ecdsa...${LOG_END}"
 cd $WORKDIR/keep-ecdsa
 
 cd solidity
-ln -s build/contracts artifacts
+ln -sf build/contracts artifacts
 
 printf "${LOG_START}Preparing tbtc...${LOG_END}"
 
 cd $WORKDIR/tbtc
 
 cd solidity
-ln -s build/contracts artifacts
+ln -sf build/contracts artifacts
 
 printf "${LOG_START}Updating tbtc.js configuration...${LOG_END}"
 
