@@ -1,1 +1,9 @@
-== End-to-end deposit & redemption test
+= End-to-end deposit & redemption test
+
+== Prerequisites
+Before starting E2E test script, make sure you have:
+
+- installed all system components using `install.sh` script
+- a working local Geth instance (`run-geth.sh`)
+- a working testnet relay instance (`run-testnet-relay.sh`)
+- a connection with the `keep-dev` VPN
