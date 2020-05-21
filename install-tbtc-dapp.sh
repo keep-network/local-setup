@@ -11,14 +11,14 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting tBTC dApp deployment...${LOG_END}"
 
-printf "${LOG_START}Preparing keep-ecdsa...${LOG_END}"
+printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
 
 cd $WORKDIR/keep-ecdsa
 
 cd solidity
 ln -sf build/contracts artifacts
 
-printf "${LOG_START}Preparing tbtc...${LOG_END}"
+printf "${LOG_START}Preparing tbtc artifacts...${LOG_END}"
 
 cd $WORKDIR/tbtc
 
