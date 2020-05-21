@@ -7,3 +7,6 @@
 [submodule "tbtc"]
 	path = tbtc
 	url = https://github.com/keep-network/tbtc.git
+[submodule "relays"]
+	path = relays
+	url = https://github.com/keep-network/relays.git
