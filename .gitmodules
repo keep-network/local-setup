@@ -7,6 +7,12 @@
 [submodule "tbtc"]
 	path = tbtc
 	url = https://github.com/keep-network/tbtc.git
+[submodule "tbtc-dapp"]
+	path = tbtc-dapp
+	url = https://github.com/keep-network/tbtc-dapp.git
+[submodule "tbtc.js"]
+	path = tbtc.js
+	url = https://github.com/keep-network/tbtc.js.git
 [submodule "relays"]
 	path = relays
 	url = https://github.com/keep-network/relays.git

@@ -33,17 +33,23 @@ mkdir -p storage/keep-ecdsa/1
 mkdir -p storage/keep-ecdsa/2
 mkdir -p storage/keep-ecdsa/3
 
-printf "${LOG_START}Running install script...${LOG_END}"
-
-cd keep-ecdsa
+printf "${LOG_START}Updating keep-ecdsa configuration...${LOG_END}"
 
 # Set correct Geth WS port.
-cd solidity
+cd keep-ecdsa/solidity
 sed -i .OLD 's:8545:8546:' truffle.js
 rm *.OLD
 cd ..
 
+printf "${LOG_START}Running install script...${LOG_END}"
+
 # Run keep-ecdsa install script.  Answer with ENTER twice on emerging prompts.
 printf '\n\n' | ./scripts/install.sh
+
+printf "${LOG_START}Updating keep-ecdsa node_modules...${LOG_END}"
+
+cd $WORKDIR
+rm -rf keep-ecdsa/solidity/node_modules/@keep-network/keep-core
+cp -R keep-core/solidity/. keep-ecdsa/solidity/node_modules/@keep-network/keep-core
 
 printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"

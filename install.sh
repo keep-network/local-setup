@@ -11,5 +11,8 @@ set -e
 # Install KEEP-ECDSA.
 ./install-keep-ecdsa.sh
 
-# Install TBTC.
+# Install tBTC.
 ./install-tbtc.sh
+
+# Install tBTC dApp.
+./install-tbtc-dapp.sh
