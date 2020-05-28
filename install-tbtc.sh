@@ -11,7 +11,10 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
-cd tbtc/solidity/migrations
+cd "$WORKDIR/relay-genesis"
+npm install
+
+cd "$WORKDIR/tbtc/solidity/migrations"
 
 # Always deploy TestnetRelay instead of the defaull MockRelay.
 jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
