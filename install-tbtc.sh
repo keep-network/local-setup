@@ -16,6 +16,12 @@ cd tbtc/solidity/migrations
 # Always deploy TestnetRelay instead of the defaull MockRelay.
 jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 
+bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
+BITCOIN_TEST=$(echo "$bitcoinTest" | tail -1)
+
+jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+
 cd "$WORKDIR/tbtc"
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.

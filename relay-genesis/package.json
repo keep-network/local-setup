@@ -1,0 +1,8 @@
+{
+  "name": "relay-genesis",
+  "version": "1.0.0",
+  "dependencies": {
+    "bitcoind-rpc": "0.8.1",
+    "bluebird": "3.7.2"
+  }
+}
