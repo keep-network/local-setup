@@ -11,7 +11,12 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
-cd tbtc
+cd tbtc/solidity/migrations
+
+# Always deploy TestnetRelay instead of the defaull MockRelay.
+jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+
+cd "$WORKDIR/tbtc"
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
