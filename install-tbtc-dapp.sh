@@ -29,6 +29,8 @@ printf "${LOG_START}Updating tbtc.js configuration...${LOG_END}"
 
 cd $WORKDIR/tbtc.js
 
+npm install
+
 TBTC_DIR="$WORKDIR/tbtc/solidity" jq '.dependencies."@keep-network/tbtc" = env.TBTC_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
 KEEP_ECDSA_DIR="$WORKDIR/keep-ecdsa/solidity" jq '.dependencies."@keep-network/keep-ecdsa" = env.KEEP_ECDSA_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
 
