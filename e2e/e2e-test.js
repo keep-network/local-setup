@@ -36,14 +36,14 @@ async function run() {
         bitcoinNetwork: "testnet",
         electrum: {
             testnet: {
-                server: "10.102.100.84",
-                port: 50002,
+                server: "10.102.100.24",
+                port: 443,
                 protocol: "ssl"
             },
             testnetWS: {
-                server: "10.102.100.84 ",
-                port: 50004,
-                protocol: "wss"
+                server: "10.102.100.24",
+                port: 8080,
+                protocol: "ws"
             }
         }
     })
