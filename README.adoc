@@ -18,6 +18,12 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 - https://github.com/pyenv/pyenv[pyenv], at least 1.2.18
 - https://github.com/pypa/pipenv[pipenv], at least 2018.11.26
 
+== VPN connection
+
+In order to install and run the system, you should be connected to the
+`keep-dev` VPN. This requirement is here because we use a bitcoin
+testnet node which is hosted on the `keep-dev` cluster. We plan to use
+a local bitcoin network soon so this requirement will be abolished.
 
 == Installing the system
 . Initialize local `geth` using:
@@ -88,6 +94,14 @@ Bonded ECDSA keep factory from `keep-ecdsa` contracts requests for new relay ent
 ```
 cd keep-core
 KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.toml relay request
+```
+
+== Relay maintainer
+
+To interact with the system properly, you should also run a relay-maintainer
+instance by doing:
+```
+./run-testnet-relay.sh
 ```
 
 = How to interact with the system
