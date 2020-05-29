@@ -3,9 +3,8 @@
 import Web3 from "web3"
 import ProviderEngine from "web3-provider-engine"
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js"
-
-import TBTC from "../tbtc.js/index.js"
-import Subproviders from "../tbtc.js/node_modules/@0x/subproviders/lib/src/index.js"
+import TBTC from "@keep-network/tbtc.js"
+import Subproviders from "@0x/subproviders"
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
