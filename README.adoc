@@ -106,6 +106,22 @@ instance by doing:
 
 = How to interact with the system
 
+You can interact with the system through the tBTC dApp or semi-automated
+end-to-end tests.
+
 == tBTC dApp
 
-WORK IN PROGRESS
+To run the tBtc dApp invoke:
+```
+./run-tbtc-dapp.sh
+```
+The application will be available on `http://localhost:3000`.
+
+== E2E tests
+
+To run the semi-automated end-to-end scenario invoke:
+```
+./run-e2e-test.sh
+```
+Please follow the emerging prompts to complete the scenario. Full automation
+will be available in the future.
