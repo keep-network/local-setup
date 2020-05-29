@@ -1,8 +1,10 @@
 #!/usr/bin/env node --experimental-modules
 
-import Web3 from "../tbtc.js/node_modules/web3/src/index.js"
+import Web3 from "web3"
+import ProviderEngine from "web3-provider-engine"
+import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js"
+
 import TBTC from "../tbtc.js/index.js"
-import ProviderEngine from "../tbtc.js/node_modules/web3-provider-engine/index.js"
 import Subproviders from "../tbtc.js/node_modules/@0x/subproviders/lib/src/index.js"
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
@@ -15,9 +17,9 @@ engine.addProvider(
     )
 )
 engine.addProvider(
-    // Local geth instance.
-    new Subproviders.RPCSubprovider(
-        "http://127.0.0.1:8545"
+    // Local geth websocket endpoint.
+    new WebsocketSubprovider(
+        {rpcUrl: "ws://127.0.0.1:8546"}
     )
 )
 
