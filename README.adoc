@@ -13,6 +13,11 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 - `protoc-gen-gogoslick` toolchain
 - `jq`
 
+Regardless you use `macos-setup.sh` or not, you should also install:
+
+- https://github.com/pyenv/pyenv[pyenv], at least 1.2.18
+- https://github.com/pypa/pipenv[pipenv], at least 2018.11.26
+
 
 == Installing the system
 . Initialize local `geth` using:

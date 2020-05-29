@@ -37,6 +37,9 @@ rm .my_env_file.env.OLD
 
 cd ../..
 
+pyenv install 3.7.0
+pyenv global 3.7.0
+
 printf "${DONE_START}relay initialized successfully!${DONE_END}"
 
 printf "${LOG_START}Starting relay...${LOG_END}"
