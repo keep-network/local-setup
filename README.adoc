@@ -107,7 +107,13 @@ instance by doing:
 = How to interact with the system
 
 You can interact with the system through the tBTC dApp or semi-automated
-end-to-end tests.
+end-to-end tests. Before you start interacting, make sure you:
+
+- Have a connection with the `keep-dev` VPN
+- Installed all system components using `install.sh` script
+- Have a local Geth instance (`run-geth.sh`) working
+- Have a working relay maintainer (`run-testnet-relay.sh`)
+- Have 1 `keep-core` and 3 `keep-ecdsa` clients up and running
 
 == tBTC dApp
 
