@@ -1,5 +1,4 @@
 .idea
 /ethereum/data/geth/
 /storage/
-/e2e/node_modules/
-/relay-genesis/node_modules/
+node_modules
