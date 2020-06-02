@@ -6,6 +6,7 @@ import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
 
+const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
 const btcAddress = '2N6L4Q6fphMzuWqERQYTwgEMmQTpcqgdVFK'
 
@@ -50,12 +51,17 @@ async function run() {
         }
     })
 
-    console.log(`\nStarting deposit...\n`)
-    const deposit = await createDeposit(tbtc, satoshiLotSize)
-    console.log(`\nDeposit ${deposit.address} has been created successfully.\n`)
 
-    console.log(`\nStarting redemption...\n`)
-    const message = await redeemDeposit(tbtc, deposit.address, btcAddress)
+    const deposits = []
+    for (let i = 1; i <= depositsCount; i++) {
+        console.log(`\nStarting deposit number [${i}]...\n`)
+        const deposit = await createDeposit(tbtc, satoshiLotSize)
+        deposits.push(deposit)
+        console.log(`\nDeposit ${deposit.address} has been created successfully.`)
+    }
+
+    console.log(`\nStarting redemption of the first deposit...\n`)
+    const message = await redeemDeposit(tbtc, deposits[0].address, btcAddress)
     console.log(`\nRedemption outcome: ${message}\n`)
 }
 
@@ -118,7 +124,7 @@ async function redeemDeposit(tbtc, depositAddress, redeemerAddress) {
 
 run()
     .then(result => {
-        console.log("Test completed sucessfully")
+        console.log("Test completed successfully")
 
         process.exit(0)
     })
