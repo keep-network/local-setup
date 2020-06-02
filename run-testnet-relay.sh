@@ -13,9 +13,6 @@ printf "${LOG_START}Starting relay...${LOG_END}"
 
 cd "$WORKDIR/relays/maintainer/"
 
-# Install python virtualenv.
-pipenv install --python=$(pyenv which python3.7)
-
 export PYTHONPATH="$WORKDIR/relays/maintainer/"
 
 # Run relay-maintainer.
