@@ -6,6 +6,9 @@ import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
 
+const satoshiLotSize = 100000 // 0.001 BTC
+const btcAddress = '2N6L4Q6fphMzuWqERQYTwgEMmQTpcqgdVFK'
+
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
 engine.addProvider(
@@ -47,13 +50,20 @@ async function run() {
         }
     })
 
-    const satoshiLotSize = web3.utils.toBN(100000)
-    const deposit = await tbtc.Deposit.withSatoshiLotSize(satoshiLotSize)
+    console.log(`\nStarting deposit...\n`)
+    const deposit = await createDeposit(tbtc, satoshiLotSize)
+    console.log(`\nDeposit ${deposit.address} has been created successfully.\n`)
 
-    await runDeposit(deposit, true)
+    console.log(`\nStarting redemption...\n`)
+    const message = await redeemDeposit(tbtc, deposit.address, btcAddress)
+    console.log(`\nRedemption outcome: ${message}\n`)
 }
 
-async function runDeposit(deposit, mintOnActive) {
+async function createDeposit(tbtc, satoshiLotSize) {
+    const deposit = await tbtc.Deposit.withSatoshiLotSize(
+        web3.utils.toBN(satoshiLotSize)
+    )
+
     deposit.autoSubmit()
 
     return new Promise(async (resolve, reject) => {
@@ -75,18 +85,34 @@ async function runDeposit(deposit, mintOnActive) {
 
         deposit.onActive(async () => {
             try {
-                if (mintOnActive) {
-                    console.log("Deposit is active, minting...")
-                    const tbtc = await deposit.mintTBTC()
-
-                    resolve(tbtc)
-                } else {
-                    resolve("Deposit is active. Minting disabled by parameter.")
-                }
+                console.log("Deposit is active, minting...")
+                await deposit.mintTBTC()
+                resolve(deposit)
             } catch (err) {
                 reject(err)
             }
         })
+    })
+}
+
+async function redeemDeposit(tbtc, depositAddress, redeemerAddress) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const deposit = await tbtc.Deposit.withAddress(depositAddress)
+            const redemption = await deposit.requestRedemption(redeemerAddress)
+            redemption.autoSubmit()
+
+            redemption.onWithdrawn(transactionID => {
+                console.log()
+
+                resolve(
+                    `Redeemed deposit ${deposit.address} with Bitcoin transaction ` +
+                    `${transactionID}.`
+                )
+            })
+        } catch (err) {
+            reject(err)
+        }
     })
 }
 
