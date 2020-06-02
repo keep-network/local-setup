@@ -18,6 +18,11 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 - https://github.com/pyenv/pyenv[pyenv], at least 1.2.18
 - https://github.com/pypa/pipenv[pipenv], at least 2018.11.26
 
+== Node.js version notice
+
+Please use Node `v11.15.0` for everything but E2E test script.
+To run the test script, please use Node `v14.3.0`.
+
 == VPN connection
 
 In order to install and run the system, you should be connected to the
