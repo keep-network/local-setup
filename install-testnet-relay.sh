@@ -38,7 +38,7 @@ rm .my_env_file.env.OLD
 cd $WORKDIR
 
 # Install right python version to run the relay.
-pyenv install 3.7.0
-pyenv global 3.7.0
+pyenv install 3.7.7
+pyenv global 3.7.7
 
 printf "${DONE_START}relay initialized successfully!${DONE_END}"
