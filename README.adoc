@@ -23,6 +23,18 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 Please use Node `v11.15.0` for everything but E2E test script.
 To run the test script, please use Node `v14.3.0`.
 
+We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
+You can install both versions by doing:
+```
+nvm install 11.15.0
+nvm install 14.3.0
+```
+And use the specific version:
+```
+nvm use 11.15.0
+nvm use 14.3.0
+```
+
 == VPN connection
 
 In order to install and run the system, you should be connected to the
