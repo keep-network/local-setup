@@ -13,6 +13,34 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 - `protoc-gen-gogoslick` toolchain
 - `jq`
 
+Regardless you use `macos-setup.sh` or not, you should also install:
+
+- https://github.com/pyenv/pyenv[pyenv], at least 1.2.18
+- https://github.com/pypa/pipenv[pipenv], at least 2018.11.26
+
+== Node.js version notice
+
+Please use Node `v11.15.0` for everything but E2E test script.
+To run the test script, please use Node `v14.3.0`.
+
+We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
+You can install both versions by doing:
+```
+nvm install 11.15.0
+nvm install 14.3.0
+```
+And use the specific version:
+```
+nvm use 11.15.0
+nvm use 14.3.0
+```
+
+== VPN connection
+
+In order to install and run the system, you should be connected to the
+`keep-dev` VPN. This requirement is here because we use a bitcoin
+testnet node which is hosted on the `keep-dev` cluster. We plan to use
+a local bitcoin network soon so this requirement will be abolished.
 
 == Installing the system
 . Initialize local `geth` using:
@@ -85,8 +113,38 @@ cd keep-core
 KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.toml relay request
 ```
 
+== Relay maintainer
+
+To interact with the system properly, you should also run a relay-maintainer
+instance by doing:
+```
+./run-testnet-relay.sh
+```
+
 = How to interact with the system
+
+You can interact with the system through the tBTC dApp or semi-automated
+end-to-end tests. Before you start interacting, make sure you:
+
+- Have a connection with the `keep-dev` VPN
+- Installed all system components using `install.sh` script
+- Have a local Geth instance (`run-geth.sh`) working
+- Have a working relay maintainer (`run-testnet-relay.sh`)
+- Have 1 `keep-core` and 3 `keep-ecdsa` clients up and running
 
 == tBTC dApp
 
-WORK IN PROGRESS
+To run the tBtc dApp invoke:
+```
+./run-tbtc-dapp.sh
+```
+The application will be available on `http://localhost:3000`.
+
+== E2E tests
+
+To run the semi-automated end-to-end scenario invoke:
+```
+./run-e2e-test.sh
+```
+Please follow the emerging prompts to complete the scenario. Full automation
+will be available in the future.

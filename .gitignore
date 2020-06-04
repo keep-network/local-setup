@@ -1,3 +1,4 @@
 .idea
 /ethereum/data/geth/
 /storage/
+node_modules
