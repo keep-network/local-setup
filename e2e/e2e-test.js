@@ -14,6 +14,7 @@ Bluebird.promisifyAll(bitcoinRpc)
 
 const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
+const expectedTbtcAmount = 99950000000
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -57,6 +58,15 @@ async function run() {
         console.log(`\nStarting deposit number [${i}]...\n`)
         const deposit = await createDeposit(tbtc, satoshiLotSize)
         deposits.push(deposit)
+
+        if (expectedTbtcAmount !== deposit.tbtcAmount) {
+            throw new Error(
+                `unexpected minted TBTC amount for deposit number ${i}:
+                actual:   ${deposit.tbtcAmount}
+                expected: ${expectedTbtcAmount}`
+            )
+        }
+
         console.log(`\nDeposit ${deposit.address} has been created successfully.`)
     }
 
@@ -98,8 +108,12 @@ async function createDeposit(tbtc, satoshiLotSize) {
         deposit.onActive(async () => {
             try {
                 console.log("Deposit is active, minting...")
-                await deposit.mintTBTC()
-                resolve(deposit)
+                const tbtcAmount = await deposit.mintTBTC()
+
+                resolve({
+                    address: deposit.address,
+                    tbtcAmount: tbtcAmount,
+                })
             } catch (err) {
                 reject(err)
             }
