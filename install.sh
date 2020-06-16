@@ -14,6 +14,9 @@ set -e
 # Install tBTC.
 ./install-tbtc.sh
 
+# Install Keep Dashboard.
+./install-keep-dashboard.sh
+
 # Install tBTC dApp.
 ./install-tbtc-dapp.sh
 
