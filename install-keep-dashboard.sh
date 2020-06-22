@@ -21,6 +21,11 @@ printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
 cd $WORKDIR/keep-ecdsa/solidity
 ln -sf build/contracts artifacts
 
+printf "${LOG_START}Preparing tBTC artifacts...${LOG_END}"
+
+cd $WORKDIR/tbtc/solidity
+ln -sf build/contracts artifacts
+
 printf "${LOG_START}Install Keep Dashboard dependencies...${LOG_END}"
 
 cd $WORKDIR/keep-core/solidity/dashboard
