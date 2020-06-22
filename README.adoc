@@ -132,6 +132,13 @@ end-to-end tests. Before you start interacting, make sure you:
 - Have a working relay maintainer (`run-testnet-relay.sh`)
 - Have 1 `keep-core` and 3 `keep-ecdsa` clients up and running
 
+== Keep Dashboard dApp
+
+To run the Keep Dashboard dApp invoke:
+```
+./run-keep-dashboard.sh
+```
+
 == tBTC dApp
 
 To run the tBtc dApp invoke:
