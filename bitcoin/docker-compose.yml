@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  bitcoind:
+    container_name: bitcoind
+    ports:
+      - 18332:18332
+    build: ./bitcoind
+  electrumx:
+    container_name: electrumx
+    ports:
+      - 50001:50001
+      - 50002:50002
+      - 50003:50003
+      - 50004:50004
+      - 8000:8000
+    environment:
+      - DAEMON_URL=http://x:user123@bitcoind:18332
+      - COIN=BitcoinSV
+      - NET=regtest
+    image: lukechilds/electrumx
