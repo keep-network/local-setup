@@ -6,6 +6,8 @@
     "@keep-network/tbtc.js": "file:../tbtc.js",
     "@0x/subproviders": "6.0.8",
     "web3": "1.2.8",
-    "web3-provider-engine": "15.0.12"
+    "web3-provider-engine": "15.0.12",
+    "bitcoind-rpc": "0.8.1",
+    "bluebird": "3.7.2"
   }
 }

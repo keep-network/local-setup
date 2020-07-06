@@ -12,9 +12,11 @@ mkdir -p datadir
   -rpcpassword=user123 \
   -rpcbind=0.0.0.0 \
   -rpcallowip=0.0.0.0/0 \
+  -fallbackfee=0.0002 \
+  -txindex \
   --daemon
 
-sleep 5
+sleep 10
 
 alias btccli='./bitcoin-cli -regtest -datadir=datadir -rpcport=18332 -rpcuser=x -rpcpassword=user123'
 

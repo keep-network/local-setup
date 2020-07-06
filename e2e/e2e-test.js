@@ -5,6 +5,12 @@ import ProviderEngine from "web3-provider-engine"
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js"
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
+import BitcoinRpc from "bitcoind-rpc"
+import Bluebird from "bluebird"
+import config from "../configs/bitcoin/config.json"
+
+const bitcoinRpc = new BitcoinRpc(config)
+Bluebird.promisifyAll(bitcoinRpc)
 
 const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
@@ -36,16 +42,11 @@ async function run() {
 
     const tbtc = await TBTC.withConfig({
         web3: web3,
-        bitcoinNetwork: "testnet",
+        bitcoinNetwork: "regtest",
         electrum: {
-            testnet: {
-                server: "10.102.100.24",
-                port: 443,
-                protocol: "ssl"
-            },
             testnetWS: {
-                server: "10.102.100.24",
-                port: 8080,
+                server: "127.0.0.1",
+                port: 50003,
                 protocol: "ws"
             }
         }
@@ -84,6 +85,8 @@ async function createDeposit(tbtc, satoshiLotSize) {
                     "satoshis please."
                 )
                 console.log("Now monitoring for deposit transaction...")
+
+                await bitcoinRpc.sendtoaddressAsync(address, lotSize / 100000000)
             } catch (err) {
                 reject(err)
             }
