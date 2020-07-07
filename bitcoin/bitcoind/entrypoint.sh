@@ -34,6 +34,6 @@ do
     hash=$(btccli generatetoaddress 1 "$address" | tr -d '[" \n"]')
     count=$(btccli getblockcount)
     printf "Generated block number $count ($hash) using miner address $address\n"
-    sleep 5
+    sleep 30
 done
 

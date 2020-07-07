@@ -14,7 +14,6 @@ Bluebird.promisifyAll(bitcoinRpc)
 
 const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
-const btcAddress = '2N6L4Q6fphMzuWqERQYTwgEMmQTpcqgdVFK'
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -62,7 +61,9 @@ async function run() {
     }
 
     console.log(`\nStarting redemption of the first deposit...\n`)
-    const message = await redeemDeposit(tbtc, deposits[0].address, btcAddress)
+    const redeemerAddress = (await bitcoinRpc.getnewaddressAsync()).result
+    console.log(`Generated reedemer address: ${redeemerAddress}`)
+    const message = await redeemDeposit(tbtc, deposits[0].address, redeemerAddress)
     console.log(`\nRedemption outcome: ${message}\n`)
 }
 
@@ -87,6 +88,8 @@ async function createDeposit(tbtc, satoshiLotSize) {
                 console.log("Now monitoring for deposit transaction...")
 
                 await bitcoinRpc.sendtoaddressAsync(address, lotSize / 100000000)
+
+                console.log("Deposit transaction sent")
             } catch (err) {
                 reject(err)
             }
