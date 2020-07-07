@@ -79,9 +79,8 @@ To run the `keep-core` client use:
 ```
 ./run-core-1.sh
 ```
-+
-It is enough to run one `keep-core` client to generate a group and produce relay entries. Setting up more than one client locally is possible but consumes more resources.
 
+It is enough to run one `keep-core` client to generate a group and produce relay entries. Setting up more than one client locally is possible but consumes more resources.
 
 To run `keep-ecdsa` clients use:
 ```
@@ -114,7 +113,7 @@ KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.to
 
 = How to interact with the system
 
-You can interact with the system through the tBTC dApp or semi-automated
+You can interact with the system through the tBTC dApp or automated
 end-to-end tests. Before you start interacting, make sure you:
 
 - Installed all system components using `install.sh` script
@@ -131,7 +130,9 @@ To run the Keep Dashboard dApp invoke:
 
 == tBTC dApp
 
-To run the tBtc dApp invoke:
+To run the tBTC dApp against the local Bitcoin network,
+make sure the tBTC dApp is configured to work with the local ElectrumX instance.
+If so, you can invoke:
 ```
 ./run-tbtc-dapp.sh
 ```
