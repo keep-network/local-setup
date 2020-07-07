@@ -14,12 +14,10 @@ printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 cd "$WORKDIR/relay-genesis"
 npm install
 
-cd "$WORKDIR/tbtc/solidity"
-
 # If you want to use BTC testnet with real relay maintaner, uncomment the block
 # below and comment the invocation of mock-difficulty.js script.
 #
-# cd migrations
+# cd "$WORKDIR/tbtc/solidity/migrations"
 # jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 #
 # bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
@@ -28,12 +26,14 @@ cd "$WORKDIR/tbtc/solidity"
 # jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 # jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 
-truffle exec "$WORKDIR/relay-genesis/mock-difficulty.js"
-
 cd "$WORKDIR/tbtc"
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
+
+cd "$WORKDIR/tbtc/solidity"
+
+truffle exec "$WORKDIR/relay-genesis/mock-difficulty.js"
 
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
