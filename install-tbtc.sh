@@ -41,8 +41,6 @@ printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
 printf "${LOG_START}Initializing keep-ecdsa...${LOG_END}"
 
-cd solidity
-
 # Get network ID.
 NETWORK_ID_OUTPUT=$(truffle exec ./scripts/get-network-id.js)
 NETWORK_ID=$(echo "$NETWORK_ID_OUTPUT" | tail -1)
