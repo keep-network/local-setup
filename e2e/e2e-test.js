@@ -18,7 +18,8 @@ const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
 const signerFeeDivisor = 0.0005 // 0.05%
 const tbtcDepositAmount = 1000000000000000 // satoshiLotSize * satoshiMultiplier
-const tbtcDepositAmountMinusSignerFee = (1 - signerFeeDivisor) * tbtcDepositAmount
+const signerFee = signerFeeDivisor * tbtcDepositAmount
+const tbtcDepositAmountMinusSignerFee = tbtcDepositAmount - signerFee
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -74,6 +75,9 @@ async function run() {
         deposits.push(deposit)
 
         assertMintedTbtcAmount(web3, deposit, tbtcDepositAmountMinusSignerFee)
+
+        // check whether signer fee went to the expected address
+        await assertTbtcAccountBalance(web3, tbtc, deposit.address, signerFee)
 
         console.log(`\nDeposit ${deposit.address} has been created successfully.`)
     }
