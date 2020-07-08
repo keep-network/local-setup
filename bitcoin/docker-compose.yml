@@ -15,7 +15,7 @@ services:
       - 50004:50004
       - 8000:8000
     environment:
-      - DAEMON_URL=http://x:user123@bitcoind:18332
+      - DAEMON_URL=http://user:password@bitcoind:18332
       - COIN=BitcoinSegwit
       - NET=regtest
       - SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002,ws://0.0.0.0:50003,wss://127.0.0.1:50004,rpc://0.0.0.0:8000

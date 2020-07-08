@@ -8,8 +8,8 @@ mkdir -p datadir
 ./bitcoind -regtest -datadir=datadir \
   -port=18333 \
   -rpcport=18332 \
-  -rpcuser=x \
-  -rpcpassword=user123 \
+  -rpcuser=user \
+  -rpcpassword=password \
   -rpcbind=0.0.0.0 \
   -rpcallowip=0.0.0.0/0 \
   -fallbackfee=0.0002 \
@@ -18,7 +18,7 @@ mkdir -p datadir
 
 sleep 10
 
-alias btccli='./bitcoin-cli -regtest -datadir=datadir -rpcport=18332 -rpcuser=x -rpcpassword=user123'
+alias btccli='./bitcoin-cli -regtest -datadir=datadir -rpcport=18332 -rpcuser=user -rpcpassword=password'
 
 # Get an address.
 address=$(btccli getnewaddress)
