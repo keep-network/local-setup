@@ -5,7 +5,7 @@ import ProviderEngine from "web3-provider-engine"
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js"
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
-import {assertMintedTbtcAmount, assertTbtcAccountBalance} from "./assertions.js";
+import {assertMintedTbtcAmount, assertTbtcAccountBalance, assertReceivedBtcAmount} from "./assertions.js";
 import {getTbtcAccountBalance} from "./common.js";
 import BitcoinRpc from "bitcoind-rpc"
 import Bluebird from "bluebird"
@@ -20,6 +20,7 @@ const signerFeeDivisor = 0.0005 // 0.05%
 const tbtcDepositAmount = 1000000000000000 // satoshiLotSize * satoshiMultiplier
 const signerFee = signerFeeDivisor * tbtcDepositAmount
 const tbtcDepositAmountMinusSignerFee = tbtcDepositAmount - signerFee
+const satoshiRedemptionFee = 150
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -122,6 +123,21 @@ async function run() {
         tbtc,
         web3.eth.defaultAccount,
         afterRedemptionTbtcAccountBalance
+    )
+
+    const afterRedemptionReceivedBtcAmount =
+        (satoshiLotSize - satoshiRedemptionFee) / 100000000
+
+    console.log(
+        `Received BTC amount for redeemer address ${redeemerAddress} after ` +
+        `performing redemption should be: ${afterRedemptionReceivedBtcAmount}. ` +
+        `Checking assertion...`
+    )
+
+    await assertReceivedBtcAmount(
+        bitcoinRpc,
+        redeemerAddress,
+        afterRedemptionReceivedBtcAmount
     )
 }
 
