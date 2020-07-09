@@ -37,8 +37,8 @@ printf "${LOG_START}Updating keep-ecdsa configuration...${LOG_END}"
 
 # Set correct Geth WS port.
 cd keep-ecdsa/solidity
-sed -i .OLD 's:8545:8546:' truffle.js
-rm *.OLD
+sed -i "" 's/\port\:.*/\port\: '8546,'/g' truffle.js
+sed -i "" 's/\websockets\:.*/\websockets\: 'true,'/g' truffle.js
 cd ..
 
 printf "${LOG_START}Running install script...${LOG_END}"
