@@ -1,0 +1,17 @@
+{
+  "builders": [
+    {
+      "type": "vagrant",
+      "source_path": "ubuntu/xenial64",
+      "provider": "virtualbox",
+      "communicator": "ssh",
+      "output_dir": "local-setup-box"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "provision.sh"
+    }
+  ]
+}
