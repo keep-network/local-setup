@@ -6,7 +6,7 @@ import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
 import {assertMintedTbtcAmount, assertTbtcAccountBalance, assertReceivedBtcAmount} from "./assertions.js";
-import {getTbtcAccountBalance} from "./common.js";
+import {getTBTCTokenBalance} from "./common.js";
 import BitcoinRpc from "bitcoind-rpc"
 import Bluebird from "bluebird"
 import config from "../configs/bitcoin/config.json"
@@ -58,7 +58,7 @@ async function run() {
         }
     })
 
-    const initialTbtcAccountBalance = await getTbtcAccountBalance(
+    const initialTbtcAccountBalance = await getTBTCTokenBalance(
         web3,
         tbtc,
         web3.eth.defaultAccount

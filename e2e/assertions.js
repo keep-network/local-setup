@@ -1,4 +1,4 @@
-import {getTbtcAccountBalance, getReceivedBtcAmount} from "./common.js";
+import {getTBTCTokenBalance, getReceivedBtcAmount} from "./common.js";
 
 export const assertMintedTbtcAmount = (web3, deposit, expectedTbtcAmount) => {
     const actualTbtcAmountBn = web3.utils.toBN(deposit.tbtcAmount)
@@ -19,7 +19,7 @@ export const assertTbtcAccountBalance = async (
     account,
     expectedTbtcBalance
 ) => {
-    const actualTbtcBalanceBn = await getTbtcAccountBalance(web3, tbtc, account)
+    const actualTbtcBalanceBn = await getTBTCTokenBalance(web3, tbtc, account)
     const expectedTbtcBalanceBn = web3.utils.toBN(expectedTbtcBalance)
 
     if (!actualTbtcBalanceBn.eq(expectedTbtcBalanceBn)) {

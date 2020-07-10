@@ -1,5 +1,5 @@
 
-export const getTbtcAccountBalance = async (web3, tbtc, account) => {
+export const getTBTCTokenBalance = async (web3, tbtc, account) => {
     const balance = await tbtc.Deposit.tokenContract.methods
         .balanceOf(account).call();
 
