@@ -9,22 +9,32 @@ DONE_END='\n\n\e[0m'    # new line + reset
 
 WORKDIR=$PWD
 
+BTC_NETWORK="regtest"
+
+while getopts n: option; do
+  case "${option}" in
+  n) BTC_NETWORK=${OPTARG};;
+  *) echo "invalid option";;
+  esac
+done
+
 printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
 cd "$WORKDIR/relay-genesis"
 npm install
 
-# If you want to use BTC testnet with real relay maintaner, uncomment the block
-# below and comment the invocation of mock-difficulty.js script.
-#
-# cd "$WORKDIR/tbtc/solidity/migrations"
-# jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
-#
-# bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
-# BITCOIN_TEST=$(echo "$bitcoinTest" | tail -1)
-#
-# jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
-# jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+printf "${LOG_START}Using $BTC_NETWORK Bitcoin network${LOG_END}"
+
+if [ "$BTC_NETWORK" == "testnet" ]; then
+  cd "$WORKDIR/tbtc/solidity/migrations"
+  jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+
+  bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
+  BITCOIN_TEST=$(echo "$bitcoinTest" | tail -1)
+
+  jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+  jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+fi
 
 cd "$WORKDIR/tbtc"
 
@@ -33,7 +43,9 @@ printf '\n' | ./scripts/install.sh
 
 cd "$WORKDIR/tbtc/solidity"
 
-truffle exec "$WORKDIR/relay-genesis/mock-difficulty.js"
+if [ "$BTC_NETWORK" == "regtest" ]; then
+  truffle exec "$WORKDIR/relay-genesis/mock-difficulty.js"
+fi
 
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
