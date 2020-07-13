@@ -11,47 +11,20 @@
   "provisioners": [
     {
       "type": "shell",
-      "script": "./provisioning/install-commons.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-nodejs.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-go.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-geth.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-solidity.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-truffle.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-protobuf.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-pyenv.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-pipenv.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-docker.sh"
-    },
-    {
-      "type": "shell",
-      "script": "./provisioning/install-docker-compose.sh"
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
+      "scripts": [
+        "./provisioning/install-commons.sh",
+        "./provisioning/install-nodejs.sh",
+        "./provisioning/install-go.sh",
+        "./provisioning/install-geth.sh",
+        "./provisioning/install-solidity.sh",
+        "./provisioning/install-truffle.sh",
+        "./provisioning/install-protobuf.sh",
+        "./provisioning/install-pyenv.sh",
+        "./provisioning/install-pipenv.sh",
+        "./provisioning/install-docker.sh",
+        "./provisioning/install-docker-compose.sh"
+      ]
     }
   ]
 }
