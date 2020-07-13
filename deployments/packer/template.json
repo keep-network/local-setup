@@ -11,7 +11,47 @@
   "provisioners": [
     {
       "type": "shell",
-      "script": "./provisioning/install.sh"
+      "script": "./provisioning/install-commons.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-nodejs.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-go.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-geth.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-solidity.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-truffle.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-protobuf.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-pyenv.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-pipenv.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-docker.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./provisioning/install-docker-compose.sh"
     }
   ]
 }
