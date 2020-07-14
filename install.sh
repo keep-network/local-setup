@@ -19,6 +19,3 @@ set -e
 
 # Install tBTC dApp.
 ./install-tbtc-dapp.sh
-
-# Install relay-maintainer.
-./install-testnet-relay.sh

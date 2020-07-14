@@ -20,8 +20,6 @@
         "./provisioning/install-solidity.sh",
         "./provisioning/install-truffle.sh",
         "./provisioning/install-protobuf.sh",
-        "./provisioning/install-pyenv.sh",
-        "./provisioning/install-pipenv.sh",
         "./provisioning/install-docker.sh",
         "./provisioning/install-docker-compose.sh"
       ]

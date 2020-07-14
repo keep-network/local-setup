@@ -15,9 +15,9 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 
 Regardless you use `macos-setup.sh` or not, you should also install:
 
-- https://github.com/pyenv/pyenv[pyenv], at least 1.2.18
-- https://github.com/pypa/pipenv[pipenv], at least 2018.11.26
 - https://docs.docker.com/get-docker[Docker] & https://docs.docker.com/compose/install/[Docker Compose]
+- https://github.com/pyenv/pyenv[pyenv], at least 1.2.18 (optional - only if testnet relay is used)
+- https://github.com/pypa/pipenv[pipenv], at least 2018.11.26 (optional - only if testnet relay is used)
 
 == Node.js version notice
 
