@@ -1,4 +1,23 @@
+def total_cpus
+  require 'etc'
+  Etc.nprocessors
+end
+
 Vagrant.configure("2") do |config|
   config.vm.box = "local-setup"
   config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = "local-setup-vm"
+    v.memory = "4096"
+    v.cpus = total_cpus - 2
+    v.customize ["modifyvm", :id, "--vram", "256"]
+  end
+
+  config.vm.provision "shell", path: "./provisioning/clone-repository.sh"
+  config.vm.provision "shell", path: "./provisioning/update-repository.sh"
+  config.vm.provision "shell", path: "./provisioning/initialize-geth.sh"
+  config.vm.provision "shell", path: "./provisioning/run-geth.sh", run: "always"
+  config.vm.provision "shell", path: "./provisioning/run-bitcoin.sh", run: "always"
+  config.vm.provision "shell", path: "./provisioning/run-install.sh", run: "always"
 end
