@@ -6,6 +6,6 @@ echo "Running Geth as transient system service..."
 
 cd local-setup
 
-systemd-run --unit=geth -p WorkingDirectory=/home/vagrant/local-setup ./run-geth.sh
+sudo systemd-run --unit=geth -p WorkingDirectory=/home/vagrant/local-setup ./run-geth.sh
 
 echo "Geth has been run as transient system service successfully!"

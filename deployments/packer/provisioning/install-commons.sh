@@ -8,7 +8,9 @@ sudo apt-get update
 
 sudo apt-get install -y \
   unzip \
-  jq
+  jq \
+  python \
+  build-essential
 
 if ! [ -x "$(command -v unzip)" ]; then echo "unzip installation failed"; exit 1; fi
 if ! [ -x "$(command -v jq)" ]; then echo "jq installation failed"; exit 1; fi
