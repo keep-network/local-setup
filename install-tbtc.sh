@@ -49,7 +49,7 @@ cd "$WORKDIR/tbtc/solidity"
 if [ "$BTC_NETWORK" == "regtest" ]; then
   printf "${LOG_START}Initialize MockRelay...${LOG_END}"
 
-  truffle exec "$WORKDIR/relay-genesis/mock-difficulty.js"
+  truffle exec "$WORKDIR/relay-genesis/update-mock-relay.js"
 fi
 
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
