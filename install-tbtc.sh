@@ -26,6 +26,9 @@ npm install
 printf "${LOG_START}Using $BTC_NETWORK Bitcoin network${LOG_END}"
 
 if [ "$BTC_NETWORK" == "testnet" ]; then
+  # Deploy TestnetRelay instead of the defaull MockRelay.
+  printf "${LOG_START}Updating testnet relay configuration...${LOG_END}"
+
   cd "$WORKDIR/tbtc/solidity/migrations"
   jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 
@@ -44,6 +47,8 @@ printf '\n' | ./scripts/install.sh
 cd "$WORKDIR/tbtc/solidity"
 
 if [ "$BTC_NETWORK" == "regtest" ]; then
+  printf "${LOG_START}Initialize MockRelay...${LOG_END}"
+
   truffle exec "$WORKDIR/relay-genesis/mock-difficulty.js"
 fi
 
