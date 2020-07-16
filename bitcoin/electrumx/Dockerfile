@@ -8,7 +8,7 @@ RUN chmod a+x /usr/local/bin/* && \
     apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing rocksdb-dev && \
     pip install aiohttp pylru plyvel websockets python-rocksdb
 
-RUN git clone https://github.com/liamzebedee/electrumx
+RUN git clone https://github.com/keep-network/electrumx
 
 RUN cd electrumx && \
     git checkout 629a609b44af8f0e810ebc67242cc0bf5f3cd1e2 && \
