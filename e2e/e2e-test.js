@@ -5,6 +5,8 @@ import ProviderEngine from "web3-provider-engine"
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js"
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
+import {assertMintedTbtcAmount, assertTbtcAccountBalance, assertReceivedBtcAmount} from "./assertions.js";
+import {getTBTCTokenBalance} from "./common.js";
 import BitcoinRpc from "bitcoind-rpc"
 import Bluebird from "bluebird"
 import config from "../configs/bitcoin/config.json"
@@ -14,6 +16,11 @@ Bluebird.promisifyAll(bitcoinRpc)
 
 const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
+const signerFeeDivisor = 0.0005 // 0.05%
+const tbtcDepositAmount = 1000000000000000 // satoshiLotSize * satoshiMultiplier
+const signerFee = signerFeeDivisor * tbtcDepositAmount
+const tbtcDepositAmountMinusSignerFee = tbtcDepositAmount - signerFee
+const satoshiRedemptionFee = 150
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -51,20 +58,87 @@ async function run() {
         }
     })
 
+    const initialTbtcAccountBalance = await getTBTCTokenBalance(
+        web3,
+        tbtc,
+        web3.eth.defaultAccount
+    )
+
+    console.log(
+        `Initial TBTC balance for account ${web3.eth.defaultAccount} ` +
+        `is: ${initialTbtcAccountBalance}`
+    )
 
     const deposits = []
     for (let i = 1; i <= depositsCount; i++) {
         console.log(`\nStarting deposit number [${i}]...\n`)
         const deposit = await createDeposit(tbtc, satoshiLotSize)
         deposits.push(deposit)
+
+        assertMintedTbtcAmount(web3, deposit, tbtcDepositAmountMinusSignerFee)
+
+        // check whether signer fee went to the expected address
+        await assertTbtcAccountBalance(web3, tbtc, deposit.address, signerFee)
+
         console.log(`\nDeposit ${deposit.address} has been created successfully.`)
     }
+
+    const afterDepositsTbtcAccountBalance = initialTbtcAccountBalance.add(
+        web3.utils.toBN(depositsCount).mul(
+            web3.utils.toBN(tbtcDepositAmountMinusSignerFee)
+        )
+    )
+
+    console.log(
+        `TBTC balance for account ${web3.eth.defaultAccount} after ` +
+        `performing deposits should be: ${afterDepositsTbtcAccountBalance}. ` +
+        `Checking assertion...`
+    )
+
+    await assertTbtcAccountBalance(
+        web3,
+        tbtc,
+        web3.eth.defaultAccount,
+        afterDepositsTbtcAccountBalance
+    )
 
     console.log(`\nStarting redemption of the first deposit...\n`)
     const redeemerAddress = (await bitcoinRpc.getnewaddressAsync()).result
     console.log(`Generated reedemer address: ${redeemerAddress}`)
     const message = await redeemDeposit(tbtc, deposits[0].address, redeemerAddress)
     console.log(`\nRedemption outcome: ${message}\n`)
+
+    const afterRedemptionTbtcAccountBalance = afterDepositsTbtcAccountBalance.sub(
+        web3.utils.toBN(tbtcDepositAmount)
+    )
+
+    console.log(
+        `TBTC balance for account ${web3.eth.defaultAccount} after ` +
+        `performing redemption should be: ${afterRedemptionTbtcAccountBalance}. ` +
+        `Checking assertion...`
+    )
+
+    await assertTbtcAccountBalance(
+        web3,
+        tbtc,
+        web3.eth.defaultAccount,
+        afterRedemptionTbtcAccountBalance
+    )
+
+    const afterRedemptionReceivedBtcAmount =
+        (satoshiLotSize - satoshiRedemptionFee) / 100000000
+
+    console.log(
+        `Received BTC amount for redeemer address ${redeemerAddress} after ` +
+        `performing redemption should be: ${afterRedemptionReceivedBtcAmount}. ` +
+        `Checking assertion...`
+    )
+
+    await assertReceivedBtcAmount(
+        bitcoinRpc,
+        redeemerAddress,
+        afterRedemptionReceivedBtcAmount
+    )
 }
 
 async function createDeposit(tbtc, satoshiLotSize) {
@@ -98,8 +172,12 @@ async function createDeposit(tbtc, satoshiLotSize) {
         deposit.onActive(async () => {
             try {
                 console.log("Deposit is active, minting...")
-                await deposit.mintTBTC()
-                resolve(deposit)
+                const tbtcAmount = await deposit.mintTBTC()
+
+                resolve({
+                    address: deposit.address,
+                    tbtcAmount: tbtcAmount,
+                })
             } catch (err) {
                 reject(err)
             }
