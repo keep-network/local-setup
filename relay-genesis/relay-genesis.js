@@ -1,6 +1,6 @@
 const BitcoinRpc = require('bitcoind-rpc')
 const Bluebird = require('bluebird')
-const config = require("../configs/relay-genesis/config.json")
+const config = require("../configs/bitcoin/config.json")
 
 const bitcoinRpc = new BitcoinRpc(config)
 Bluebird.promisifyAll(bitcoinRpc)

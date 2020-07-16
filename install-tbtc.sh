@@ -9,34 +9,54 @@ DONE_END='\n\n\e[0m'    # new line + reset
 
 WORKDIR=$PWD
 
+BTC_NETWORK="regtest"
+
+while getopts n: option; do
+  case "${option}" in
+  n) BTC_NETWORK=${OPTARG};;
+  *) echo "invalid option";;
+  esac
+done
+
 printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
 cd "$WORKDIR/relay-genesis"
 npm install
 
-cd "$WORKDIR/tbtc/solidity/migrations"
+printf "${LOG_START}Using $BTC_NETWORK Bitcoin network${LOG_END}"
 
-# Always deploy TestnetRelay instead of the defaull MockRelay.
-jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+if [ "$BTC_NETWORK" == "testnet" ]; then
+  # Deploy TestnetRelay instead of the defaull MockRelay.
+  printf "${LOG_START}Updating testnet relay configuration...${LOG_END}"
 
-bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
-BITCOIN_TEST=$(echo "$bitcoinTest" | tail -1)
+  cd "$WORKDIR/tbtc/solidity/migrations"
+  jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 
-jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
-jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+  bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
+  BITCOIN_TEST=$(echo "$bitcoinTest" | tail -1)
+
+  jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+  jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+fi
 
 cd "$WORKDIR/tbtc"
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
 
+cd "$WORKDIR/tbtc/solidity"
+
+if [ "$BTC_NETWORK" == "regtest" ]; then
+  printf "${LOG_START}Initialize MockRelay...${LOG_END}"
+
+  truffle exec "$WORKDIR/relay-genesis/update-mock-relay.js"
+fi
+
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
 # Initialize KEEP-ECDSA
 
 printf "${LOG_START}Initializing keep-ecdsa...${LOG_END}"
-
-cd solidity
 
 # Get network ID.
 NETWORK_ID_OUTPUT=$(truffle exec ./scripts/get-network-id.js)

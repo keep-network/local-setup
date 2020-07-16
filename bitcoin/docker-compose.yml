@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  bitcoind:
+    container_name: bitcoind
+    ports:
+      - 18332:18332
+    build: ./bitcoind
+  electrumx:
+    container_name: electrumx
+    ports:
+      - 50001:50001
+      - 50002:50002
+      - 50003:50003
+      - 50004:50004
+      - 8000:8000
+    environment:
+      - DAEMON_URL=http://user:password@bitcoind:18332
+      - COIN=BitcoinSegwit
+      - NET=regtest
+      - SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002,ws://0.0.0.0:50003,wss://127.0.0.1:50004,rpc://0.0.0.0:8000
+    build: ./electrumx

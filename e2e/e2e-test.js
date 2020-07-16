@@ -5,10 +5,15 @@ import ProviderEngine from "web3-provider-engine"
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js"
 import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
+import BitcoinRpc from "bitcoind-rpc"
+import Bluebird from "bluebird"
+import config from "../configs/bitcoin/config.json"
+
+const bitcoinRpc = new BitcoinRpc(config)
+Bluebird.promisifyAll(bitcoinRpc)
 
 const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
-const btcAddress = '2N6L4Q6fphMzuWqERQYTwgEMmQTpcqgdVFK'
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -36,16 +41,11 @@ async function run() {
 
     const tbtc = await TBTC.withConfig({
         web3: web3,
-        bitcoinNetwork: "testnet",
+        bitcoinNetwork: "regtest",
         electrum: {
-            testnet: {
-                server: "10.102.100.24",
-                port: 443,
-                protocol: "ssl"
-            },
             testnetWS: {
-                server: "10.102.100.24",
-                port: 8080,
+                server: "127.0.0.1",
+                port: 50003,
                 protocol: "ws"
             }
         }
@@ -61,7 +61,9 @@ async function run() {
     }
 
     console.log(`\nStarting redemption of the first deposit...\n`)
-    const message = await redeemDeposit(tbtc, deposits[0].address, btcAddress)
+    const redeemerAddress = (await bitcoinRpc.getnewaddressAsync()).result
+    console.log(`Generated reedemer address: ${redeemerAddress}`)
+    const message = await redeemDeposit(tbtc, deposits[0].address, redeemerAddress)
     console.log(`\nRedemption outcome: ${message}\n`)
 }
 
@@ -84,6 +86,10 @@ async function createDeposit(tbtc, satoshiLotSize) {
                     "satoshis please."
                 )
                 console.log("Now monitoring for deposit transaction...")
+
+                await bitcoinRpc.sendtoaddressAsync(address, lotSize / 100000000)
+
+                console.log("Deposit transaction sent")
             } catch (err) {
                 reject(err)
             }
