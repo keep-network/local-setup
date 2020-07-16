@@ -32,8 +32,9 @@ cp -R configs/relays/. relays/maintainer/maintainer/config/
 cd "$WORKDIR/relays/maintainer/maintainer/config"
 
 # Fill SUMMA_RELAY_CONTRACT env in config file with their actual value.
-sed -i .OLD 's:RELAYCONTRACT:'$TESTNET_RELAY_CONTRACT_ADDRESS':' .my_env_file.env
-rm .my_env_file.env.OLD
+TMP_FILE=$(mktemp /tmp/.my_env_file.env.XXXXXXXXXX)
+sed 's:RELAYCONTRACT:'$TESTNET_RELAY_CONTRACT_ADDRESS':' .my_env_file.env > $TMP_FILE
+mv $TMP_FILE .my_env_file.env
 
 cd $WORKDIR
 
