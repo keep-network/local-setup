@@ -9,7 +9,7 @@ unless Vagrant.has_plugin?("vagrant-disksize")
 end
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "local-setup-base"
+  config.vm.box = "local-setup-environment"
   config.vm.synced_folder ".", "/vagrant", disabled: true
   config.disksize.size = '15GB'
 

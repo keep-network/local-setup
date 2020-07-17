@@ -5,7 +5,7 @@
       "source_path": "ubuntu/xenial64",
       "provider": "virtualbox",
       "communicator": "ssh",
-      "output_dir": "local-setup-base"
+      "output_dir": "vagrant-box"
     },
     {
       "type": "docker",
@@ -13,7 +13,6 @@
       "commit": true,
       "run_command": [
         "-d", "-i", "-t",
-        "--name=local-setup-base-builder",
         "-w=/root",
         "--entrypoint=/bin/bash",
         "--",
@@ -62,7 +61,7 @@
     [
       {
         "type": "docker-tag",
-        "repository": "local-setup-base"
+        "repository": "local-setup-environment"
       }
     ]
   ]
