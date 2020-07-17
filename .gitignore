@@ -2,6 +2,6 @@
 /ethereum/data/geth/
 /storage/
 node_modules
-local-setup-box
+local-setup-base
 .vagrant
 *.log
