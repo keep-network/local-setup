@@ -58,11 +58,10 @@
     }
   ],
   "post-processors": [
-    [
-      {
-        "type": "docker-tag",
-        "repository": "local-setup-environment"
-      }
-    ]
+    {
+      "type": "docker-tag",
+      "repository": "local-setup-environment",
+      "only": ["docker"]
+    }
   ]
 }
