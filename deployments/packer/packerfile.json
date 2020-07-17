@@ -11,8 +11,17 @@
       "type": "docker",
       "image": "ubuntu:xenial",
       "commit": true,
+      "run_command": [
+        "-d", "-i", "-t",
+        "--name=local-setup-base-builder",
+        "-w=/root",
+        "--entrypoint=/bin/bash",
+        "--",
+        "{{.Image}}"
+      ],
       "changes": [
-        "ENTRYPOINT /bin/bash"
+        "WORKDIR /root",
+        "ENTRYPOINT /bin/bash -l"
       ]
     }
   ],
