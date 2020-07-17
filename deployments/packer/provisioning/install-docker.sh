@@ -23,6 +23,4 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
 if ! [ -x "$(command -v docker)" ]; then echo "Docker installation failed"; exit 1; fi
 
-sudo gpasswd -a $USER docker
-
 echo "Docker has been installed successfully!"

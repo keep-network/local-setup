@@ -5,10 +5,24 @@
       "source_path": "ubuntu/xenial64",
       "provider": "virtualbox",
       "communicator": "ssh",
-      "output_dir": "local-setup-box"
+      "output_dir": "local-setup-base"
+    },
+    {
+      "type": "docker",
+      "image": "ubuntu:xenial",
+      "commit": true,
+      "changes": [
+        "ENTRYPOINT /bin/bash"
+      ]
     }
   ],
   "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
+      "inline": ["apt-get update && apt-get -y install sudo"],
+      "only": ["docker"]
+    },
     {
       "type": "shell",
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
@@ -18,11 +32,29 @@
         "./provisioning/install-go.sh",
         "./provisioning/install-geth.sh",
         "./provisioning/install-solidity.sh",
-        "./provisioning/install-truffle.sh",
         "./provisioning/install-protobuf.sh",
         "./provisioning/install-docker.sh",
         "./provisioning/install-docker-compose.sh"
       ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
+      "inline": ["npm -g config set user root"],
+      "only": ["docker"]
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
+      "script": "./provisioning/install-truffle.sh"
     }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "local-setup-base"
+      }
+    ]
   ]
 }
