@@ -19,3 +19,5 @@ set -e
 
 # Install tBTC dApp.
 ./install-tbtc-dapp.sh
+
+echo "Installation script executed successfully with versions of submodules:\n$(git submodule)"
