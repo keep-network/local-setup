@@ -1,0 +1,111 @@
+= Automatic setup on virtual machine
+
+== Prerequisites
+
+You need to install:
+
+- https://www.packer.io/downloads[Packer]
+- https://www.vagrantup.com/downloads[Vagrant]
+- https://www.virtualbox.org/wiki/Downloads[VirtualBox]
+
+[TIP]
+VirtualBox installation may fail on macOS Catalina. If it's your case, please look
+at https://apple.stackexchange.com/questions/372492/virtualbox-installation-failed-on-macos-catalina[this issue].
+
+== Installing the system
+
+First, go to the `deployments/local-setup-environment` directory and build the environment image:
+```
+packer build -only=vagrant packerfile.json
+```
+An output directory named `vagrant-box` containing `package.box` file should be created.
+
+Then, switch the directory to `deployments/local-setup-instance` and import
+the image:
+```
+vagrant box add --force --name=local-setup-environment ./../local-setup-environment/vagrant-box/package.box
+```
+Finally, you can run the virtual machine by doing:
+```
+vagrant up
+```
+A new virtual machine will be created and provisioned accordingly. When
+this command terminates successfully, the machine should be ready to work
+and have all the auxiliary software like Geth, Bitcoin Core, ElectrumX
+and Core/ECDSA clients running.
+
+== How to interact with the system
+
+You can interact with the system through the tBTC dApp or automated
+end-to-end tests. Before you start interacting, you have to connect
+to the virtual machine. First, switch to the `deployments/local-setup-instance`
+directory and do:
+```
+vagrant ssh
+```
+
+You will be moved to the virtual machine home directory where you can find
+the `local-setup` directory where all installed things live.
+
+=== Keep Dashboard dApp
+
+To run the Keep Dashboard dApp invoke:
+```
+./run-keep-dashboard.sh
+```
+
+=== tBTC dApp
+
+To run the tBTC dApp against the local Bitcoin network,
+make sure the tBTC dApp is configured to work with the local ElectrumX instance.
+You can configure this in `./tbtc-dapp/src/wrappers/web3.js` file,
+where `TBTC.withConfig` line occurs.
+Then, you can invoke:
+```
+./run-tbtc-dapp.sh
+```
+The application will be available on `http://localhost:3000`.
+
+=== E2E tests
+
+To run the automated end-to-end scenario switch to Node 14.3.0:
+```
+nvm use 14.3.0
+```
+Then invoke:
+```
+./run-e2e-test.sh
+```
+
+== Virtual machine lifecycle
+
+You can manage the VM lifecycle by switching to the `deployments/local-setup-instance`
+directory.
+
+To stop the machine do:
+```
+vagrant halt
+```
+
+To start it again, just make:
+```
+vagrant up
+```
+
+To restart the machine, invoke:
+```
+vagrant reload
+```
+
+Everytime you start the machine, Geth, btcd, ElectrumX and Core/ECDSA clients
+will be started as well but the configured `local-setup` directory won't be touched.
+However, if you want to deploy everything from scratch
+you can reload the machine with provisioning option enabled:
+```
+vagrant reload --provision
+```
+or, destroy the machine:
+```
+vagrant destroy
+```
+and run it again.
