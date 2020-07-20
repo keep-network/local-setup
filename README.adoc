@@ -6,7 +6,7 @@ This repository can be used in two different ways described below:
 
 === Automatic installation on separate virtual machine
 
-To install everything automatically on a separate VitualBox machine using Packer and
+To install everything automatically on a separate VirtualBox machine using Packer and
 Vagrant, please follow the <<./docs/auto-setup.adoc#title, automatic setup guide>>.
 
 === Manual installation on your local machine
