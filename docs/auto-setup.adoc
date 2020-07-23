@@ -32,7 +32,8 @@ vagrant up
 A new virtual machine will be created and provisioned accordingly. When
 this command terminates successfully, the machine should be ready to work
 and have all the auxiliary software like Geth, Bitcoin Core, ElectrumX
-and Core/ECDSA clients running.
+and Core/ECDSA clients running. Worth noting, `keep-core` and `keep-ecdsa` client
+executables are always built from their recent master versions.
 
 == How to interact with the system
 
