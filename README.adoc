@@ -1,8 +1,27 @@
 = KEEP & tBTC local setup
 
+This repository provide a bunch of scripts which allow to install tBTC and
+Keep locally for development and test purposes. It also contains and
+enables execution of automated end-to-end system tests for tBTC.
+
+Basically, the entire setup operates on several component submodules:
+
+- https://github.com/keep-network/keep-core[`keep-core`]
+- https://github.com/keep-network/keep-ecdsa[`keep-ecdsa`]
+- https://github.com/keep-network/tbtc[`tbtc`]
+- https://github.com/keep-network/tbtc.js[`tbtc.js`]
+- https://github.com/keep-network/tbtc-dapp[`tbtc-dapp`]
+- https://github.com/keep-network/relays[`relays`]
+
+It also uses some auxiliary software needed by tBTC and Keep:
+
+- https://github.com/ethereum/go-ethereum[Geth]
+- https://bitcoincore.org[Bitcoin Core]
+- https://electrumx.readthedocs.io/en/latest[ElectrumX]
+
 == Installation
 
-This repository can be used in two different ways described below:
+The installation can be performed in two different ways described below:
 
 === Automatic installation on separate virtual machine
 
