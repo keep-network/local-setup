@@ -64,7 +64,30 @@ To run the Keep Dashboard dApp invoke:
 To run the tBTC dApp against the local Bitcoin network,
 make sure the tBTC dApp is configured to work with the local ElectrumX instance.
 You can configure this in `./tbtc-dapp/src/wrappers/web3.js` file,
-where `TBTC.withConfig` line occurs.
+where `TBTC.withConfig` line occurs:
+```
+const initializeContracts = async (web3, connector) => {
+    // Initialise default account.
+    const accounts = await web3.eth.getAccounts()
+    web3.eth.defaultAccount = accounts[0]
+
+    // Log the netId/chainId.
+    const netId = await web3.eth.net.getId()
+    const chainId = await web3.eth.getChainId()
+    console.debug(`netId: ${netId}\nchainId: ${chainId}`)
+
+    Web3LoadedDeferred.resolve(web3)
+
+    const tbtc = await TBTC.withConfig({
+        web3: web3,
+        bitcoinNetwork: "testnet",
+        electrum: config.electrum
+    })
+
+    TBTCLoadedDeferred.resolve(tbtc)
+}
+```
+
 Then, you can invoke:
 ```
 ./run-tbtc-dapp.sh
