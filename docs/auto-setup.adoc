@@ -25,6 +25,10 @@ the image:
 ```
 vagrant box add --force --name=local-setup-environment ./../local-setup-environment/vagrant-box/package.box
 ```
+Also, install the required `vagrant-disksize` plugin:
+```
+vagrant plugin install vagrant-disksize
+```
 Finally, you can run the virtual machine by doing:
 ```
 vagrant up
