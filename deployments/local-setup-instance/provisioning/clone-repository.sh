@@ -4,7 +4,7 @@ set -e
 
 echo "Cloning repository..."
 
-if [ -d local-setup ]; then rm -Rf local-setup; fi
+if [ -d local-setup ]; then sudo rm -Rf local-setup; fi
 
 git clone https://github.com/keep-network/local-setup.git
 
