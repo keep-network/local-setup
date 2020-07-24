@@ -1,0 +1,81 @@
+version: 2.1
+
+workflows:
+  version: 2
+  nightly-e2e-tests:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - run-e2e-tests
+
+jobs:
+  run-e2e-tests:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+    resource_class: large
+    working_directory: ~/local-setup
+    shell: /bin/bash -eo pipefail -l
+    steps:
+      - checkout
+      - run:
+          name: Install common tools
+          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-commons.sh
+      - run:
+          name: Install Node.js and NPM
+          command: |
+            nvm install 14.3.0
+            nvm install 11.15.0
+            nvm alias default 11.15.0
+            nvm use default
+            echo "Using node: $(node -v)"
+      - run:
+          name: Install Go
+          command: |
+            cd ~
+            sudo rm -rf /usr/local/go
+            ./local-setup/deployments/local-setup-environment/provisioning/install-go.sh
+            echo "Using Go: $(go version)"
+      - run:
+          name: Install Geth
+          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-geth.sh
+      - run:
+          name: Install Solidity
+          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-solidity.sh
+      - run:
+          name: Install Protobuf
+          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-protobuf.sh
+      - run:
+          name: Install Truffle
+          command: |
+            cd ~
+            echo "Using node: $(node -v)"
+            ./local-setup/deployments/local-setup-environment/provisioning/install-truffle.sh
+      - run:
+          name: Initialize and run Geth
+          command: |
+            cd ~
+            ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
+            ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
+      - run:
+          name: Run Bitcoin Core and ElectrumX
+          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
+      - run:
+          name: Run install script
+          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
+      - run:
+          name: Run Core and ECDSA clients
+          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
+      - run:
+          name: Run E2E test scripts
+          no_output_timeout: 30m
+          command: |
+            nvm use 14.3.0
+            echo "Using node: $(node -v)"
+            ./run-e2e-test.sh
+
