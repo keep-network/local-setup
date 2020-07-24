@@ -9,7 +9,7 @@ workflows:
           filters:
             branches:
               only:
-                - local-setup-ci #TODO: change to master
+                - master
     jobs:
       - run-e2e-tests
 
