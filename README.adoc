@@ -1,148 +1,35 @@
 = KEEP & tBTC local setup
 
-== Setting up development environment
-If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-core/blob/master/scripts/macos-setup.sh[macos-setup.sh] script to setup all necessary tools.
+This repository provide a bunch of scripts which allow to install tBTC and
+Keep locally for development and test purposes. It also contains and
+enables execution of automated end-to-end system tests for tBTC.
 
-If you are not on macOS or you don't have Homebrew, you need to install:
+Basically, the entire setup operates on several component submodules:
 
-- Go compiler, at least 1.14
-- Geth (Ethereum client) 1.9.9-stable
-- Solidity, at least 0.5.17
-- Truffle, at least 5.1.18
-- Protobuf compiler, at least 3.11.4
-- `protoc-gen-gogoslick` toolchain
-- `jq`
+- https://github.com/keep-network/keep-core[`keep-core`]
+- https://github.com/keep-network/keep-ecdsa[`keep-ecdsa`]
+- https://github.com/keep-network/tbtc[`tbtc`]
+- https://github.com/keep-network/tbtc.js[`tbtc.js`]
+- https://github.com/keep-network/tbtc-dapp[`tbtc-dapp`]
+- https://github.com/keep-network/relays[`relays`]
 
-Regardless you use `macos-setup.sh` or not, you should also install:
+It also uses some auxiliary software needed by tBTC and Keep:
 
-- https://github.com/pyenv/pyenv[pyenv], at least 1.2.18
-- https://github.com/pypa/pipenv[pipenv], at least 2018.11.26
-- https://docs.docker.com/get-docker[Docker] & https://docs.docker.com/compose/install/[Docker Compose]
+- https://github.com/ethereum/go-ethereum[Geth]
+- https://bitcoincore.org[Bitcoin Core]
+- https://electrumx.readthedocs.io/en/latest[ElectrumX]
 
-== Node.js version notice
+== Installation
 
-Please use Node `v11.15.0` for everything but E2E test script.
-To run the test script, please use Node `v14.3.0`.
+The installation can be performed in two different ways described below:
 
-We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
-You can install both versions by doing:
-```
-nvm install 11.15.0
-nvm install 14.3.0
-```
-And use the specific version:
-```
-nvm use 11.15.0
-nvm use 14.3.0
-```
+=== Automatic installation on separate virtual machine
 
-== Installing the system
-. Initialize local `geth` using:
-+
-```
-./initialize-geth.sh
-```
-+
-You can skip this step if your local geth is already initialized. This script clears all Ethereum client data, initilizes genesis block, and funds five accounts. All client data are kept in the working directory of this project so all the data used for other projects stay untouched.
+To install everything automatically on a separate VirtualBox machine using Packer and
+Vagrant, please follow the <<./docs/auto-setup.adoc#title, automatic setup guide>>.
 
-. Run local `geth` node using:
-+
-```
-./run-geth.sh
-```
-. Run local Bitcoin Core node and ElectrumX using:
-+
-```
-./run-bitcoin.sh
-```
-. Run Keep & tBTC installation script:
-+
-```
-./install.sh
-```
-+ 
-This script will fetch `keep-core`, `keep-ecdsa`, and `tbtc` source code, deploy contracts of `keep-core`, `keep-ecdsa`, and `tbtc`. It will also build `keep-core` and `keep-ecdsa` off-chain clients.
-+
-Later on, if you decide to update `tbtc`, you can run just `install-tbtc.sh`. 
-+
-Keep in mind, `tbtc` depends on `keep-ecdsa` and `keep-ecdsa` depends on `keep-core` so if you decide to update `keep-ecdsa`, you can run `install-keep-ecdsa.sh` followed by `install-tbtc.sh`. 
-+
-If you decide to update `keep-core`, you have to run `install-keep-core.sh` followed by `install-keep-ecdsa.sh` followed by `install-tbtc.sh` or just the entire `install.sh` again.
+=== Manual installation on your local machine
 
-== Run clients
-The above installation script will configure:
+To install everything on your local machine by hand,
+please follow the <<./docs/manual-setup.adoc#title, manual setup guide>>.
 
-- 1 `keep-core` client
-- 3 `keep-ecdsa` clients
-
-To run the `keep-core` client use:
-```
-./run-core-1.sh
-```
-
-It is enough to run one `keep-core` client to generate a group and produce relay entries. Setting up more than one client locally is possible but consumes more resources.
-
-To run `keep-ecdsa` clients use:
-```
-./run-ecdsa-1.sh
-```
-```
-./run-ecdsa-2.sh
-```
-```
-./run-ecdsa-3.sh
-```
-
-There are at least 3 `keep-ecdsa` clients needed to open a keep. Setting up more than three clients locally is possible but consumes more resources.
-
-== Beacon genesis
-
-Before the beacon is able to produce a first relay entry, genesis needs to happen. Genesis triggers the first random beacon group selection.
-
-Genesis should be triggered after `keep-core` client started with:
-```
-cd keep-core
-KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.toml relay genesis
-```
-
-Bonded ECDSA keep factory from `keep-ecdsa` contracts requests for new relay entry to reseed after each signer selection but it is also possible to request for a new relay entry manually with:
-```
-cd keep-core
-KEEP_ETHEREUM_PASSWORD="password" ./keep-core --config configs/config.local.1.toml relay request
-```
-
-= How to interact with the system
-
-You can interact with the system through the tBTC dApp or automated
-end-to-end tests. Before you start interacting, make sure you:
-
-- Installed all system components using `install.sh` script
-- Have a local Geth instance (`run-geth.sh`) working
-- Have local Bitcoin Core and ElectrumX instances (`run-bitcoin.sh`) working
-- Have 1 `keep-core` and 3 `keep-ecdsa` clients up and running
-
-== Keep Dashboard dApp
-
-To run the Keep Dashboard dApp invoke:
-```
-./run-keep-dashboard.sh
-```
-
-== tBTC dApp
-
-To run the tBTC dApp against the local Bitcoin network,
-make sure the tBTC dApp is configured to work with the local ElectrumX instance.
-You can configure this in `./tbtc-dapp/src/wrappers/web3.js` file,
-where `TBTC.withConfig` line occurs.
-Then, you can invoke:
-```
-./run-tbtc-dapp.sh
-```
-The application will be available on `http://localhost:3000`.
-
-== E2E tests
-
-To run the automated end-to-end scenario invoke:
-```
-./run-e2e-test.sh
-```

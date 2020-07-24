@@ -19,8 +19,9 @@ cp -R configs/keep-core/. keep-core/configs/
 cd keep-core/configs
 
 # Fill absolute paths in config file with actual working directory.
-sed -i .OLD 's:WORKDIR:'$WORKDIR':' config.local.1.toml
-rm *.OLD
+TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
+sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml > $TMP_FILE
+mv $TMP_FILE config.local.1.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
 

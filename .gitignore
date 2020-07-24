@@ -2,3 +2,6 @@
 /ethereum/data/geth/
 /storage/
 node_modules
+vagrant-box
+.vagrant
+*.log
