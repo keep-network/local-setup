@@ -1,4 +1,4 @@
-import {getTBTCTokenBalance, getReceivedBtcAmount} from "./common.js";
+import {getTBTCTokenBalance, getBtcBalance} from "./common.js";
 
 export const assertMintedTbtcAmount = (web3, deposit, expectedTbtcAmount) => {
     const actualTbtcAmountBn = web3.utils.toBN(deposit.tbtcAmount)
@@ -31,18 +31,20 @@ export const assertTbtcAccountBalance = async (
     }
 }
 
-export const assertReceivedBtcAmount = async (
-    bitcoinRpc,
+export const assertBtcBalance = async (
+    web3,
+    BitcoinHelpers,
     address,
-    expectedReceivedBtcAmount
+    expectedBtcBalance
 ) => {
-    const actualReceivedBtcAmount = await getReceivedBtcAmount(bitcoinRpc, address)
+    const actualBtcBalanceBn = await getBtcBalance(web3, BitcoinHelpers, address)
+    const expectedBtcBalanceBn = web3.utils.toBN(expectedBtcBalance)
 
-    if (actualReceivedBtcAmount !== expectedReceivedBtcAmount) {
+    if (!actualBtcBalanceBn.eq(expectedBtcBalanceBn)) {
         throw new Error(
-            `unexpected received BTC amount for address ${address}:
-                actual:   ${actualReceivedBtcAmount}
-                expected: ${expectedReceivedBtcAmount}`
+            `unexpected BTC balance for address ${address}:
+                actual:   ${actualBtcBalanceBn}
+                expected: ${expectedBtcBalanceBn}`
         )
     }
 }
