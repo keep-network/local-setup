@@ -20,8 +20,13 @@ sleep 10
 
 alias btccli='./bitcoin-cli -regtest -datadir=datadir -rpcport=18332 -rpcuser=user -rpcpassword=password'
 
-# Get an address.
-address=$(btccli getnewaddress)
+# Use a specific private key.
+privateKey="cTj6Z9fxMr4pzfpUhiN8KssVzZjgQz9zFCfh87UrH8ZLjh3hGZKF"
+
+btccli importprivkey "$privateKey" "main"
+
+# Get the imported address. It should start with `bcrt1` because this is the right prefix for the regtest network.
+address=$(btccli getaddressesbylabel "main" | jq -r 'with_entries(select(.key | startswith("bcrt1"))) | 'keys[0]'')
 
 # Mine some initial blocks to unlock coinbase.
 btccli generatetoaddress 1000 "$address"
