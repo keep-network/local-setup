@@ -8,11 +8,28 @@ import Subproviders from "@0x/subproviders"
 import BitcoinRpc from "bitcoind-rpc"
 import Bluebird from "bluebird"
 import config from "../configs/bitcoin/config.json"
+import * as fs from 'fs' 
+
+const states = {
+    '0': 'START',
+    '1': 'AWAITING_SIGNER_SETUP',
+    '2': 'AWAITING_BTC_FUNDING_PROOF',
+    '3': 'FAILED_SETUP',
+    '4': 'ACTIVE',
+    '5': 'AWAITING_WITHDRAWAL_SIGNATURE',
+    '6': 'AWAITING_WITHDRAWAL_PROOF',
+    '7': 'REDEEMED',
+    '8': 'COURTESY_CALL',
+    '9': 'FRAUD_LIQUIDATION_IN_PROGRESS',
+    '10': 'LIQUIDATION_IN_PROGRESS',
+    '11': 'LIQUIDATED',
+  }
+  
+const blocksTimespan = 500
 
 const bitcoinRpc = new BitcoinRpc(config)
 Bluebird.promisifyAll(bitcoinRpc)
 
-const blocksTimespan = 500
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -35,9 +52,32 @@ const web3 = new Web3(engine)
 engine.start()
 
 async function run() {
+
+    // Set first account as the default account.
+    web3.eth.defaultAccount = (await web3.eth.getAccounts())[0]
+
+    let htmlContent = 
+`
+<!DOCTYPE html>
+<html>
+<body>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Bitcoin address</th>
+        <th>Satoshi Lot Size</th>
+        <th>Current State</th>
+        <th>Signer fee</th>
+        <th>Redemption cost</th>
+        <th>Tbtc account balance</th>
+    </tr>
+    </thead>
+    <tbody>
+`
     const tbtc = await TBTC.withConfig({
         web3: web3,
-        bitcoinNetwork: "regtest",
+        bitcoinNetwork: "regtest",   
         electrum: {
             testnetWS: {
                 server: "127.0.0.1",
@@ -48,24 +88,54 @@ async function run() {
     })
 
     const currentBlockNumber = await web3.eth.getBlockNumber()
-    const fromBlock = 0
-    // const fromBlock = currentBlockNumber - blocksTimespan
- 
+    // const fromBlock = 0
+    const fromBlock = currentBlockNumber - blocksTimespan
+
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
 
     const depositAddresses = createdDepositEvents.map(event => event.returnValues._depositContractAddress)
-
+    
     for (const depositAddress of depositAddresses) {
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
-
-        const satoshiLotSize = (await deposit.getSatoshiLotSize()).toString()
+        
         const bitcoinAddress = await deposit.getBitcoinAddress()
+        const satoshiLotSize = (await deposit.getSatoshiLotSize()).toString()
         const currentState = await deposit.getCurrentState()
+        const signerFee = await deposit.getSignerFeeTBTC()
+        const redemptionCost = await deposit.getRedemptionCost()
+        const tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
 
+
+        htmlContent += 
+        `
+        <tr>
+            <td>` + bitcoinAddress + `</td>
+            <td>` + satoshiLotSize + `</td>
+            <td>` + states[currentState] + `</td>
+            <td>` + signerFee + `</td>
+            <td>` + redemptionCost + `</td>
+            <td>` + tbtcAccountBalance + `</td>
+        </tr>
+        `
+        
         console.log("satoshi lot size: ", satoshiLotSize)
         console.log("bitcoin address: ", bitcoinAddress)
-        console.log("current state: ", currentState)
+        console.log("current state: ", states[currentState])
+        console.log("signerFee: ", signerFee.toString())
+        console.log("redemptionCost: ", redemptionCost.toString())
+        console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
     }
+    
+    htmlContent += 
+    `
+    </tbody>
+</table>
+
+</body>
+</html>
+    `
+    
+    fs.writeFileSync('./site/index.html', htmlContent);
 }
 
 

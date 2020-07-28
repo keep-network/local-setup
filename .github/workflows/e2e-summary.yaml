@@ -1,0 +1,16 @@
+name: Node.js CI
+
+on: push
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+      
+        - name: Installing npm dependencies
+          run: cd e2e && npm install
+        
+        - name: Running e2e summary test 
+          run: ./run-e2e-summary.sh
