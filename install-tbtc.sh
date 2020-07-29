@@ -39,10 +39,18 @@ if [ "$BTC_NETWORK" == "testnet" ]; then
   jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 fi
 
+printf "${LOG_START}Running install script...${LOG_END}"
+
 cd "$WORKDIR/tbtc"
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
+
+printf "${LOG_START}Updating tBTC node_modules...${LOG_END}"
+
+cd $WORKDIR
+rm -rf tbtc/solidity/node_modules/@keep-network/keep-ecdsa
+cp -R keep-ecdsa/solidity/. tbtc/solidity/node_modules/@keep-network/keep-ecdsa
 
 cd "$WORKDIR/tbtc/solidity"
 
