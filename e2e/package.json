@@ -8,6 +8,7 @@
     "web3": "1.2.8",
     "web3-provider-engine": "15.0.12",
     "bcoin": "git+https://github.com/bcoin-org/bcoin.git#8851582",
-    "wif": "2.0.6"
+    "wif": "2.0.6",
+    "commander": "6.0.0"
   }
 }

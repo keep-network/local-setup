@@ -10,15 +10,19 @@ import {assertMintedTbtcAmount, assertTbtcAccountBalance, assertBtcBalance} from
 import {getTBTCTokenBalance, getBtcBalance} from "./common.js";
 import bcoin from "bcoin"
 import wif from "wif"
+import program from "commander"
 
-const bitcoinElectrumHost = "127.0.0.1"
-const bitcoinElectrumPort = 50003
-const bitcoinNetwork = "regtest"
-const bitcoinDepositorPrivateKey = "cTj6Z9fxMr4pzfpUhiN8KssVzZjgQz9zFCfh87UrH8ZLjh3hGZKF"
+program
+    .option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
+    .option('--bitcoin-electrum-port <port>', "electrum server port", (port) => parseInt(port, 10), 50003)
+    .option('--bitcoin-network <network>', "type of the bitcoin network (\"regtest\"|\"testnet\")", "regtest")
+    .option('--bitcoin-depositor-pk <privateKey>', "private key of the Bitcoin depositor in WIF format", "cTj6Z9fxMr4pzfpUhiN8KssVzZjgQz9zFCfh87UrH8ZLjh3hGZKF")
+    .option('--ethereum-host <host>', "ethereum node host", "127.0.0.1")
+    .option('--ethereum-port <port>', "ethereum node port", (port) => parseInt(port, 10), 8546)
+    .option('--ethereum-pk <privateKey>', "private key of ethereum account", "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd")
+    .parse(process.argv)
 
-const ethereumHost = "127.0.0.1"
-const ethereumPort = 8546
-const ethereumPrivateKey = "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd"
+console.log("\nScript options values: ", program.opts(), "\n")
 
 const depositsCount = 2
 const satoshiLotSize = 100000 // 0.001 BTC
@@ -28,15 +32,17 @@ const signerFee = signerFeeDivisor * tbtcDepositAmount
 const tbtcDepositAmountMinusSignerFee = tbtcDepositAmount - signerFee
 const satoshiRedemptionFee = 150
 
-bcoin.set(bitcoinNetwork)
+bcoin.set(program.bitcoinNetwork)
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
 engine.addProvider(
-    new Subproviders.PrivateKeyWalletSubprovider(ethereumPrivateKey)
+    new Subproviders.PrivateKeyWalletSubprovider(program.ethereumPk)
 )
 engine.addProvider(
-    new WebsocketSubprovider({rpcUrl: `ws://${ethereumHost}:${ethereumPort}`})
+    new WebsocketSubprovider({
+        rpcUrl: `ws://${program.ethereumHost}:${program.ethereumPort}`
+    })
 )
 
 const web3 = new Web3(engine)
@@ -49,11 +55,11 @@ async function run() {
 
     const tbtc = await TBTC.withConfig({
         web3: web3,
-        bitcoinNetwork: bitcoinNetwork,
+        bitcoinNetwork: program.bitcoinNetwork,
         electrum: {
             testnetWS: {
-                server: bitcoinElectrumHost,
-                port: bitcoinElectrumPort,
+                server: program.bitcoinElectrumHost,
+                port: program.bitcoinElectrumPort,
                 protocol: "ws"
             }
         }
@@ -65,8 +71,7 @@ async function run() {
 
     const bitcoinDepositorKeyRing = await importBitcoinPrivateKey(
         bitcoinWallet,
-        bitcoinDepositorPrivateKey
-
+        program.bitcoinDepositorPk
     )
 
     const bitcoinRedeemerKeyRing = await generateBitcoinPrivateKey(bitcoinWallet)
@@ -277,10 +282,15 @@ async function sendBitcoinTransaction(
         value: amount.toNumber(),
     })
 
+
+    const rate = await estimateBitcoinTransactionRate();
+
+    console.log(`Using transaction rate: ${rate}`)
+
     await transaction.fund(
         coins,
         {
-            rate: await estimateBitcoinTransactionRate(),
+            rate: rate,
             changeAddress: sourceAddress,
             subtractFee: subtractFee
         }
