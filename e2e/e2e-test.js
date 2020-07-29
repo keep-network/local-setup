@@ -248,7 +248,7 @@ async function sendBitcoinTransaction(
 
     console.log(`Sending transaction from ${sourceAddress} to ${targetAddress}`)
 
-    const utxos = await BitcoinHelpers.Transaction.findAll(sourceAddress)
+    const utxos = await BitcoinHelpers.Transaction.findAllUnspent(sourceAddress)
 
     const coins = []
     let coinsAmount = 0
@@ -282,15 +282,10 @@ async function sendBitcoinTransaction(
         value: amount.toNumber(),
     })
 
-
-    const rate = await estimateBitcoinTransactionRate();
-
-    console.log(`Using transaction rate: ${rate}`)
-
     await transaction.fund(
         coins,
         {
-            rate: rate,
+            rate: null, // set null explicitly to always use the default value
             changeAddress: sourceAddress,
             subtractFee: subtractFee
         }
@@ -303,14 +298,6 @@ async function sendBitcoinTransaction(
     )
 
     console.log(`Transaction ${broadcastOutcome.transactionID} sent`)
-}
-
-async function estimateBitcoinTransactionRate() {
-    try {
-        return await BitcoinHelpers.Transaction.estimateFeePerKb()
-    } catch (e) {
-        return null
-    }
 }
 
 async function returnBitcoinToDepositor(depositorKeyRing, redeemerKeyRing) {
