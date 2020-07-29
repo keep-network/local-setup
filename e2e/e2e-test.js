@@ -157,6 +157,13 @@ async function run() {
         redeemerAddress,
         afterRedemptionBtcBalance
     )
+
+    console.log(`\nReturning redeemed bitcoins to the depositor...\n`)
+
+    await returnBitcoinToDepositor(
+        bitcoinDepositorKeyRing,
+        bitcoinRedeemerKeyRing
+    )
 }
 
 async function createDeposit(tbtc, satoshiLotSize, keyRing) {
@@ -226,7 +233,12 @@ async function generateBitcoinPrivateKey(wallet) {
     return keyRing
 }
 
-async function sendBitcoinTransaction(targetAddress, amount, keyRing) {
+async function sendBitcoinTransaction(
+    targetAddress,
+    amount,
+    keyRing,
+    subtractFee = false
+) {
     const sourceAddress = keyRing.getAddress("string");
 
     console.log(`Sending transaction from ${sourceAddress} to ${targetAddress}`)
@@ -270,6 +282,7 @@ async function sendBitcoinTransaction(targetAddress, amount, keyRing) {
         {
             rate: await estimateBitcoinTransactionRate(),
             changeAddress: sourceAddress,
+            subtractFee: subtractFee
         }
     )
 
@@ -288,6 +301,25 @@ async function estimateBitcoinTransactionRate() {
     } catch (e) {
         return null
     }
+}
+
+async function returnBitcoinToDepositor(depositorKeyRing, redeemerKeyRing) {
+    const redeemerBalance = await getBtcBalance(
+        web3,
+        BitcoinHelpers,
+        redeemerKeyRing.getAddress("string")
+    )
+
+    const depositorAddress = depositorKeyRing.getAddress("string")
+
+    console.log(`Returning ${redeemerBalance} satoshis to depositor ${depositorAddress}`)
+
+    await sendBitcoinTransaction(
+        depositorAddress,
+        redeemerBalance,
+        redeemerKeyRing,
+        true
+    )
 }
 
 async function redeemDeposit(tbtc, depositAddress, redeemerAddress) {
