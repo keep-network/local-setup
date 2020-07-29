@@ -15,7 +15,6 @@ const bitcoinElectrumHost = "127.0.0.1"
 const bitcoinElectrumPort = 50003
 const bitcoinNetwork = "regtest"
 const bitcoinDepositorPrivateKey = "cTj6Z9fxMr4pzfpUhiN8KssVzZjgQz9zFCfh87UrH8ZLjh3hGZKF"
-const bitcoinRedeemerPrivateKey = "cPvsaHbYdoPDTrPymWwxAhahz9cRT75Mp6bcQPnP6JyccN4qrTif"
 
 const ethereumHost = "127.0.0.1"
 const ethereumPort = 8546
@@ -70,11 +69,7 @@ async function run() {
 
     )
 
-    // TODO: Try to generate a new address for each redemption.
-    const bitcoinRedeemerKeyRing = await importBitcoinPrivateKey(
-        bitcoinWallet,
-        bitcoinRedeemerPrivateKey
-    )
+    const bitcoinRedeemerKeyRing = await generateBitcoinPrivateKey(bitcoinWallet)
 
     const initialTbtcAccountBalance = await getTBTCTokenBalance(
         web3,
@@ -216,6 +211,15 @@ async function importBitcoinPrivateKey(wallet, privateKey) {
         privateKey: decodedPrivateKey.privateKey,
         compressed: decodedPrivateKey.compressed
     });
+
+    await wallet.importKey(0, keyRing)
+
+    return keyRing
+}
+
+async function generateBitcoinPrivateKey(wallet) {
+    const keyRing = bcoin.KeyRing.generate(true)
+    keyRing.witness = true
 
     await wallet.importKey(0, keyRing)
 
