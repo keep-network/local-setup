@@ -39,6 +39,12 @@ if [ "$BTC_NETWORK" == "testnet" ]; then
   jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 fi
 
+printf "${LOG_START}Updating tbtc configuration...${LOG_END}"
+
+cd "$WORKDIR/tbtc/solidity"
+
+KEEP_ECDSA_DIR="$WORKDIR/keep-ecdsa/solidity" jq '.dependencies."@keep-network/keep-ecdsa" = env.KEEP_ECDSA_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
+
 cd "$WORKDIR/tbtc"
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
