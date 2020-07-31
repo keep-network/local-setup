@@ -20,10 +20,10 @@ done
 
 printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
+printf "${LOG_START}Using $BTC_NETWORK Bitcoin network${LOG_END}"
+
 cd "$WORKDIR/relay-genesis"
 npm install
-
-printf "${LOG_START}Using $BTC_NETWORK Bitcoin network${LOG_END}"
 
 if [ "$BTC_NETWORK" == "testnet" ]; then
   # Deploy TestnetRelay instead of the defaull MockRelay.
@@ -38,6 +38,20 @@ if [ "$BTC_NETWORK" == "testnet" ]; then
   jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
   jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 fi
+
+printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
+
+cd "$WORKDIR/keep-ecdsa/solidity"
+
+ln -sf build/contracts artifacts
+
+printf "${LOG_START}Updating tBTC configuration...${LOG_END}"
+
+cd "$WORKDIR/tbtc/solidity"
+
+KEEP_ECDSA_DIR="$WORKDIR/keep-ecdsa/solidity" jq '.dependencies."@keep-network/keep-ecdsa" = env.KEEP_ECDSA_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
+
+printf "${LOG_START}Running install script...${LOG_END}"
 
 cd "$WORKDIR/tbtc"
 
