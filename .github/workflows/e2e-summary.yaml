@@ -1,6 +1,8 @@
-name: Node.js CI
+name: e2e summary
 
-on: push
+on:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
     build:
@@ -14,3 +16,12 @@ jobs:
         
         - name: Running e2e summary test 
           run: ./run-e2e-summary.sh
+
+        - name: Deploy e2e summary site
+          run: |
+
+            git config --local user.email "cron-e2e-summary@github.com"
+            git config --local user.name ${{github.actor}}
+
+            git commit e2e/site/index.html -m "Updating e2e summary page" || echo "No changes to commit"
+            git push --force "https://${{github.actor}}:${{secrets.Token}}@github.com/${{github.repository}}.git"
