@@ -10,16 +10,32 @@ jobs:
 
         steps:
         - uses: actions/checkout@v2
+
+        - name: installing JSON processor - jq
+        - run: apt-get install jq
+
+        - name:
+          env: TBTCJS_VERSION 0.17.0-rc.1
+          run: |
+            cd e2e 
+            jq '.dependencies."@keep-network/tbtc.js" = $TBTCJS_VERSION \
+            package.json > package.json.tmp && mv package.json.tmp package.json
       
         - name: Installing npm dependencies
           run: cd e2e && npm install
         
         - name: Running e2e summary test 
-          run: ./run-e2e-summary.sh
+          run: | 
+            cd e2e
+            node --experimental-json-modules e2e-summary.js \
+            --bitcoin-electrum-host 34.70.251.19 \
+            --bitcoin-electrum-port 8080 \
+            --bitcoin-network testnet \
+            --ethereum-node wss://ropsten.infura.io/ws/v3/880f2a054e784898a55627bd5f047917
+            --ethereum-pk 033cea2b77cbd50c02cbc57573cf4389b8c785642c2107c7e1614df9876b787b
 
         - name: Deploy e2e summary site
           run: |
-
             git config --local user.email "cron-e2e-summary@github.com"
             git config --local user.name ${{github.actor}}
 
