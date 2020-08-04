@@ -1,0 +1,14 @@
+{
+  "TokenStakingOld": {
+    "address": "0x4fD1dffba0c83907E1470272dA81079B9a6D6412"
+  },
+  "TokenStakingNew": {
+    "address": "0x5fa444D80CA45ad32050C697107316C25bf61C68"
+  },
+  "TokenStakingEscrow": {
+    "address": "0x67209617EBD0EeDa05b283A2Ab5C0ec77f9B9B8d"
+  },
+  "StakingPortBacker": {
+    "address": "0x19d46D672B12E9476e71d8DAd4149A2370E5BDFc"
+  }
+}

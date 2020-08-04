@@ -1,11 +1,19 @@
 const KeepToken = artifacts.require("./KeepToken.sol");
 const TokenStaking = artifacts.require("./TokenStaking.sol");
+const TokenStakingEscrow = artifacts.require("./TokenStakingEscrow.sol");
 const KeepRandomBeaconOperator = artifacts.require(
   "./KeepRandomBeaconOperator.sol"
 );
 const StakingPortBacker = artifacts.require("./StakingPortBacker.sol");
+const ManagedGrantFactory = artifacts.require("./ManagedGrantFactory.sol");
+const ManagedGrant = artifacts.require("./ManagedGrant.sol");
+const TokenGrant = artifacts.require("./TokenGrant.sol");
+const PermissiveStakingPolicy = artifacts.require(
+  "./PermissiveStakingPolicy.sol"
+);
 
 const { getAddress } = require("./helpers/contracts-data");
+const { sleep } = require("./helpers/sleep");
 
 const BN = web3.utils.BN;
 const chai = require("chai");
@@ -53,6 +61,9 @@ module.exports = async function () {
     const accounts = await getAccounts();
     const keepToken = await KeepToken.deployed();
 
+    const tokenStakingEscrow = await TokenStakingEscrow.at(
+      getAddress("TokenStakingEscrow")
+    );
     const tokenStakingOld = await TokenStaking.at(
       getAddress("TokenStakingOld")
     );
@@ -65,25 +76,25 @@ module.exports = async function () {
     );
 
     const operatorContract = await KeepRandomBeaconOperator.deployed();
+    const managedGrantFactory = await ManagedGrantFactory.deployed();
+    const tokenGrant = await TokenGrant.deployed();
+    const stakingPolicy = await PermissiveStakingPolicy.deployed();
 
     const owner = accounts[0];
+    const grantManager = accounts[1];
 
     const PASSWORD = "password";
     const UNLOCK_DURATION = 600;
 
-    const tokenOwner = await web3.eth.personal.newAccount(PASSWORD);
+    const grantee = await web3.eth.personal.newAccount(PASSWORD);
     const operator = await web3.eth.personal.newAccount(PASSWORD);
     const beneficiary = await web3.eth.personal.newAccount(PASSWORD);
     const authorizer = accounts[3];
 
-    await web3.eth.personal.unlockAccount(
-      tokenOwner,
-      PASSWORD,
-      UNLOCK_DURATION
-    );
+    await web3.eth.personal.unlockAccount(grantee, PASSWORD, UNLOCK_DURATION);
     await web3.eth.sendTransaction({
       from: owner,
-      to: tokenOwner,
+      to: grantee,
       value: web3.utils.toWei("1"),
     });
 
@@ -98,9 +109,12 @@ module.exports = async function () {
       owner
     );
 
-    await keepToken.transfer(tokenOwner, grantAmount, { from: owner });
+    await keepToken.transfer(grantManager, grantAmount, { from: owner });
+    await keepToken.approve(managedGrantFactory.address, grantAmount, {
+      from: grantManager,
+    });
 
-    expect(await keepToken.balanceOf(tokenOwner)).to.eq.BN(grantAmount);
+    expect(await keepToken.balanceOf(grantManager)).to.eq.BN(grantAmount);
 
     const initialTokenStakingOldKEEPBalance = await keepToken.balanceOf(
       tokenStakingOld.address
@@ -108,6 +122,46 @@ module.exports = async function () {
     const initialTokenStakingNewKEEPBalance = await keepToken.balanceOf(
       tokenStakingNew.address
     );
+
+    console.log("Create managed grant");
+    const managedGrantAddress = await managedGrantFactory.createManagedGrant.call(
+      grantee,
+      grantAmount,
+      1,
+      1,
+      1,
+      true,
+      stakingPolicy.address,
+      {
+        from: grantManager,
+      }
+    );
+
+    console.log("Managed Grant Address:", managedGrantAddress);
+
+    await managedGrantFactory.createManagedGrant(
+      grantee,
+      grantAmount,
+      1,
+      1,
+      1,
+      true,
+      stakingPolicy.address,
+      {
+        from: grantManager,
+      }
+    );
+
+    expect(await keepToken.balanceOf(grantManager)).to.eq.BN(0);
+    expect(await tokenGrant.balanceOf(managedGrantAddress)).to.eq.BN(
+      grantAmount
+    );
+
+    const managedGrant = await ManagedGrant.at(managedGrantAddress);
+
+    expect(await managedGrant.grantee()).equal(grantee);
+
+    const grantID = await managedGrant.grantId();
 
     console.log("Delegate");
 
@@ -119,12 +173,16 @@ module.exports = async function () {
         Buffer.from(authorizer.substr(2), "hex"),
       ]).toString("hex");
 
-    await keepToken.approveAndCall(
+    await tokenGrant.authorizeStakingContract(tokenStakingOld.address, {
+      from: grantManager,
+    });
+
+    await managedGrant.stake(
       tokenStakingOld.address,
       firstDelegationAmount,
       delegation,
       {
-        from: tokenOwner,
+        from: grantee,
       }
     );
     await tokenStakingOld.authorizeOperatorContract(
@@ -133,27 +191,25 @@ module.exports = async function () {
       { from: authorizer }
     );
 
+    expect(await tokenGrant.availableToStake(grantID)).to.eq.BN(
+      grantAmount.sub(firstDelegationAmount)
+    );
+
     expect(await keepToken.balanceOf(tokenStakingOld.address)).to.eq.BN(
       initialTokenStakingOldKEEPBalance.add(firstDelegationAmount)
     );
 
-    expect(await keepToken.balanceOf(tokenOwner)).to.eq.BN(
-      grantAmount.sub(firstDelegationAmount)
-    );
-
-    expect(await keepToken.balanceOf(tokenOwner)).to.eq.BN(
-      grantAmount.sub(firstDelegationAmount)
+    expect(await tokenGrant.balanceOf(managedGrantAddress)).to.eq.BN(
+      grantAmount
     );
 
     expect(await tokenStakingOld.balanceOf(operator)).to.eq.BN(
       firstDelegationAmount
     );
 
-    expect(await tokenStakingOld.ownerOf(operator)).to.equal(tokenOwner);
-
-    expect(
-      await tokenStakingOld.eligibleStake(operator, operatorContract.address)
-    ).to.eq.BN(firstDelegationAmount);
+    // expect(
+    //   await tokenStakingOld.eligibleStake(operator, operatorContract.address)
+    // ).to.eq.BN(firstDelegationAmount);
 
     expect(await tokenStakingNew.balanceOf(operator)).to.eq.BN(0);
 
@@ -164,7 +220,7 @@ module.exports = async function () {
     console.log("Copy stake");
 
     await stakingPortBacker.allowOperator(operator);
-    await stakingPortBacker.copyStake(operator, { from: tokenOwner });
+    await stakingPortBacker.copyStake(operator, { from: grantee });
 
     expect(await keepToken.balanceOf(tokenStakingOld.address)).to.eq.BN(
       initialTokenStakingOldKEEPBalance.add(firstDelegationAmount)
@@ -191,50 +247,32 @@ module.exports = async function () {
     ).to.eq.BN(firstDelegationAmount);
 
     console.log("Undelegate and recover OLD stake");
-    await tokenStakingOld.undelegate(operator, { from: tokenOwner });
-    await tokenStakingOld.recoverStake(operator, { from: tokenOwner });
+    await managedGrant.undelegate(operator, { from: grantee });
+    await managedGrant.recoverStake(operator, { from: grantee });
 
-    expect(await keepToken.balanceOf(tokenOwner)).to.eq.BN(grantAmount);
+    expect(await tokenGrant.availableToStake(grantID)).to.eq.BN(grantAmount);
 
-    console.log("Pay back staking port backer");
-    await expectRevert(
-      tokenStakingNew.undelegate(operator, { from: tokenOwner }),
-      "Not authorized"
-    );
+    await managedGrant.withdraw({ from: grantee });
 
-    const data = web3.eth.abi.encodeParameters(["address"], [operator]);
-
-    await keepToken.approveAndCall(
-      stakingPortBacker.address,
-      firstDelegationAmount,
-      data,
-      {
-        from: tokenOwner,
-      }
-    );
-
-    expect(await keepToken.balanceOf(tokenOwner)).to.eq.BN(
-      grantAmount.sub(firstDelegationAmount)
-    );
-
-    expect(await keepToken.balanceOf(stakingPortBacker.address)).to.eq.BN(
-      firstDelegationAmount
-    );
+    expect(await keepToken.balanceOf(grantee)).to.eq.BN(grantAmount);
 
     console.log("Undelegate and recover NEW stake");
     await expectRevert(
-      stakingPortBacker.undelegate(operator, { from: tokenOwner }),
+      tokenStakingNew.undelegate(operator, { from: grantee }),
       "Not authorized"
     );
 
-    await tokenStakingNew.undelegate(operator, { from: tokenOwner });
-    await new Promise((r) => setTimeout(r, 5000));
-    await tokenStakingNew.recoverStake(operator, { from: tokenOwner });
+    await stakingPortBacker.undelegate(operator, { from: grantee });
+    await sleep(5000);
+    await stakingPortBacker.recoverStake(operator, { from: grantee });
 
-    expect(await keepToken.balanceOf(tokenOwner)).to.eq.BN(grantAmount);
+    expect(await keepToken.balanceOf(grantee)).to.eq.BN(grantAmount);
     expect(await keepToken.balanceOf(stakingPortBacker.address)).to.eq.BN(
       firstDelegationAmount
     );
+
+    expect(await tokenStakingEscrow.availableAmount(operator), 0);
+    expect(await tokenStakingEscrow.withdrawable(operator), 0);
 
     console.log("success!");
   } catch (err) {
