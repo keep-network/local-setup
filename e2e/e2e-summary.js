@@ -7,13 +7,14 @@ import TBTC from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
 import {getTBTCTokenBalance} from "./common.js";
 import program from "commander"
+import * as fs from 'fs'
 
 program 
-    .option('--bitcoin-electrum-host <host>')
+    .option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
     .option('--bitcoin-electrum-port <port>', "electrum server port", (port) => parseInt(port, 10), 50003)
-    .option('--bitcoin-network <network>')
-    .option('--ethereum-node <url>')
-    .option('--ethereum-pk <privateKey>')
+    .option('--bitcoin-network <network>', "type of the bitcoin network (\"regtest\"|\"testnet\")", "regtest")
+    .option('--ethereum-node <url>', "ethereum node url", "ws://127.0.0.1:8546")
+    .option('--ethereum-pk <privateKey>', "private key of ethereum account", "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd")
     .parse(process.argv)
 
 console.log("\nScript options values: ", program.opts(), "\n")
@@ -33,7 +34,7 @@ const states = {
     '11': 'LIQUIDATED',
   }
   
-const blocksTimespan = 10000
+const blocksTimespan = 5000
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -68,12 +69,12 @@ async function run() {
         web3,
         tbtc,
         web3.eth.defaultAccount
-    )
-
-    console.log(
-        `Initial TBTC balance for account ${web3.eth.defaultAccount} ` +
-        `is: ${initialTbtcAccountBalance}`
-    )
+        )
+        
+        console.log(
+            `Initial TBTC balance for account ${web3.eth.defaultAccount} ` +
+            `is: ${initialTbtcAccountBalance}`
+            )
 
     let htmlContent = 
 `
@@ -82,33 +83,53 @@ async function run() {
 <body>
 
 <table border="1">
-    <thead>
-    <tr>
-        <th>Bitcoin address</th>
-        <th>Satoshi Lot Size</th>
-        <th>Current State</th>
-        <th>Signer fee</th>
-        <th>Redemption cost</th>
-        <th>Tbtc account balance</th>
-    </tr>
-    </thead>
-    <tbody>
+<thead>
+<tr>
+<th>Bitcoin address</th>
+<th>Satoshi Lot Size</th>
+<th>Current State</th>
+<th>Signer fee</th>
+<th>Redemption cost</th>
+<th>Tbtc account balance</th>
+</tr>
+</thead>
+<tbody>
 `
 
     const currentBlockNumber = await web3.eth.getBlockNumber()
-    // const fromBlock = 0
-    const fromBlock = currentBlockNumber - blocksTimespan
+    const fromBlock = 0
+    // const fromBlock = currentBlockNumber - blocksTimespan
 
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
-
     const depositAddresses = createdDepositEvents.map(event => event.returnValues._depositContractAddress)
 
     for (const depositAddress of depositAddresses) {
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
 
+        const currentState = await deposit.getCurrentState()
+        
+        if (states[currentState] === "AWAITING_SIGNER_SETUP") {
+            // TODO: might need to create getter for signingGroupRequestedAt in tbtc Deposit.sol
+            // However, notifySignerSetupFailed() already checks if time elapsed for signer setup.
+            try {
+                await deposit.contract.methods.notifySignerSetupFailed().call()
+                continue;
+            } catch (err) {
+            }
+        }
+
+        if (states[currentState] === "AWAITING_WITHDRAWAL_SIGNATURE") {
+            // TODO: might need to create getter for withdrawalRequestTime in tbtc Deposit.sol
+            // However, notifyRedemptionSignatureTimedOut() already checks if time elapsed for redemption sig.
+            try {
+                await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
+                continue;
+            } catch (err) {
+            }
+        }
+
         const bitcoinAddress = await deposit.getBitcoinAddress()
         const satoshiLotSize = (await deposit.getSatoshiLotSize()).toString()
-        const currentState = await deposit.getCurrentState()
         const signerFee = await deposit.getSignerFeeTBTC()
         const redemptionCost = await deposit.getRedemptionCost()
         const tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
