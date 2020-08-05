@@ -8,32 +8,21 @@ import Subproviders from "@0x/subproviders"
 import {getTBTCTokenBalance} from "./common.js";
 import program from "commander"
 import * as fs from 'fs'
+import web3Utils from "web3-utils"
+
+const { toBN } = web3Utils
 
 program 
-    .option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
-    .option('--bitcoin-electrum-port <port>', "electrum server port", (port) => parseInt(port, 10), 50003)
-    .option('--bitcoin-network <network>', "type of the bitcoin network (\"regtest\"|\"testnet\")", "regtest")
-    .option('--ethereum-node <url>', "ethereum node url", "ws://127.0.0.1:8546")
-    .option('--ethereum-pk <privateKey>', "private key of ethereum account", "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd")
-    .parse(process.argv)
+.option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
+.option('--bitcoin-electrum-port <port>', "electrum server port", (port) => parseInt(port, 10), 50003)
+.option('--bitcoin-network <network>', "type of the bitcoin network (\"regtest\"|\"testnet\")", "regtest")
+.option('--ethereum-node <url>', "ethereum node url", "ws://127.0.0.1:8546")
+.option('--ethereum-pk <privateKey>', "private key of ethereum account", "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd")
+.parse(process.argv)
 
 console.log("\nScript options values: ", program.opts(), "\n")
 
-const states = {
-    '0': 'START',
-    '1': 'AWAITING_SIGNER_SETUP',
-    '2': 'AWAITING_BTC_FUNDING_PROOF',
-    '3': 'FAILED_SETUP',
-    '4': 'ACTIVE',
-    '5': 'AWAITING_WITHDRAWAL_SIGNATURE',
-    '6': 'AWAITING_WITHDRAWAL_PROOF',
-    '7': 'REDEEMED',
-    '8': 'COURTESY_CALL',
-    '9': 'FRAUD_LIQUIDATION_IN_PROGRESS',
-    '10': 'LIQUIDATION_IN_PROGRESS',
-    '11': 'LIQUIDATED',
-  }
-  
+let tbtc
 const blocksTimespan = 5000
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
@@ -53,7 +42,7 @@ async function run() {
     // Set first account as the default account.
     web3.eth.defaultAccount = (await web3.eth.getAccounts())[0]
     
-    const tbtc = await TBTC.withConfig({
+    tbtc = await TBTC.withConfig({
         web3: web3,
         bitcoinNetwork: program.bitcoinNetwork,
         electrum: {
@@ -64,6 +53,8 @@ async function run() {
             }
         }
     })
+
+    const depositStates = tbtc.depositFactory.State
 
     const initialTbtcAccountBalance = await getTBTCTokenBalance(
         web3,
@@ -101,30 +92,27 @@ async function run() {
     // const fromBlock = currentBlockNumber - blocksTimespan
 
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
-    const depositAddresses = createdDepositEvents.map(event => event.returnValues._depositContractAddress)
+    
+    const signingGroupFormationTimeout = await tbtc.Deposit.constantsContract.methods.getSigningGroupFormationTimeout().call()
+    const signingTimeout = await tbtc.Deposit.constantsContract.methods.getSignatureTimeout().call()
 
-    for (const depositAddress of depositAddresses) {
+    for (const createdEvent of createdDepositEvents) {
+        const depositAddress = createdEvent.returnValues._depositContractAddress
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
-
-        const currentState = await deposit.getCurrentState()
+        const currentState = deposit.getCurrentState()
         
-        if (states[currentState] === "AWAITING_SIGNER_SETUP") {
-            // TODO: might need to create getter for signingGroupRequestedAt in tbtc Deposit.sol
-            // However, notifySignerSetupFailed() already checks if time elapsed for signer setup.
-            try {
+        if (currentState == depositStates['AWAITING_SIGNER_SETUP']) {
+            if (toBN(currentBlockNumber.timestamp).gt(toBN(createdEvent.returnValues._timestamp).add(signingTimeout))) {
                 await deposit.contract.methods.notifySignerSetupFailed().call()
                 continue;
-            } catch (err) {
             }
         }
 
-        if (states[currentState] === "AWAITING_WITHDRAWAL_SIGNATURE") {
-            // TODO: might need to create getter for withdrawalRequestTime in tbtc Deposit.sol
-            // However, notifyRedemptionSignatureTimedOut() already checks if time elapsed for redemption sig.
-            try {
+        if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
+            const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
+            if (toBN(currentBlockNumber.timestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
                 await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
                 continue;
-            } catch (err) {
             }
         }
 
@@ -139,7 +127,7 @@ async function run() {
         <tr>
             <td>` + bitcoinAddress + `</td>
             <td>` + satoshiLotSize + `</td>
-            <td>` + states[currentState] + `</td>
+            <td>` + currentState + `</td>
             <td>` + signerFee + `</td>
             <td>` + redemptionCost + `</td>
             <td>` + tbtcAccountBalance + `</td>
@@ -148,7 +136,7 @@ async function run() {
         
         console.log("satoshi lot size: ", satoshiLotSize)
         console.log("bitcoin address: ", bitcoinAddress)
-        console.log("current state: ", states[currentState])
+        console.log("current state: ", currentState)
         console.log("signerFee: ", signerFee.toString())
         console.log("redemptionCost: ", redemptionCost.toString())
         console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
@@ -164,6 +152,19 @@ async function run() {
     `
     
     fs.writeFileSync('./site/index.html', htmlContent);
+}
+
+async function getTimeOfEvent(eventName, depositAddress) {
+    const event = (
+      await tbtc.depositFactory.systemContract.getPastEvents(eventName, {
+        fromBlock: 0,
+        toBlock: "latest",
+        filter: { _depositContractAddress: depositAddress }
+      })
+    )[0]
+
+    const block = await web3.eth.getBlock(event.blockNumber)
+    return block.timestamp
 }
 
 
