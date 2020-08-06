@@ -40,6 +40,7 @@ engine.start()
 
 async function run() {
     // Set first account as the default account.
+    // Please make sure it is the same account as in e2e-test.js
     web3.eth.defaultAccount = (await web3.eth.getAccounts())[0]
     
     tbtc = await TBTC.withConfig({
@@ -78,56 +79,71 @@ async function run() {
     // const fromBlock = currentBlockNumber - blocksTimespan
     
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
-    
+
     const signingGroupFormationTimeout = await tbtc.Deposit.constantsContract.methods.getSigningGroupFormationTimeout().call()
     const signingTimeout = await tbtc.Deposit.constantsContract.methods.getSignatureTimeout().call()
     
     let htmlContent = ''
-
+    
     for (const createdEvent of createdDepositEvents) {
         const depositAddress = createdEvent.returnValues._depositContractAddress
+        const keepAddress = createdEvent.returnValues._keepAddress
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
-        const currentState = await deposit.getCurrentState()
         
-        if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
-            if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
-                await deposit.contract.methods.notifySignerSetupFailed().call()
-                continue;
+        const depositOwner = await deposit.getOwner()
+
+        // filter deposits that were created by e2e-test.js
+        if (depositOwner === web3.eth.defaultAccount) {
+            const currentState = await deposit.getCurrentState()
+            
+            if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
+                if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
+                    await deposit.contract.methods.notifySignerSetupFailed().call()
+                    continue;
+                }
             }
-        }
-
-        if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
-            const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
-            if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
-                await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
-                continue;
+            
+            if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
+                const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
+                if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
+                    await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
+                    continue;
+                }
             }
-        }
-
-        const bitcoinAddress = await deposit.getBitcoinAddress()
-        const satoshiLotSize = (await deposit.getSatoshiLotSize()).toString()
-        const signerFee = await deposit.getSignerFeeTBTC()
-        const redemptionCost = await deposit.getRedemptionCost()
-        const tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
-
-        htmlContent += 
-        `
-        <tr>
+    
+            const bitcoinAddress = await deposit.getBitcoinAddress()
+            const createdDepositBlockNumber = await createdEvent.blockNumber
+            const satoshiLotSize = (await deposit.getSatoshiLotSize()).toString()
+            const signerFee = await deposit.getSignerFeeTBTC()
+            const redemptionCost = await deposit.getRedemptionCost()
+            const tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
+            const keepBondAmount = await deposit.keepContract.methods.checkBondAmount().call()
+            
+            htmlContent += 
+            `
+            <tr>
             <td>` + bitcoinAddress + `</td>
+            <td>` + createdDepositBlockNumber + `</td>
             <td>` + satoshiLotSize + `</td>
             <td>` + depositStatesInverted[currentState] + `</td>
             <td>` + signerFee + `</td>
             <td>` + redemptionCost + `</td>
             <td>` + tbtcAccountBalance + `</td>
-        </tr>
-        `
-        
-        console.log("satoshi lot size: ", satoshiLotSize)
-        console.log("bitcoin address: ", bitcoinAddress)
-        console.log("current state: ", depositStatesInverted[currentState])
-        console.log("signerFee: ", signerFee.toString())
-        console.log("redemptionCost: ", redemptionCost.toString())
-        console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
+            <td>` + keepAddress + `</td>
+            <td>` + keepBondAmount + `</td>
+            </tr>
+            `
+            
+            console.log("bitcoin address: ", bitcoinAddress)
+            console.log("satoshi lot size: ", satoshiLotSize)
+            console.log("createdDepositBlockNumber: ", createdDepositBlockNumber)
+            console.log("current state: ", depositStatesInverted[currentState])
+            console.log("signerFee: ", signerFee.toString())
+            console.log("redemptionCost: ", redemptionCost.toString())
+            console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
+            console.log("keepAddress: ", keepAddress)
+            console.log("keepBondAmount: ", keepBondAmount.toString())
+        }
     }
 
     fs.writeFileSync('./site/index.html', await buildHtml(htmlContent));
@@ -158,11 +174,14 @@ async function buildHtml(content) {
     <thead>
         <tr>
             <th>Bitcoin address</th>
+            <th>Block# of created deposit</th>
             <th>Satoshi Lot Size</th>
             <th>Current State</th>
             <th>Signer fee</th>
             <th>Redemption cost</th>
             <th>Tbtc account balance</th>
+            <th>Keep address</th>
+            <th>Keep bond amount</th>
         </tr>
     </thead>
     <tbody>
