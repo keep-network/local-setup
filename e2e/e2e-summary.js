@@ -122,15 +122,15 @@ async function run() {
             htmlContent += 
             `
             <tr>
-            <td>` + bitcoinAddress + `</td>
-            <td>` + createdDepositBlockNumber + `</td>
-            <td>` + satoshiLotSize + `</td>
-            <td>` + depositStatesInverted[currentState] + `</td>
-            <td>` + signerFee + `</td>
-            <td>` + redemptionCost + `</td>
-            <td>` + tbtcAccountBalance + `</td>
-            <td>` + keepAddress + `</td>
-            <td>` + keepBondAmount + `</td>
+                <td>` + bitcoinAddress + `</td>
+                <td>` + createdDepositBlockNumber + `</td>
+                <td>` + satoshiLotSize + `</td>
+                <td>` + depositStatesInverted[currentState] + `</td>
+                <td>` + signerFee + `</td>
+                <td>` + redemptionCost + `</td>
+                <td>` + tbtcAccountBalance + `</td>
+                <td>` + keepAddress + `</td>
+                <td>` + keepBondAmount + `</td>
             </tr>
             `
             
