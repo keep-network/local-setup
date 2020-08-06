@@ -55,54 +55,42 @@ async function run() {
     })
 
     const depositStates = tbtc.depositFactory.State
-
+    const depositStatesInverted = Object.keys(depositStates).reduce((obj, key) => {
+        obj[depositStates[key]] = key;
+        return obj
+      }, {})
+    
     const initialTbtcAccountBalance = await getTBTCTokenBalance(
         web3,
         tbtc,
         web3.eth.defaultAccount
         )
         
-        console.log(
-            `Initial TBTC balance for account ${web3.eth.defaultAccount} ` +
-            `is: ${initialTbtcAccountBalance}`
-            )
-
-    let htmlContent = 
-`
-<!DOCTYPE html>
-<html>
-<body>
-
-<table border="1">
-<thead>
-<tr>
-<th>Bitcoin address</th>
-<th>Satoshi Lot Size</th>
-<th>Current State</th>
-<th>Signer fee</th>
-<th>Redemption cost</th>
-<th>Tbtc account balance</th>
-</tr>
-</thead>
-<tbody>
-`
+    console.log(
+        `Initial TBTC balance for account ${web3.eth.defaultAccount} ` +
+        `is: ${initialTbtcAccountBalance}`
+        )
 
     const currentBlockNumber = await web3.eth.getBlockNumber()
+    const currentTimestamp = (await web3.eth.getBlock(currentBlockNumber)).timestamp
+    
     const fromBlock = 0
     // const fromBlock = currentBlockNumber - blocksTimespan
-
+    
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
     
     const signingGroupFormationTimeout = await tbtc.Deposit.constantsContract.methods.getSigningGroupFormationTimeout().call()
     const signingTimeout = await tbtc.Deposit.constantsContract.methods.getSignatureTimeout().call()
+    
+    let htmlContent = ''
 
     for (const createdEvent of createdDepositEvents) {
         const depositAddress = createdEvent.returnValues._depositContractAddress
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
-        const currentState = deposit.getCurrentState()
+        const currentState = await deposit.getCurrentState()
         
-        if (currentState == depositStates['AWAITING_SIGNER_SETUP']) {
-            if (toBN(currentBlockNumber.timestamp).gt(toBN(createdEvent.returnValues._timestamp).add(signingTimeout))) {
+        if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
+            if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
                 await deposit.contract.methods.notifySignerSetupFailed().call()
                 continue;
             }
@@ -110,7 +98,7 @@ async function run() {
 
         if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
             const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
-            if (toBN(currentBlockNumber.timestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
+            if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
                 await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
                 continue;
             }
@@ -127,7 +115,7 @@ async function run() {
         <tr>
             <td>` + bitcoinAddress + `</td>
             <td>` + satoshiLotSize + `</td>
-            <td>` + currentState + `</td>
+            <td>` + depositStatesInverted[currentState] + `</td>
             <td>` + signerFee + `</td>
             <td>` + redemptionCost + `</td>
             <td>` + tbtcAccountBalance + `</td>
@@ -136,22 +124,13 @@ async function run() {
         
         console.log("satoshi lot size: ", satoshiLotSize)
         console.log("bitcoin address: ", bitcoinAddress)
-        console.log("current state: ", currentState)
+        console.log("current state: ", depositStatesInverted[currentState])
         console.log("signerFee: ", signerFee.toString())
         console.log("redemptionCost: ", redemptionCost.toString())
         console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
     }
-    
-    htmlContent += 
-    `
-    </tbody>
-</table>
 
-</body>
-</html>
-    `
-    
-    fs.writeFileSync('./site/index.html', htmlContent);
+    fs.writeFileSync('./site/index.html', await buildHtml(htmlContent));
 }
 
 async function getTimeOfEvent(eventName, depositAddress) {
@@ -165,6 +144,40 @@ async function getTimeOfEvent(eventName, depositAddress) {
 
     const block = await web3.eth.getBlock(event.blockNumber)
     return block.timestamp
+}
+
+async function buildHtml(content) {
+
+    const header =
+`
+<!DOCTYPE html>
+<html>
+<body>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Bitcoin address</th>
+            <th>Satoshi Lot Size</th>
+            <th>Current State</th>
+            <th>Signer fee</th>
+            <th>Redemption cost</th>
+            <th>Tbtc account balance</th>
+        </tr>
+    </thead>
+    <tbody>
+`
+
+    const footer = 
+`
+    </tbody>
+</table>
+
+</body>
+</html>
+`
+
+    return header + content + footer;
 }
 
 
