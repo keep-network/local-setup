@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: e2e-test-config
+  namespace: default
+data:
+  bitcoin-electrum-host: "34.70.251.19"
+  bitcoin-electrum-port: "8080"
+  bitcoin-network: "testnet"
+  ethereum-node: "wss://ropsten.infura.io/ws/v3/880f2a054e784898a55627bd5f047917"
