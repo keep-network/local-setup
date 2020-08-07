@@ -15,12 +15,12 @@ jobs:
         - run: apt-get install jq
 
         - name: Updating tbtc.js version
-        run: |
-          cd e2e
-          jq '.dependencies."@keep-network/tbtc.js" = $TBTCJS_VERSION \
-          package.json > package.json.tmp && mv package.json.tmp package.json
-        env: 
-          TBTCJS_VERSION: 0.17.0-rc.1
+          run: |
+            cd e2e
+            jq '.dependencies."@keep-network/tbtc.js" = $TBTCJS_VERSION \
+            package.json > package.json.tmp && mv package.json.tmp package.json
+          env:
+            TBTCJS_VERSION: 0.17.0-rc.1
       
         - name: Installing npm dependencies
           run: cd e2e && npm install
