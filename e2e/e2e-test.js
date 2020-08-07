@@ -197,7 +197,7 @@ async function createDeposit(tbtc, satoshiLotSize, keyRing) {
     return new Promise(async (resolve, reject) => {
         deposit.onBitcoinAddressAvailable(async address => {
             try {
-                const lotSize = await deposit.getSatoshiLotSize()
+                const lotSize = await deposit.getLotSizeSatoshis()
                 console.log(
                     "\tGot deposit address:",
                     address,
