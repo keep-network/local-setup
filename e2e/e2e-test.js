@@ -6,8 +6,19 @@ import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket.js
 import TBTC from "@keep-network/tbtc.js"
 import {BitcoinHelpers} from "@keep-network/tbtc.js"
 import Subproviders from "@0x/subproviders"
-import {assertMintedTbtcAmount, assertTbtcAccountBalance, assertBtcBalance} from "./assertions.js";
-import {getTBTCTokenBalance, getBtcBalance} from "./common.js";
+import {
+    assertMintedTbtcAmount,
+    assertTbtcAccountBalance,
+    assertBtcBalance
+} from "./assertions.js";
+import {
+    getTBTCTokenBalance,
+    getBtcBalance,
+    importBitcoinPrivateKey,
+    generateBitcoinPrivateKey,
+    sendBitcoinTransaction,
+    returnBitcoinToDepositor
+} from "./common.js";
 import bcoin from "bcoin"
 import wif from "wif"
 import program from "commander"
@@ -67,11 +78,16 @@ async function run() {
     const bitcoinWallet = await bitcoinWalletDB.create()
 
     const bitcoinDepositorKeyRing = await importBitcoinPrivateKey(
+        bcoin,
+        wif,
         bitcoinWallet,
         program.bitcoinDepositorPk
     )
 
-    const bitcoinRedeemerKeyRing = await generateBitcoinPrivateKey(bitcoinWallet)
+    const bitcoinRedeemerKeyRing = await generateBitcoinPrivateKey(
+        bcoin,
+        bitcoinWallet
+    )
 
     const initialTbtcAccountBalance = await getTBTCTokenBalance(
         web3,
@@ -163,6 +179,9 @@ async function run() {
     console.log(`\nReturning redeemed bitcoins to the depositor...\n`)
 
     await returnBitcoinToDepositor(
+        web3,
+        bcoin,
+        BitcoinHelpers,
         bitcoinDepositorKeyRing,
         bitcoinRedeemerKeyRing
     )
@@ -188,7 +207,13 @@ async function createDeposit(tbtc, satoshiLotSize, keyRing) {
                 )
                 console.log("Now monitoring for deposit transaction...")
 
-                await sendBitcoinTransaction(address, lotSize, keyRing)
+                await sendBitcoinTransaction(
+                    bcoin,
+                    BitcoinHelpers,
+                    address,
+                    lotSize,
+                    keyRing
+                )
 
                 console.log("Deposit transaction sent")
             } catch (err) {
@@ -210,110 +235,6 @@ async function createDeposit(tbtc, satoshiLotSize, keyRing) {
             }
         })
     })
-}
-
-async function importBitcoinPrivateKey(wallet, privateKey) {
-    const decodedPrivateKey = wif.decode(privateKey);
-
-    const keyRing = new bcoin.KeyRing({
-        witness: true,
-        privateKey: decodedPrivateKey.privateKey,
-        compressed: decodedPrivateKey.compressed
-    });
-
-    await wallet.importKey(0, keyRing)
-
-    return keyRing
-}
-
-async function generateBitcoinPrivateKey(wallet) {
-    const keyRing = bcoin.KeyRing.generate(true)
-    keyRing.witness = true
-
-    await wallet.importKey(0, keyRing)
-
-    return keyRing
-}
-
-async function sendBitcoinTransaction(
-    targetAddress,
-    amount,
-    keyRing,
-    subtractFee = false
-) {
-    const sourceAddress = keyRing.getAddress("string");
-
-    console.log(`Sending transaction from ${sourceAddress} to ${targetAddress}`)
-
-    const utxos = await BitcoinHelpers.Transaction.findAllUnspent(sourceAddress)
-
-    const coins = []
-    let coinsAmount = 0
-
-    // Start from the oldest UTXO.
-    for (const utxo of utxos.reverse()) {
-        // Make sure the selected coins amount covers the 110% of the amount.
-        // The additional 10% is taken as a big reserve to make sure that input
-        // coins will cover the transaction fee.
-        if (coinsAmount >= 1.1 * amount.toNumber()) {
-            break
-        }
-
-        const tx = await BitcoinHelpers.withElectrumClient(async electrumClient => {
-            return electrumClient.getTransaction(utxo.transactionID)
-        })
-
-        coins.push(bcoin.Coin.fromTX(
-            bcoin.MTX.fromRaw(tx.hex, 'hex'),
-            utxo.outputPosition,
-            -1
-        ))
-
-        coinsAmount += utxo.value
-    }
-
-    const transaction = new bcoin.MTX()
-
-    transaction.addOutput({
-        script: bcoin.Script.fromAddress(targetAddress),
-        value: amount.toNumber(),
-    })
-
-    await transaction.fund(
-        coins,
-        {
-            rate: null, // set null explicitly to always use the default value
-            changeAddress: sourceAddress,
-            subtractFee: subtractFee
-        }
-    )
-
-    transaction.sign(keyRing)
-
-    const broadcastOutcome = await BitcoinHelpers.Transaction.broadcast(
-        transaction.toRaw().toString('hex')
-    )
-
-    console.log(`Transaction ${broadcastOutcome.transactionID} sent`)
-}
-
-async function returnBitcoinToDepositor(depositorKeyRing, redeemerKeyRing) {
-    const redeemerBalance = await getBtcBalance(
-        web3,
-        BitcoinHelpers,
-        redeemerKeyRing.getAddress("string")
-    )
-
-    const depositorAddress = depositorKeyRing.getAddress("string")
-
-    console.log(`Returning ${redeemerBalance} satoshis to depositor ${depositorAddress}`)
-
-    await sendBitcoinTransaction(
-        depositorAddress,
-        redeemerBalance,
-        redeemerKeyRing,
-        true
-    )
 }
 
 async function redeemDeposit(tbtc, depositAddress, redeemerAddress) {
