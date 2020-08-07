@@ -14,7 +14,7 @@ jobs:
         - name: installing JSON processor - jq
         - run: apt-get install jq
 
-        - name:
+        - name: Updating tbtc.js version
           env: TBTCJS_VERSION 0.17.0-rc.1
           run: |
             cd e2e 
