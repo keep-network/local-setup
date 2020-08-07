@@ -12,7 +12,7 @@ jobs:
         - uses: actions/checkout@v2
 
         - name: installing JSON processor - jq
-        - run: apt-get install jq
+          run: apt-get install jq
 
         - name: Updating tbtc.js version
           run: |
@@ -32,7 +32,7 @@ jobs:
             --bitcoin-electrum-host 34.70.251.19 \
             --bitcoin-electrum-port 8080 \
             --bitcoin-network testnet \
-            --ethereum-node wss://ropsten.infura.io/ws/v3/880f2a054e784898a55627bd5f047917
+            --ethereum-node wss://ropsten.infura.io/ws/v3/880f2a054e784898a55627bd5f047917 \
             --ethereum-pk 033cea2b77cbd50c02cbc57573cf4389b8c785642c2107c7e1614df9876b787b
 
         - name: Deploy e2e summary site
