@@ -23,7 +23,7 @@ program
 console.log("\nScript options values: ", program.opts(), "\n")
 
 let tbtc
-const blocksTimespan = 1000
+const blocksTimespan = 5000
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -96,20 +96,22 @@ async function run() {
         // if (depositOwner === web3.eth.defaultAccount) {
             const currentState = await deposit.getCurrentState()
             
-            // if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
-            //     if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
-            //         await deposit.contract.methods.notifySignerSetupFailed().call()
-            //         continue;
-            //     }
-            // }
+            if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
+                if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
+                    await deposit.contract.methods.notifySignerSetupFailed().call()
+                    // TODO: add to the summary table?
+                    continue;
+                }
+            }
             
-            // if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
-            //     const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
-            //     if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
-            //         await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
-            //         continue;
-            //     }
-            // }
+            if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
+                const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
+                if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
+                    await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
+                    // TODO: add to the summary table?
+                    continue;
+                }
+            }
     
             const bitcoinAddress = await deposit.getBitcoinAddress()
             const createdDepositBlockNumber = await createdEvent.blockNumber
