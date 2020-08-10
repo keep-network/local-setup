@@ -23,7 +23,7 @@ program
 console.log("\nScript options values: ", program.opts(), "\n")
 
 let tbtc
-const blocksTimespan = 5000
+const blocksTimespan = 500
 
 const engine = new ProviderEngine({ pollingInterval: 1000 })
 
@@ -97,29 +97,41 @@ async function run() {
             const currentState = await deposit.getCurrentState()
             
             if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
-                if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
-                    await deposit.contract.methods.notifySignerSetupFailed().call()
-                    // TODO: add to the summary table?
+            //     if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
+            //         await deposit.contract.methods.notifySignerSetupFailed().call()
                     continue;
-                }
+            //     }
             }
             
-            if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
-                const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
-                if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
-                    await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
-                    // TODO: add to the summary table?
-                    continue;
-                }
-            }
+            // if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
+            //     console.log("bbbbbbbbbb")
+            //     const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
+            //     if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
+            //         await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
+            //         // TODO: add to the summary table?
+                    // continue;
+            //     }
+            // }
     
-            const bitcoinAddress = await deposit.getBitcoinAddress()
-            const createdDepositBlockNumber = await createdEvent.blockNumber
-            const satoshiLotSize = (await deposit.getLotSizeSatoshis()).toString()
-            const signerFee = await deposit.getSignerFeeTBTC()
-            const redemptionCost = await deposit.getRedemptionCost()
-            const tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
-            const keepBondAmount = await deposit.keepContract.methods.checkBondAmount().call()
+            let bitcoinAddress = ''
+            let createdDepositBlockNumber = ''
+            let satoshiLotSize = ''
+            let signerFee = ''
+            let redemptionCost = ''
+            let tbtcAccountBalance = ''
+            let keepBondAmount = ''
+
+            try {
+                bitcoinAddress = await deposit.getBitcoinAddress()
+                createdDepositBlockNumber = await createdEvent.blockNumber
+                satoshiLotSize = (await deposit.getLotSizeSatoshis()).toString()
+                signerFee = await deposit.getSignerFeeTBTC()
+                redemptionCost = await deposit.getRedemptionCost()
+                tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
+                keepBondAmount = await deposit.keepContract.methods.checkBondAmount().call()
+            } catch(err) {
+                console.log(err)
+            }
             
             htmlContent += 
             `
