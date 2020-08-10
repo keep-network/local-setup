@@ -113,7 +113,7 @@ async function run() {
     
             const bitcoinAddress = await deposit.getBitcoinAddress()
             const createdDepositBlockNumber = await createdEvent.blockNumber
-            const satoshiLotSize = (await deposit.getSatoshiLotSize()).toString()
+            const satoshiLotSize = (await deposit.getLotSizeSatoshis()).toString()
             const signerFee = await deposit.getSignerFeeTBTC()
             const redemptionCost = await deposit.getRedemptionCost()
             const tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
