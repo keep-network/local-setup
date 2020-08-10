@@ -13,7 +13,12 @@ jobs:
 
         - name: installing JSON processor - jq
           run: apt-get install jq
-
+          
+        - name: Rebasing master branch
+          run: |
+            git checkout gh-pages
+            git rebase --strategy-option theirs origin master
+        
         - name: Updating tbtc.js version
           run: |
             cd e2e
@@ -21,7 +26,7 @@ jobs:
             package.json > package.json.tmp && mv package.json.tmp package.json
           env:
             TBTCJS_VERSION: 0.17.0-rc.1
-      
+
         - name: Installing npm dependencies
           run: cd e2e && npm install
         
