@@ -8,3 +8,4 @@ data:
   bitcoin-electrum-port: "8080"
   bitcoin-network: "testnet"
   ethereum-node: "wss://ropsten.infura.io/ws/v3/880f2a054e784898a55627bd5f047917"
+  lot-size-satoshis: "1000000"
