@@ -11,11 +11,17 @@ jobs:
 
         - name: installing JSON processor - jq
           run: sudo apt-get install jq
+
+        - name: Setting up git config
+          run: |
+            git config --local user.email "cron-e2e-summary@github.com"
+            git config --local user.name ${{github.actor}}
           
-        - name: Rebasing master branch
+        - name: Merging master branch	
           run: |
             git fetch --all
             git checkout gh-pages
+            git merge -X theirs origin/master --allow-unrelated-histories
         
         - name: Updating tbtc.js version
           run: |
@@ -38,8 +44,5 @@ jobs:
 
         - name: Deploy e2e summary site
           run: |
-            git config --local user.email "cron-e2e-summary@github.com"
-            git config --local user.name ${{github.actor}}
-
             git commit e2e/site/index.html -m "Updating e2e summary page" || echo "No changes to commit"
             git push --force "https://${{github.actor}}:${{secrets.Token}}@github.com/${{github.repository}}.git"
