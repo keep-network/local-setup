@@ -16,7 +16,6 @@ jobs:
           run: |
             git fetch --all
             git checkout gh-pages
-            git rebase --strategy-option theirs master
         
         - name: Updating tbtc.js version
           run: |
