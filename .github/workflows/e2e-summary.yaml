@@ -10,7 +10,7 @@ jobs:
         - uses: actions/checkout@v2
 
         - name: installing JSON processor - jq
-          run: apt-get install jq
+          run: sudo apt-get install jq
           
         - name: Rebasing master branch
           run: |
