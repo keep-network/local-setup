@@ -14,7 +14,6 @@ jobs:
           
         - name: Rebasing master branch
           run: |
-            git fetch upstream
             git checkout gh-pages
             git rebase --strategy-option theirs origin/master
         
