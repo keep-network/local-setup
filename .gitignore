@@ -5,3 +5,4 @@ node_modules
 vagrant-box
 .vagrant
 *.log
+e2e/site/index.html
