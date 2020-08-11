@@ -1,0 +1,51 @@
+name: e2e summary
+
+on:
+  schedule:
+    # every 10th minute
+    - cron: '*/10 * * * *'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: installing JSON processor - jq
+          run: sudo apt-get install jq
+
+        - name: Setting up git config
+          run: |
+            git config --local user.email "cron-e2e-summary@github.com"
+            git config --local user.name ${{github.actor}}
+          
+        - name: Merging master branch	
+          run: |
+            git fetch --all
+            git checkout gh-pages
+            git merge -X theirs origin/master --allow-unrelated-histories
+        
+        - name: Updating tbtc.js version
+          run: |
+            cd e2e
+            jq '.dependencies."@keep-network/tbtc.js" = "0.18.0-rc.1"' \
+            package.json > package.json.tmp && mv package.json.tmp package.json
+        - name: Installing npm dependencies
+          run: cd e2e && npm install
+        
+        - name: Running e2e summary test 
+          run: | 
+            cd e2e
+            node --experimental-json-modules e2e-summary.js \
+            --bitcoin-electrum-host 34.70.251.19 \
+            --bitcoin-electrum-port 8080 \
+            --bitcoin-network testnet \
+            --ethereum-node wss://ropsten.infura.io/ws/v3/a6e0ba36c6b44333bd56c5c8cc681cc3 \
+            --ethereum-pk 033cea2b77cbd50c02cbc57573cf4389b8c785642c2107c7e1614df9876b787b \
+            --blocks-timespan 1000
+
+        - name: Deploy e2e summary site
+          run: |
+            git commit e2e/site/index.html -m "Updating e2e summary page" || echo "No changes to commit"
+            git push --force "https://${{github.actor}}:${{secrets.Token}}@github.com/${{github.repository}}.git"
