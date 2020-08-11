@@ -7,7 +7,7 @@ metadata:
     app: tbtc
     type: e2e-test
 spec:
-  schedule: '0 */4 * * *'
+  schedule: '0 */8 * * *'
   concurrencyPolicy: Forbid
   jobTemplate:
     metadata:
@@ -16,7 +16,7 @@ spec:
         type: e2e-test
     spec:
       backoffLimit: 0
-      activeDeadlineSeconds: 3600
+      activeDeadlineSeconds: 7200
       template:
         spec:
           containers:
@@ -28,7 +28,8 @@ spec:
               "--bitcoin-network", "$(BITCOIN_NETWORK)",
               "--bitcoin-depositor-pk", "$(BITCOIN_DEPOSITOR_PK)",
               "--ethereum-node", "$(ETHEREUM_NODE)",
-              "--ethereum-pk", "$(ETHEREUM_PK)"
+              "--ethereum-pk", "$(ETHEREUM_PK)",
+              "--lot-size-satoshis", "$(LOT_SIZE_SATOSHIS)"
             ]
             env:
               - name: BITCOIN_ELECTRUM_HOST
@@ -61,4 +62,9 @@ spec:
                   secretKeyRef:
                     name: e2e-test-secret
                     key: ethereum-pk
+              - name: LOT_SIZE_SATOSHIS
+                valueFrom:
+                  configMapKeyRef:
+                    name: e2e-test-config
+                    key: lot-size-satoshis
           restartPolicy: Never
