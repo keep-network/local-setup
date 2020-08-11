@@ -2,8 +2,8 @@ name: e2e summary
 
 on:
   schedule:
-    # every 4 hours
-    - cron: '0 */4 * * *'
+    # every 10th minute
+    - cron: '*/10 * * * *'
 
 jobs:
     build:
