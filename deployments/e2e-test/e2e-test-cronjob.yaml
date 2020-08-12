@@ -7,8 +7,8 @@ metadata:
     app: tbtc
     type: e2e-test
 spec:
-  schedule: '0 */8 * * *'
-  concurrencyPolicy: Forbid
+  schedule: '0 */1 * * *'
+  concurrencyPolicy: Replace
   jobTemplate:
     metadata:
       labels:
@@ -16,7 +16,6 @@ spec:
         type: e2e-test
     spec:
       backoffLimit: 0
-      activeDeadlineSeconds: 7200
       template:
         spec:
           containers:
