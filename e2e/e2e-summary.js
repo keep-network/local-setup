@@ -101,52 +101,52 @@ async function run() {
             console.log("getting current state...")
             const currentState = await deposit.getCurrentState()
             
-            if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
-                if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
-                    console.log("notifySignerSetupFailed() call...")
-                    try {
-                        await deposit.contract.methods.notifySignerSetupFailed().call()
-                        htmlContent += 
-                        `
-                        <tr bgcolor="red">
-                            <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
-                            <td>` + depositStatesInverted[currentState] + `</td>
-                            <td colspan="3">notifySignerSetupFailed() call... </td>
-                            <td>` + keepAddress + `</td>
-                            <td></td>
-                        </tr>
-                        `
-                        count++
-                        continue
-                    } catch (err) {
-                        console.log(err)
-                    }
-                }
-            }
+            // if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
+            //     if (toBN(currentTimestamp).gt(toBN(createdEvent.returnValues._timestamp).add(toBN(signingTimeout)))) {
+            //         console.log("notifySignerSetupFailed() call...")
+            //         try {
+            //             await deposit.contract.methods.notifySignerSetupFailed().call()
+            //             htmlContent += 
+            //             `
+            //             <tr bgcolor="red">
+            //                 <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
+            //                 <td>` + depositStatesInverted[currentState] + `</td>
+            //                 <td colspan="3">notifySignerSetupFailed() call... </td>
+            //                 <td>` + keepAddress + `</td>
+            //                 <td></td>
+            //             </tr>
+            //             `
+            //             count++
+            //             continue
+            //         } catch (err) {
+            //             console.log(err)
+            //         }
+            //     }
+            // }
             
-            if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
-                const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
-                if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
-                    console.log("notifyRedemptionSignatureTimedOut() call...")
-                    try {
-                        await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
-                        htmlContent += 
-                        `
-                        <tr bgcolor="red">
-                            <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
-                            <td>` + depositStatesInverted[currentState] + `</td>
-                            <td colspan="3">notifyRedemptionSignatureTimedOut() call... </td>
-                            <td>` + keepAddress + `</td>
-                            <td></td>
-                        </tr>
-                        `
-                        count++
-                        continue
-                    } catch(err) {
-                        console.log(err)
-                    }
-                }
-            }
+            // if (currentState === depositStates['AWAITING_WITHDRAWAL_SIGNATURE']) {
+            //     const redemptionRequestedAt = await getTimeOfEvent("RedemptionRequested", depositAddress)
+            //     if (toBN(currentTimestamp).gt(toBN(redemptionRequestedAt).add(toBN(signingGroupFormationTimeout)))) {
+            //         console.log("notifyRedemptionSignatureTimedOut() call...")
+            //         try {
+            //             await deposit.contract.methods.notifyRedemptionSignatureTimedOut().call()
+            //             htmlContent += 
+            //             `
+            //             <tr bgcolor="red">
+            //                 <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
+            //                 <td>` + depositStatesInverted[currentState] + `</td>
+            //                 <td colspan="3">notifyRedemptionSignatureTimedOut() call... </td>
+            //                 <td>` + keepAddress + `</td>
+            //                 <td></td>
+            //             </tr>
+            //             `
+            //             count++
+            //             continue
+            //         } catch(err) {
+            //             console.log(err)
+            //         }
+            //     }
+            // }
             count++
 
             let bitcoinAddress = ''
