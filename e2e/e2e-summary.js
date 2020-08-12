@@ -77,7 +77,7 @@ async function run() {
     const fromBlock = currentBlockNumber - program.blocksTimespan
     
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
-    console.log("number of created deposit events: ", createdDepositEvents.length)
+    console.log("number of 'Created' deposit events: ", createdDepositEvents.length)
 
     const signingGroupFormationTimeout = await tbtc.Deposit.constantsContract.methods.getSigningGroupFormationTimeout().call()
     const signingTimeout = await tbtc.Deposit.constantsContract.methods.getSignatureTimeout().call()
@@ -89,12 +89,16 @@ async function run() {
         console.log("event count: ", count)
         const depositAddress = createdEvent.returnValues._depositContractAddress
         const keepAddress = createdEvent.returnValues._keepAddress
+
+        console.log("getting deposit...")
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
         
-        const depositOwner = await deposit.getOwner()
+        // const depositOwner = await deposit.getOwner()
+        // console.log("after getting deposit owner...")
 
         // filter deposits that were created by e2e-test.js
         // if (depositOwner === web3.eth.defaultAccount) {
+            console.log("getting current state...")
             const currentState = await deposit.getCurrentState()
             
             if (currentState === depositStates['AWAITING_SIGNER_SETUP']) {
@@ -105,9 +109,11 @@ async function run() {
                         htmlContent += 
                         `
                         <tr bgcolor="red">
-                        <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
-                        <td colspan="3">` + "keepAddress: " + keepAddress + `</td>
-                        <td colspan="3">` + depositStatesInverted[currentState] + `</td>
+                            <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
+                            <td>` + depositStatesInverted[currentState] + `</td>
+                            <td colspan="3">notifySignerSetupFailed() call... </td>
+                            <td>` + keepAddress + `</td>
+                            <td></td>
                         </tr>
                         `
                         count++
@@ -127,9 +133,11 @@ async function run() {
                         htmlContent += 
                         `
                         <tr bgcolor="red">
-                        <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
-                        <td colspan="3">` + "keepAddress: " + keepAddress + `</td>
-                        <td colspan="3">` + depositStatesInverted[currentState] + `</td>
+                            <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
+                            <td>` + depositStatesInverted[currentState] + `</td>
+                            <td colspan="3">notifyRedemptionSignatureTimedOut() call... </td>
+                            <td>` + keepAddress + `</td>
+                            <td></td>
                         </tr>
                         `
                         count++
@@ -149,25 +157,39 @@ async function run() {
             let tbtcAccountBalance = ''
             let keepBondAmount = ''
 
+            const waitingTimeForPublicKey = 30*1000 //30sec
+
             try {
-                bitcoinAddress = await deposit.getBitcoinAddress()
+                console.log("getting bitcoin address...")
+                bitcoinAddress = await getBitcoinAddressTimeout(deposit, waitingTimeForPublicKey)
+                console.log("getting block number...")
                 createdDepositBlockNumber = await createdEvent.blockNumber
+                console.log("getting lot size satoshis...")
                 satoshiLotSize = (await deposit.getLotSizeSatoshis()).toString()
+                console.log("getting signer fee TBTC...")
                 signerFee = await deposit.getSignerFeeTBTC()
+                console.log("getting redemption cost...")
                 redemptionCost = await deposit.getRedemptionCost()
+                console.log("getting balance of deposit...")
                 tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
+                console.log("getting bond amount...")
                 keepBondAmount = await deposit.keepContract.methods.checkBondAmount().call()
+                console.log("retrieved all data...")
             } catch(err) {
                 htmlContent += 
                 `
                 <tr bgcolor="#ff8000">
-                    <td colspan="9">` + err + `</td>
+                    <td colspan="3">` + "depositAddress: " + depositAddress + `</td>
+                    <td>` + depositStatesInverted[currentState] + `</td>
+                    <td colspan="3">waiting for bitcoin address takes too long </td>
+                    <td>` + keepAddress + `</td>
+                    <td></td>
                 </tr>
                 `
-                console.log(err)
-                continue
+                console.log("getting info err: ", err)
+                continue;
             }
-            
+
             htmlContent += 
             `
             <tr>
@@ -196,6 +218,13 @@ async function run() {
     }
 
     fs.writeFileSync('./site/index.html', await buildHtml(htmlContent));
+}
+
+function getBitcoinAddressTimeout(deposit, timeout) {
+    return new Promise(function(resolve, reject) {
+        deposit.getBitcoinAddress().then(resolve, reject);
+        setTimeout(reject, timeout);
+    });
 }
 
 async function getTimeOfEvent(eventName, depositAddress) {
