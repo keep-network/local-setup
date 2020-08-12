@@ -7,7 +7,7 @@ metadata:
     app: tbtc
     type: e2e-test
 spec:
-  schedule: '0 */1 * * *'
+  schedule: '0 */4 * * *'
   concurrencyPolicy: Replace
   jobTemplate:
     metadata:
