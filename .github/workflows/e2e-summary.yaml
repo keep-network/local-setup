@@ -41,7 +41,7 @@ jobs:
             --bitcoin-electrum-host 34.70.251.19 \
             --bitcoin-electrum-port 8080 \
             --bitcoin-network testnet \
-            --ethereum-node wss://ropsten.infura.io/ws/v3/c7d9a83a904d440ba19a7acda98f4c72 \
+            --ethereum-node wss://ropsten.infura.io/ws/v3/a6e0ba36c6b44333bd56c5c8cc681cc3 \
             --ethereum-pk 033cea2b77cbd50c02cbc57573cf4389b8c785642c2107c7e1614df9876b787b \
             --blocks-timespan 500
 
