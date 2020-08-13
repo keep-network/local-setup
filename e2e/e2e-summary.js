@@ -86,6 +86,12 @@ async function run() {
     let count = 1;
 
     for (const createdEvent of createdDepositEvents) {
+        // This is a temp workaround. Previously it threw the exception on 98th event
+        // after passing "fresh" Infura's project ID.
+        if (count == 90) {
+            console.log("Forcing loop termination because of Infura rate limits...")
+            break;
+        }
         console.log("event count: ", count)
         const depositAddress = createdEvent.returnValues._depositContractAddress
         const keepAddress = createdEvent.returnValues._keepAddress
@@ -186,7 +192,9 @@ async function run() {
                     <td></td>
                 </tr>
                 `
-                console.log("getting info err: ", err)
+                if (err) {
+                    console.log("getting info err: ", err)
+                }
                 continue;
             }
 

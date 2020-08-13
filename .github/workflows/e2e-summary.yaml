@@ -41,8 +41,8 @@ jobs:
             --bitcoin-electrum-host 34.70.251.19 \
             --bitcoin-electrum-port 8080 \
             --bitcoin-network testnet \
-            --ethereum-node wss://ropsten.infura.io/ws/v3/5df0460b55a64bc59cb9ab4210fd557b \
-            --ethereum-pk 033cea2b77cbd50c02cbc57573cf4389b8c785642c2107c7e1614df9876b787b \
+            --ethereum-node wss://ropsten.infura.io/ws/v3/${{secrets.INFURA_PROJECT_ID}} \
+            --ethereum-pk ${{secrets.ETH_PRIVATE_KEY}} \
             --blocks-timespan 500
 
         - name: Deploy e2e summary site
