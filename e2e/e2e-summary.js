@@ -86,7 +86,7 @@ async function run() {
     let count = 1;
 
     for (const createdEvent of createdDepositEvents) {
-        // This is a temp workaround. Previouly it threw the exception on 98th event
+        // This is a temp workaround. Previously it threw the exception on 98th event
         // after passing "fresh" Infura's project ID.
         if (count == 90) {
             console.log("Forcing loop termination because of Infura rate limits...")
