@@ -43,7 +43,7 @@ jobs:
             --bitcoin-network testnet \
             --ethereum-node wss://ropsten.infura.io/ws/v3/${{secrets.INFURA_PROJECT_ID}} \
             --ethereum-pk ${{secrets.ETH_PRIVATE_KEY}} \
-            --blocks-timespan 500
+            --blocks-timespan 7500
 
         - name: Deploy e2e summary site
           run: |
