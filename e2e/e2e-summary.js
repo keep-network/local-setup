@@ -73,37 +73,34 @@ async function run() {
         )
 
     const currentBlockNumber = await web3.eth.getBlockNumber()
-    const currentTimestamp = (await web3.eth.getBlock(currentBlockNumber)).timestamp
     const fromBlock = currentBlockNumber - program.blocksTimespan
     
     const createdDepositEvents = await tbtc.Deposit.systemContract.getPastEvents("Created", {fromBlock: fromBlock, toBlock: "latest"})
     console.log("number of 'Created' deposit events: ", createdDepositEvents.length)
 
-    const signingGroupFormationTimeout = await tbtc.Deposit.constantsContract.methods.getSigningGroupFormationTimeout().call()
-    const signingTimeout = await tbtc.Deposit.constantsContract.methods.getSignatureTimeout().call()
+    // const currentTimestamp = (await web3.eth.getBlock(currentBlockNumber)).timestamp
+    // const signingGroupFormationTimeout = await tbtc.Deposit.constantsContract.methods.getSigningGroupFormationTimeout().call()
+    // const signingTimeout = await tbtc.Deposit.constantsContract.methods.getSignatureTimeout().call()
     
     let htmlContent = ''
-    let count = 1;
+    let createdEventCount = 1;
+    let e2eTestCreatedEventCount = 1
 
     for (const createdEvent of createdDepositEvents) {
-        // This is a temp workaround. Previously it threw the exception on 98th event
-        // after passing "fresh" Infura's project ID.
-        if (count == 90) {
-            console.log("Forcing loop termination because of Infura rate limits...")
-            break;
-        }
-        console.log("event count: ", count)
+        console.log("created event count: ", createdEventCount)
         const depositAddress = createdEvent.returnValues._depositContractAddress
         const keepAddress = createdEvent.returnValues._keepAddress
 
         console.log("getting deposit...")
         const deposit = await tbtc.Deposit.withAddress(depositAddress)
         
-        // const depositOwner = await deposit.getOwner()
-        // console.log("after getting deposit owner...")
+        console.log("getting deposit owner...")
+        const depositOwner = await deposit.getOwner()
 
         // filter deposits that were created by e2e-test.js
-        // if (depositOwner === web3.eth.defaultAccount) {
+        if (depositOwner === web3.eth.defaultAccount) {
+            console.log("e2e-test created event count: ", e2eTestCreatedEventCount)
+
             console.log("getting current state...")
             const currentState = await deposit.getCurrentState()
             
@@ -153,7 +150,8 @@ async function run() {
             //         }
             //     }
             // }
-            count++
+            e2eTestCreatedEventCount++
+            e2eTestCount++
 
             let bitcoinAddress = ''
             let createdDepositBlockNumber = ''
@@ -222,7 +220,9 @@ async function run() {
             console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
             console.log("keepAddress: ", keepAddress)
             console.log("keepBondAmount: ", keepBondAmount.toString())
-        // }
+        } else {
+            createdEventCount++
+        }
     }
 
     fs.writeFileSync('./site/index.html', await buildHtml(htmlContent));
