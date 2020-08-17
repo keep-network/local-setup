@@ -66,11 +66,9 @@ async function run() {
         web3: web3,
         bitcoinNetwork: program.bitcoinNetwork,
         electrum: {
-            testnetWS: {
-                server: program.bitcoinElectrumHost,
-                port: program.bitcoinElectrumPort,
-                protocol: "ws"
-            }
+            server: program.bitcoinElectrumHost,
+            port: program.bitcoinElectrumPort,
+            protocol: "ws"
         }
     })
 
