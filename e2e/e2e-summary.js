@@ -8,9 +8,6 @@ import Subproviders from "@0x/subproviders"
 import {getTBTCTokenBalance} from "./common.js";
 import program from "commander"
 import * as fs from 'fs'
-import web3Utils from "web3-utils"
-
-const { toBN } = web3Utils
 
 program 
     .option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
