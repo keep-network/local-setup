@@ -34,16 +34,19 @@ jobs:
         - name: Installing npm dependencies
           run: cd e2e && npm install
         
-        - name: Running e2e summary test 
+        - name: Running e2e summary test
+          env:
+            INFURA_PROJECT_ID: ${{secrets.INFURA_PROJECT_ID}}
+            ETH_PRIVATE_KEY: ${{secrets.ETH_PRIVATE_KEY}}
           run: | 
             cd e2e
             node --experimental-json-modules e2e-summary.js \
             --bitcoin-electrum-host 34.70.251.19 \
             --bitcoin-electrum-port 8080 \
             --bitcoin-network testnet \
-            --ethereum-node wss://ropsten.infura.io/ws/v3/${{secrets.INFURA_PROJECT_ID}} \
-            --ethereum-pk ${{secrets.ETH_PRIVATE_KEY}} \
-            --blocks-timespan 7500
+            --blocks-timespan 7500 \
+            --ethereum-node wss://ropsten.infura.io/ws/v3/$INFURA_PROJECT_ID \
+            --ethereum-pk $ETH_PRIVATE_KEY
 
         - name: Deploy e2e summary site
           run: |
