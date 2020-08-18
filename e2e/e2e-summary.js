@@ -16,9 +16,9 @@ program
     .option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
     .option('--bitcoin-electrum-port <port>', "electrum server port", (port) => parseInt(port, 10), 50003)
     .option('--bitcoin-network <network>', "type of the bitcoin network (\"regtest\"|\"testnet\")", "regtest")
+    .option('--blocks-timespan <blocks>', "blocks to search back from", (blocks) => parseInt(blocks, 10), 7000)
     .option('--ethereum-node <url>', "ethereum node url", "ws://127.0.0.1:8546")
     .option('--ethereum-pk <privateKey>', "private key of ethereum account", "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd")
-    .option('--blocks-timespan <blocks>', "blocks to search back from", (blocks) => parseInt(blocks, 10), 7000)
     .parse(process.argv)
 
 console.log("\nScript options values: ", program.opts(), "\n")
