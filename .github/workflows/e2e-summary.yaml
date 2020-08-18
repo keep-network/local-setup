@@ -16,12 +16,6 @@ jobs:
           run: |
             git config --local user.email "cron-e2e-summary@github.com"
             git config --local user.name ${{github.actor}}
-          
-        - name: Merging master branch	
-          run: |
-            git fetch --all
-            git checkout gh-pages
-            git merge -X theirs origin/master --allow-unrelated-histories
         
         - name: Updating tbtc.js version
           run: |
