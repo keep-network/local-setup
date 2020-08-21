@@ -78,7 +78,7 @@ async function run() {
     
     let htmlContent = ''
     let allCreatedEventCount = 1;
-    // let e2eTestCreatedEventCount = 1
+    let e2eTestCreatedEventCount = 1
 
     for (const createdEvent of createdDepositEvents) {
         console.log("created event count: ", allCreatedEventCount)
@@ -92,13 +92,13 @@ async function run() {
         const depositOwner = await deposit.getOwner()
 
         // filter deposits that were created by e2e-test.js
-        // if (depositOwner === web3.eth.defaultAccount) {
-            // console.log("e2e-test created event count: ", e2eTestCreatedEventCount)
+        if (depositOwner === web3.eth.defaultAccount) {
+            console.log("e2e-test created event count: ", e2eTestCreatedEventCount)
 
             console.log("getting current state...")
             const currentState = await deposit.getCurrentState()
             
-            // e2eTestCreatedEventCount++
+            e2eTestCreatedEventCount++
             allCreatedEventCount++
 
             let bitcoinAddress = ''
@@ -135,8 +135,6 @@ async function run() {
                 createdDepositBlockNumber = await createdEvent.blockNumber
                 console.log("getting signer fee TBTC...")
                 signerFee = await deposit.getSignerFeeTBTC()
-                console.log("getting redemption cost...")
-                redemptionCost = await deposit.getRedemptionCost()
                 console.log("getting balance of deposit...")
                 tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
                 console.log("getting bond amount...")
@@ -159,6 +157,32 @@ async function run() {
                 continue;
             }
 
+            const totalAttempts = 5
+            for (let attempt = 1; attempt <= totalAttempts; attempt++) {
+                try {
+                    console.log("getting redemption cost...")
+                    redemptionCost = await deposit.getRedemptionCost()
+                    break;
+                } catch (err) {
+                    if (attempt === totalAttempts) {
+                        console.debug(`last attempt ${attempt} failed while getting redemption cost`)
+                        redemptionCost = `<div style="background-color:red">` + err + `</div>`
+                        continue;
+                    }
+
+                    const backoffMillis = Math.pow(2, attempt) * 1000
+                    const jitterMillis = Math.floor(Math.random() * 100)
+                    const waitMillis = backoffMillis + jitterMillis
+
+                    console.log(
+                        `attempt ${attempt} failed while getting redemption cost; ` +
+                        `retrying after ${waitMillis} milliseconds`
+                    )
+
+                    await new Promise(resolve => setTimeout(resolve, waitMillis))
+                }
+            }
+            
             htmlContent += 
             `
             <tr>
@@ -181,9 +205,9 @@ async function run() {
             console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
             console.log("keepAddress: ", keepAddress)
             console.log("keepBondAmount: ", keepBondAmount.toString())
-        // } else {
-        //     allCreatedEventCount++
-        // }
+        } else {
+            allCreatedEventCount++
+        }
     }
 
     fs.writeFileSync('./site/index.html', await buildHtml(htmlContent));
