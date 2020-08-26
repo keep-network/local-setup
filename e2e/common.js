@@ -129,3 +129,18 @@ export const returnBitcoinToDepositor = async (
         true
     )
 }
+
+export const promiseTimeout = function(ms, promise) {
+    let timeout = new Promise((resolve, reject) => {
+        let id = setTimeout(() => {
+            clearTimeout(id);
+            resolve(false)
+        }, ms)
+    })
+
+    // Returns a race between our timeout and the passed in promise
+    return Promise.race([
+        promise,
+        timeout
+    ])
+  }

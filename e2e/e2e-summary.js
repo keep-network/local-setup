@@ -8,6 +8,7 @@ import Subproviders from "@0x/subproviders"
 import {getTBTCTokenBalance} from "./common.js";
 import program from "commander"
 import * as fs from 'fs'
+import {promiseTimeout} from "./common.js";
 
 program 
     .option('--bitcoin-electrum-host <host>', "electrum server host", "127.0.0.1")
@@ -59,7 +60,6 @@ async function run() {
       }, {})
     
     const initialTbtcAccountBalance = await getTBTCTokenBalance(
-        web3,
         tbtc,
         web3.eth.defaultAccount
         )
@@ -79,116 +79,156 @@ async function run() {
     let htmlContent = ''
     let allCreatedEventCount = 1;
     let e2eTestCreatedEventCount = 1
+    const millisec = 1000
 
     for (const createdEvent of createdDepositEvents) {
         console.log("created event count: ", allCreatedEventCount)
+        allCreatedEventCount++
+
         const depositAddress = createdEvent.returnValues._depositContractAddress
         const keepAddress = createdEvent.returnValues._keepAddress
+        let deposit = {}
 
-        console.log("getting deposit...")
-        const deposit = await tbtc.Deposit.withAddress(depositAddress)
-        
-        console.log("getting deposit owner...")
-        const depositOwner = await deposit.getOwner()
+        try {
+            const depositPromise = tbtc.Deposit.withAddress(depositAddress)
+            console.log("getting deposit...")
+            deposit = await promiseTimeout(1*millisec, depositPromise) // timeout 1sec
+            if (deposit === false) {
+                const depositTimeoutMsg = "deposit retrieval timed out..."
+                console.log(depositTimeoutMsg)
+                htmlContent += await buildTimeout(depositAddress, '', depositTimeoutMsg, keepAddress)
+                continue
+            }
+        } catch(error) {
+            htmlContent += await buildError(depositAddress, '', error, keepAddress)
+            continue;
+        }
+
+        let depositOwner = {}
+        try {
+            const depositOwnerPromise = deposit.getOwner()
+            console.log("getting deposit owner...")
+            depositOwner = await promiseTimeout(1*millisec, depositOwnerPromise) // timeout 1sec
+            if (depositOwner === false) {
+                const depositOwnerTimeoutMsg = "deposit owner retrieval timed out..."
+                console.log(depositOwnerTimeoutMsg)
+                htmlContent += await buildTimeout(depositAddress, '', depositOwnerTimeoutMsg, keepAddress)
+                continue
+            }
+        } catch(error) {
+            htmlContent += await buildError(depositAddress, '', error, keepAddress)
+            continue;
+        }
 
         // filter deposits that were created by e2e-test.js
         if (depositOwner === web3.eth.defaultAccount) {
-            console.log("e2e-test created event count: ", e2eTestCreatedEventCount)
-
-            console.log("getting current state...")
-            const currentState = await deposit.getCurrentState()
-            
-            e2eTestCreatedEventCount++
-            allCreatedEventCount++
-
             let bitcoinAddress = ''
             let createdDepositBlockNumber = ''
             let signerFee = ''
             let redemptionCost = ''
             let tbtcAccountBalance = ''
             let keepBondAmount = ''
+            let state = ''
 
-            const waitingTimeForPublicKey = 1*1000 //1sec
+            console.log("e2e-test created event count: ", e2eTestCreatedEventCount)
+            e2eTestCreatedEventCount++
+
+            console.log("getting block number...")
+            createdDepositBlockNumber = await createdEvent.blockNumber
+
+            try {
+                const currentStatePromise = deposit.getCurrentState()
+                console.log("getting current state...")
+                let currentState = await promiseTimeout(1*millisec, currentStatePromise) // timeout 1sec
+                if (currentState === false) {
+                    const currentStateTimeoutMsg = "current state retrieval timed out..."
+                    console.log(bitcoinAddressTimeoutMsg)
+                    state = await buildTimeoutCell(currentStateTimeoutMsg)
+                } else {
+                    state = depositStatesInverted[currentState]
+                }
+            } catch(error) {
+                htmlContent += await buildError(depositAddress, state, error, keepAddress)
+                continue;
+            }
 
             try {
                 console.log("getting bitcoin address...")
-                bitcoinAddress = await getBitcoinAddressTimeout(deposit, waitingTimeForPublicKey)
-            } catch(err) {
-                htmlContent += 
-                `
-                <tr bgcolor="#ff8000">
-                    <td colspan="2">` + "depositAddress: " + depositAddress + `</td>
-                    <td>` + depositStatesInverted[currentState] + `</td>
-                    <td colspan="3">public key not set or not 64-bytes long </td>
-                    <td>` + keepAddress + `</td>
-                    <td></td>
-                </tr>
-                `
-                if (err) {
-                    console.log("retrieving bitcoin address error: ", err)
+                const bitcoinAddressPromise = deposit.getBitcoinAddress()
+                bitcoinAddress = await promiseTimeout(2*millisec, bitcoinAddressPromise) // timeout 2sec
+                if (bitcoinAddress === false) {
+                    const bitcoinAddressTimeoutMsg = "bitcoin address retrieval timed out..."
+                    console.log(bitcoinAddressTimeoutMsg)
+                    bitcoinAddress = await buildTimeoutCell(bitcoinAddressTimeoutMsg)
                 }
+            } catch(error) {
+                htmlContent += await buildError(depositAddress, state, error, keepAddress)
                 continue;
             }
 
             try {
-                console.log("getting block number...")
-                createdDepositBlockNumber = await createdEvent.blockNumber
                 console.log("getting signer fee TBTC...")
-                signerFee = await deposit.getSignerFeeTBTC()
-                console.log("getting balance of deposit...")
-                tbtcAccountBalance = await tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
-                console.log("getting bond amount...")
-                keepBondAmount = await deposit.keepContract.methods.checkBondAmount().call()
-                console.log("retrieved all data...")
-            } catch(err) {
-                htmlContent += 
-                `
-                <tr bgcolor="red">
-                    <td colspan="2">` + "depositAddress: " + depositAddress + `</td>
-                    <td>` + depositStatesInverted[currentState] + `</td>
-                    <td colspan="3">` + err + ` </td>
-                    <td>` + keepAddress + `</td>
-                    <td></td>
-                </tr>
-                `
-                if (err) {
-                    console.log("getting info error: ", err)
+                const signerFeePromise = deposit.getSignerFeeTBTC()
+                signerFee = await promiseTimeout(1*millisec, signerFeePromise) // timeout 1sec
+                if (signerFee === false) {
+                    const signerFeeTimeoutMsg = "signer fee retrieval timed out..."
+                    console.log(signerFeeTimeoutMsg)
+                    signerFee = await buildTimeoutCell(signerFeeTimeoutMsg)
                 }
+            } catch(error) {
+                htmlContent += await buildError(depositAddress, state, error, keepAddress)
                 continue;
             }
 
-            const totalAttempts = 5
-            for (let attempt = 1; attempt <= totalAttempts; attempt++) {
-                try {
-                    console.log("getting redemption cost...")
-                    redemptionCost = await deposit.getRedemptionCost()
-                    break;
-                } catch (err) {
-                    if (attempt === totalAttempts) {
-                        console.debug(`last attempt ${attempt} failed while getting redemption cost`)
-                        redemptionCost = `<div style="background-color:red">` + err + `</div>`
-                        continue;
-                    }
-
-                    const backoffMillis = Math.pow(2, attempt) * 1000
-                    const jitterMillis = Math.floor(Math.random() * 100)
-                    const waitMillis = backoffMillis + jitterMillis
-
-                    console.log(
-                        `attempt ${attempt} failed while getting redemption cost; ` +
-                        `retrying after ${waitMillis} milliseconds`
-                    )
-
-                    await new Promise(resolve => setTimeout(resolve, waitMillis))
+            try {
+                console.log("getting redemption cost..")
+                const redemptionCostPromise = await deposit.getRedemptionCost()
+                redemptionCost = await promiseTimeout(2*millisec, redemptionCostPromise) // timeout 2sec
+                if (redemptionCost === false) {
+                    const redemptionCostTimeoutMsg = "redemption cost retrieval timed out..."
+                    console.log(redemptionCostTimeoutMsg)
+                    redemptionCost = await buildTimeoutCell(redemptionCostTimeoutMsg)
                 }
+            } catch(error) {
+                htmlContent += await buildError(depositAddress, state, error, keepAddress)
+                continue;
             }
+
+            try {
+                console.log("getting balance of deposit...")
+                const tbtcAccountBalancePromise = tbtc.Deposit.tokenContract.methods.balanceOf(depositAddress).call()
+                tbtcAccountBalance = await promiseTimeout(1*millisec, tbtcAccountBalancePromise) // timeout 1sec
+                if (tbtcAccountBalance === false) {
+                    const tbtcAccountBalanceTimeoutMsg = "tbtc account balance retrieval timed out..."
+                    console.log(tbtcAccountBalanceTimeoutMsg)
+                    tbtcAccountBalance = await buildTimeoutCell(tbtcAccountBalanceTimeoutMsg)
+                }
+            } catch(error) {
+                htmlContent += await buildError(depositAddress, state, error, keepAddress)
+                continue;
+            }
+
+            try {
+                console.log("getting bond amount...")
+                const keepBondAmountPromise = deposit.keepContract.methods.checkBondAmount().call()
+                keepBondAmount = await promiseTimeout(1*millisec, keepBondAmountPromise) // timeout 1sec
+                if (tbtcAccountBalance === false) {
+                    const bondAmountTimeoutMsg = "bond amount retrieval timed out..."
+                    console.log(bondAmountTimeoutMsg)
+                    keepBondAmount = await buildTimeoutCell(bondAmountTimeoutMsg)
+                }
+            } catch(error) {
+                htmlContent += await buildError(depositAddress, state, error, keepAddress)
+                continue;
+            }
+
             
             htmlContent += 
             `
             <tr>
                 <td>` + bitcoinAddress + `</td>
                 <td>` + createdDepositBlockNumber + `</td>
-                <td>` + depositStatesInverted[currentState] + `</td>
+                <td>` + state + `</td>
                 <td>` + signerFee + `</td>
                 <td>` + redemptionCost + `</td>
                 <td>` + tbtcAccountBalance + `</td>
@@ -199,25 +239,16 @@ async function run() {
             
             console.log("bitcoin address: ", bitcoinAddress)
             console.log("createdDepositBlockNumber: ", createdDepositBlockNumber)
-            console.log("current state: ", depositStatesInverted[currentState])
+            console.log("current state: ", state)
             console.log("signerFee: ", signerFee.toString())
             console.log("redemptionCost: ", redemptionCost.toString())
             console.log("tbtcAccountBalance: ", tbtcAccountBalance.toString())
             console.log("keepAddress: ", keepAddress)
             console.log("keepBondAmount: ", keepBondAmount.toString())
-        } else {
-            allCreatedEventCount++
         }
     }
 
     fs.writeFileSync('./site/index.html', await buildHtml(htmlContent));
-}
-
-function getBitcoinAddressTimeout(deposit, timeout) {
-    return new Promise(function(resolve, reject) {
-        deposit.getBitcoinAddress().then(resolve, reject);
-        setTimeout(reject, timeout);
-    });
 }
 
 async function buildHtml(content) {
@@ -254,6 +285,40 @@ async function buildHtml(content) {
 `
 
     return header + content + footer;
+}
+
+async function buildError(depositAddress, currentState, error, keepAddress) {
+    const html = 
+    `
+    <tr bgcolor="red">
+        <td colspan="2">` + "depositAddress: " + depositAddress + `</td>
+        <td>` + currentState + `</td>
+        <td colspan="3">` + error + `</td>
+        <td>` + keepAddress + `</td>
+        <td></td>
+    </tr>
+    `
+
+    return html
+}
+
+async function buildTimeout(depositAddress, currentState, msg, keepAddress) {
+    const html = 
+    `
+    <tr bgcolor="#ff8000">
+        <td colspan="2">` + "depositAddress: " + depositAddress + `</td>
+        <td>` + currentState + `</td>
+        <td colspan="3">` + msg + `</td>
+        <td>` + keepAddress + `</td>
+        <td></td>
+    </tr>
+    `
+
+    return html
+}
+
+async function buildTimeoutCell(msg) {
+    return `<div style="background-color:#ff8000">` + msg + `</div>`
 }
 
 
