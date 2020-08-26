@@ -89,7 +89,6 @@ async function run() {
     )
 
     const initialTbtcAccountBalance = await getTBTCTokenBalance(
-        web3,
         tbtc,
         web3.eth.defaultAccount
     )
@@ -105,10 +104,11 @@ async function run() {
         const deposit = await createDeposit(tbtc, program.lotSizeSatoshis, bitcoinDepositorKeyRing)
         deposits.push(deposit)
 
-        assertMintedTbtcAmount(web3, deposit, tbtcDepositAmountMinusSignerFee)
+        assertMintedTbtcAmount(deposit.tbtcAmount, tbtcDepositAmountMinusSignerFee)
 
+        const actualTbtcBalanceBn = await getTBTCTokenBalance(tbtc, deposit.address)
         // check whether signer fee went to the expected address
-        await assertTbtcAccountBalance(web3, tbtc, deposit.address, signerFee)
+        await assertTbtcAccountBalance(deposit.address, actualTbtcBalanceBn, signerFee)
 
         console.log(`\nDeposit ${deposit.address} has been created successfully.`)
     }
@@ -134,7 +134,7 @@ async function run() {
 
     console.log(`\nStarting redemption of the first deposit...\n`)
     const redeemerAddress = bitcoinRedeemerKeyRing.getAddress("string")
-    console.log(`Using reedemer address: ${redeemerAddress}`)
+    console.log(`Using redeemer address: ${redeemerAddress}`)
 
     const beforeRedemptionBtcBalance = await getBtcBalance(web3, BitcoinHelpers, redeemerAddress)
 

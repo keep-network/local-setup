@@ -1,15 +1,17 @@
+import Web3 from "web3"
 
-export const getTBTCTokenBalance = async (web3, tbtc, account) => {
+export const getTBTCTokenBalance = async (tbtc, account) => {
+
     const balance = await tbtc.Deposit.tokenContract.methods
         .balanceOf(account).call();
 
-    return web3.utils.toBN(balance)
+    return Web3.utils.toBN(balance)
 }
 
-export const getBtcBalance = async (web3, BitcoinHelpers, address) => {
+export const getBtcBalance = async (BitcoinHelpers, address) => {
     const balance = await BitcoinHelpers.Transaction.getBalance(address);
 
-    return web3.utils.toBN(balance)
+    return Web3.utils.toBN(balance)
 }
 
 export const importBitcoinPrivateKey = async (
@@ -104,14 +106,12 @@ export const sendBitcoinTransaction = async(
 }
 
 export const returnBitcoinToDepositor = async (
-    web3,
     bcoin,
     BitcoinHelpers,
     depositorKeyRing,
     redeemerKeyRing
 ) => {
     const redeemerBalance = await getBtcBalance(
-        web3,
         BitcoinHelpers,
         redeemerKeyRing.getAddress("string")
     )
