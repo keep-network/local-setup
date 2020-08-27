@@ -126,7 +126,6 @@ async function run() {
     )
 
     await assertTbtcAccountBalance(
-        web3,
         tbtc,
         web3.eth.defaultAccount,
         afterDepositsTbtcAccountBalance
@@ -136,7 +135,7 @@ async function run() {
     const redeemerAddress = bitcoinRedeemerKeyRing.getAddress("string")
     console.log(`Using redeemer address: ${redeemerAddress}`)
 
-    const beforeRedemptionBtcBalance = await getBtcBalance(web3, BitcoinHelpers, redeemerAddress)
+    const beforeRedemptionBtcBalance = await getBtcBalance(BitcoinHelpers, redeemerAddress)
 
     const message = await redeemDeposit(tbtc, deposits[0].address, redeemerAddress)
     console.log(`\nRedemption outcome: ${message}\n`)
@@ -152,7 +151,6 @@ async function run() {
     )
 
     await assertTbtcAccountBalance(
-        web3,
         tbtc,
         web3.eth.defaultAccount,
         afterRedemptionTbtcAccountBalance
@@ -169,7 +167,6 @@ async function run() {
     )
 
     await assertBtcBalance(
-        web3,
         BitcoinHelpers,
         redeemerAddress,
         afterRedemptionBtcBalance
@@ -178,7 +175,6 @@ async function run() {
     console.log(`\nReturning redeemed bitcoins to the depositor...\n`)
 
     await returnBitcoinToDepositor(
-        web3,
         bcoin,
         BitcoinHelpers,
         bitcoinDepositorKeyRing,
