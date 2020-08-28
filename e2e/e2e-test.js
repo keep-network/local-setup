@@ -125,9 +125,10 @@ async function run() {
         `Checking assertion...`
     )
 
+    let actualTbtcBalanceBn = await getTBTCTokenBalance(tbtc, web3.eth.defaultAccount)
     await assertTbtcAccountBalance(
-        tbtc,
         web3.eth.defaultAccount,
+        actualTbtcBalanceBn,
         afterDepositsTbtcAccountBalance
     )
 
@@ -150,9 +151,10 @@ async function run() {
         `Checking assertion...`
     )
 
+    actualTbtcBalanceBn = await getTBTCTokenBalance(tbtc, web3.eth.defaultAccount)
     await assertTbtcAccountBalance(
-        tbtc,
         web3.eth.defaultAccount,
+        actualTbtcBalanceBn,
         afterRedemptionTbtcAccountBalance
     )
 
