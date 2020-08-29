@@ -137,13 +137,11 @@ where `TBTC.withConfig` line occurs. Change it as follows:
 ```
 const tbtc = await TBTC.withConfig({
     web3: web3,
-    bitcoinNetwork: "regtest",
+    bitcoinNetwork: BitcoinHelpers.Network.REGTEST,
     electrum: {
-        testnetWS: {
-            server: "127.0.0.1",
-            port: 50003,
-            protocol: "ws"
-        }
+        server: "127.0.0.1",
+        port: 50003,
+        protocol: "ws"
     }
 })
 ```
