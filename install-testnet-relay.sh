@@ -14,7 +14,7 @@ printf "${LOG_START}Initializing relay...${LOG_END}"
 cd "$WORKDIR/tbtc/solidity"
 
 # Get network ID.
-NETWORK_ID_OUTPUT=$(truffle exec ./scripts/get-network-id.js)
+NETWORK_ID_OUTPUT=$(npx truffle exec ./scripts/get-network-id.js)
 NETWORK_ID=$(echo "$NETWORK_ID_OUTPUT" | tail -1)
 
 # Extract TestnetRelay contract address.
