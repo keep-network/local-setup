@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: geth
+  namespace: local-setup
+spec:
+  replicas: 1
+  serviceName: geth
+  volumeClaimTemplates:
+    - metadata:
+        name: geth-data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: ropsten-miner # use SSD storage
+        resources:
+          requests:
+            storage: 1Gi
+  selector:
+    matchLabels:
+      app: geth
+      type: local
+  template:
+    metadata:
+      labels:
+        app: geth
+        type: local
+    spec:
+      volumes:
+        - name: geth-data
+          persistentVolumeClaim:
+            claimName: geth-data
+        - name: geth-genesis
+          configMap:
+            name: geth-config
+            items:
+              - key: genesis.json
+                path: genesis.json
+      containers:
+        - name: geth
+          image: ethereum/client-go:v1.9.9
+          ports:
+            - containerPort: 8545
+            - containerPort: 8546
+            - containerPort: 30303
+          volumeMounts:
+            - name: geth-data
+              mountPath: /root/geth/data
+            - name: geth-genesis
+              mountPath: /root/geth/genesis/genesis.json
+              subPath: genesis.json
+          env:
+            - name: ETHERBASE
+              valueFrom:
+                configMapKeyRef:
+                  name: geth-config
+                  key: etherbase
+          command: [ "sh" ]
+          args:
+            - "-c"
+            - "geth --datadir=/root/geth/data init /root/geth/genesis/genesis.json && \
+               geth --networkid 1101 --identity \"somerandomidentity\" \
+               --ws --wsaddr \"0.0.0.0\" --wsport \"8546\" --wsorigins \"*\" \
+               --rpc --rpcport \"8545\" --rpcaddr \"0.0.0.0\" --rpccorsdomain \"*\" \
+               --rpcapi \"db,ssh,miner,admin,eth,net,web3,personal,debug\" \
+               --wsapi \"db,ssh,miner,admin,eth,net,web3,personal\" \
+               --datadir=/root/geth/data --syncmode \"fast\" \
+               --mine --miner.threads=1 --miner.etherbase=$ETHERBASE \
+               --allow-insecure-unlock"
+
