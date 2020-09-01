@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/ecdsa"
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec"
@@ -10,6 +11,7 @@ import (
 	"github.com/libp2p/go-libp2p-core/peer"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"text/template"
@@ -19,14 +21,50 @@ const (
 	keystoreDir = "./keystore"
 )
 
-func main() {
-	fmt.Printf("generating accounts...\n")
+type keyfile struct {
+	Address    string
+	Json       string
+	PrivateKey string
 
-	count, err := strconv.Atoi(os.Args[1])
-	if err != nil {
-		fmt.Printf("could not parse count: [%v]\n", err)
+	PrivateKeyObject *ecdsa.PrivateKey
+}
+
+func main() {
+	if os.Args[1] == "network" {
+		count, err := strconv.Atoi(os.Args[2])
+		if err != nil {
+			fmt.Printf("could not parse count: [%v]\n", err)
+			return
+		}
+
+		err = generateNetworkConfig(count)
+		if err != nil {
+			fmt.Printf("could not generate network config: [%v]\n", err)
+			return
+		}
+	} else if os.Args[1] == "clients" {
+		sanctionedApp := os.Args[2]
+
+		if len(sanctionedApp) == 0 {
+			fmt.Printf("could not parse sanctioned application\n")
+			return
+		}
+
+		err := generateClientsConfig(sanctionedApp)
+		if err != nil {
+			fmt.Printf("could not generate clients config: [%v]\n", err)
+			return
+		}
+	} else {
+		fmt.Printf("unknown command\n")
 		return
 	}
+}
+
+func generateNetworkConfig(count int) error {
+	fmt.Printf("generating accounts...\n")
+
+	_ = os.RemoveAll(keystoreDir)
 
 	keyStore := keystore.NewKeyStore(
 		keystoreDir,
@@ -34,58 +72,31 @@ func main() {
 		keystore.StandardScryptP,
 	)
 
-	defer os.RemoveAll(keystoreDir)
-
-	type keyfile struct {
-		Address    string
-		Json       string
-		PrivateKey string
-	}
-
-	var bootstrapID string
 	keyfiles := make([]*keyfile, count)
 
-	for i := 0; i < count; i++ {
+	for i := range keyfiles {
 		account, err := keyStore.NewAccount("password")
 		if err != nil {
-			fmt.Printf("could not create account: [%v]\n", err)
-			return
+			return err
 		}
 
-		keyfileJson, err := ioutil.ReadFile(account.URL.Path)
+		keyfile, err := getKeyfile(account.URL.Path)
 		if err != nil {
-			fmt.Printf("could not read keyfile: [%v]\n", err)
-			return
+			return err
 		}
 
-		key, err := keystore.DecryptKey(keyfileJson, "password")
-		if err != nil {
-			fmt.Printf("could not decrypt keyfile: [%v]\n", err)
-			return
-		}
+		keyfiles[i] = keyfile
 
-		keyfiles[i] = &keyfile{
-			Address:    account.Address.Hex(),
-			Json:       string(keyfileJson),
-			PrivateKey: hex.EncodeToString(crypto.FromECDSA(key.PrivateKey)),
-		}
-
-		if i == 0 {
-			bootstrapID, err = getIDFromKey(key)
-			if err != nil {
-				fmt.Printf("could get bootstrap id: [%v]\n", err)
-				return
-			}
-		}
-
-		fmt.Printf("generated account %v\n", keyfiles[i].Address)
+		fmt.Printf("generated account [%v]\n", keyfiles[i].Address)
 	}
+
+	sort.Stable(byAddress(keyfiles))
 
 	fmt.Printf("accounts generated\n")
 
 	fmt.Printf("generating geth configmap...\n")
 
-	err = generateConfig(
+	err := generateConfig(
 		"network/geth-configmap.yml",
 		"network/geth-configmap.yml",
 		map[string]interface{}{
@@ -95,8 +106,7 @@ func main() {
 		},
 	)
 	if err != nil {
-		fmt.Printf("could not generate geth configmap: [%v]\n", err)
-		return
+		return err
 	}
 
 	fmt.Printf("geth configmap generated\n")
@@ -111,13 +121,39 @@ func main() {
 		},
 	)
 	if err != nil {
-		fmt.Printf("could not generate accounts configmap: [%v]\n", err)
-		return
+		return err
 	}
 
 	fmt.Printf("accounts configmap generated\n")
 
-	fmt.Printf("generating keep clients configs...\n")
+	return nil
+}
+
+func generateClientsConfig(sanctionedApp string) error {
+	fmt.Printf("generating clients configs...\n")
+
+	files, err := ioutil.ReadDir(keystoreDir)
+	if err != nil {
+		return err
+	}
+
+	keyfiles := make([]*keyfile, len(files))
+
+	for i, file := range files {
+		keyfile, err := getKeyfile(keystoreDir + "/" + file.Name())
+		if err != nil {
+			return err
+		}
+
+		keyfiles[i] = keyfile
+	}
+
+	sort.Stable(byAddress(keyfiles))
+
+	bootstrapID, err := getIDFromKey(keyfiles[0].PrivateKeyObject)
+	if err != nil {
+		return err
+	}
 
 	for i := range keyfiles {
 		err = generateConfig(
@@ -128,8 +164,7 @@ func main() {
 			},
 		)
 		if err != nil {
-			fmt.Printf("could not generate keep-client service config: [%v]\n", err)
-			return
+			return err
 		}
 
 		err = generateConfig(
@@ -142,23 +177,68 @@ func main() {
 			},
 		)
 		if err != nil {
-			fmt.Printf("could not generate keep-client statefulset config: [%v]\n", err)
-			return
+			return err
+		}
+
+		err = generateConfig(
+			"clients/keep-ecdsa-service.yml",
+			fmt.Sprintf("clients/keep-ecdsa-%v-service.yml", i),
+			map[string]interface{}{
+				"clientIndex": i,
+			},
+		)
+		if err != nil {
+			return err
+		}
+
+		err = generateConfig(
+			"clients/keep-ecdsa-statefulset.yml",
+			fmt.Sprintf("clients/keep-ecdsa-%v-statefulset.yml", i),
+			map[string]interface{}{
+				"clientIndex":   i,
+				"bootstrapID":   bootstrapID,
+				"owner":         keyfiles[0],
+				"sanctionedApp": sanctionedApp,
+			},
+		)
+		if err != nil {
+			return err
 		}
 	}
 
-	fmt.Printf("keep clients configs generated\n")
+	fmt.Printf("clients configs generated\n")
 
+	return nil
 }
 
-func getIDFromKey(key *keystore.Key) (string, error) {
-	pk, _ := btcec.PrivKeyFromBytes(btcec.S256(), key.PrivateKey.D.Bytes())
+func getIDFromKey(privateKey *ecdsa.PrivateKey) (string, error) {
+	pk, _ := btcec.PrivKeyFromBytes(btcec.S256(), privateKey.D.Bytes())
+
 	id, err := peer.IDFromPrivateKey((*libp2pcrypto.Secp256k1PrivateKey)(pk))
 	if err != nil {
 		return "", err
 	}
 
 	return id.String(), nil
+}
+
+func getKeyfile(path string) (*keyfile, error) {
+	keyfileJson, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	key, err := keystore.DecryptKey(keyfileJson, "password")
+	if err != nil {
+		return nil, err
+	}
+
+	return &keyfile{
+		Address:          key.Address.Hex(),
+		Json:             string(keyfileJson),
+		PrivateKey:       hex.EncodeToString(crypto.FromECDSA(key.PrivateKey)),
+		PrivateKeyObject: key.PrivateKey,
+	}, nil
 }
 
 func generateConfig(input, output string, data interface{}) error {
@@ -183,4 +263,21 @@ func generateConfig(input, output string, data interface{}) error {
 	}
 
 	return nil
+}
+
+type byAddress []*keyfile
+
+func (ba byAddress) Len() int {
+	return len(ba)
+}
+
+func (ba byAddress) Swap(i, j int) {
+	ba[i], ba[j] = ba[j], ba[i]
+}
+
+func (ba byAddress) Less(i, j int) bool {
+	return strings.Compare(
+		strings.ToLower(ba[i].Address),
+		strings.ToLower(ba[j].Address),
+	) < 1
 }

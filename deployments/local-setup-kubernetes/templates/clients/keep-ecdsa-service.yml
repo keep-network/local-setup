@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: keep-client-{{ .clientIndex }}
+  name: keep-ecdsa-{{ .clientIndex }}
   namespace: local-setup
   labels:
-    app: keep-client
+    app: keep-ecdsa
     type: local
     id: '{{ .clientIndex }}'
 spec:
@@ -13,6 +13,6 @@ spec:
       targetPort: 3919
       name: tcp-3919
   selector:
-    app: keep-client
+    app: keep-ecdsa
     type: local
     id: '{{ .clientIndex }}'
