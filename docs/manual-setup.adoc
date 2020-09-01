@@ -8,7 +8,6 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 - Go compiler, at least 1.14
 - Geth (Ethereum client) 1.9.9-stable
 - Solidity, at least 0.5.17
-- Truffle, at least 5.1.18
 - Protobuf compiler, at least 3.11.4
 - `protoc-gen-gogoslick` toolchain
 - `jq`
@@ -137,13 +136,11 @@ where `TBTC.withConfig` line occurs. Change it as follows:
 ```
 const tbtc = await TBTC.withConfig({
     web3: web3,
-    bitcoinNetwork: "regtest",
+    bitcoinNetwork: BitcoinHelpers.Network.REGTEST,
     electrum: {
-        testnetWS: {
-            server: "127.0.0.1",
-            port: 50003,
-            protocol: "ws"
-        }
+        server: "127.0.0.1",
+        port: 50003,
+        protocol: "ws"
     }
 })
 ```

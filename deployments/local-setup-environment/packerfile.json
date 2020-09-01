@@ -50,11 +50,6 @@
       "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
       "inline": ["npm -g config set user root"],
       "only": ["docker"]
-    },
-    {
-      "type": "shell",
-      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} bash -l {{ .Path }}",
-      "script": "./provisioning/install-truffle.sh"
     }
   ],
   "post-processors": [

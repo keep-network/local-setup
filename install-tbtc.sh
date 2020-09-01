@@ -63,7 +63,7 @@ cd "$WORKDIR/tbtc/solidity"
 if [ "$BTC_NETWORK" == "regtest" ]; then
   printf "${LOG_START}Initialize MockRelay...${LOG_END}"
 
-  truffle exec "$WORKDIR/relay-genesis/update-mock-relay.js"
+  npx truffle exec "$WORKDIR/relay-genesis/update-mock-relay.js"
 fi
 
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
@@ -73,7 +73,7 @@ printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 printf "${LOG_START}Initializing keep-ecdsa...${LOG_END}"
 
 # Get network ID.
-NETWORK_ID_OUTPUT=$(truffle exec ./scripts/get-network-id.js)
+NETWORK_ID_OUTPUT=$(npx truffle exec ./scripts/get-network-id.js)
 NETWORK_ID=$(echo "$NETWORK_ID_OUTPUT" | tail -1)
 
 # Extract TBTCSystem contract address.
