@@ -1,16 +1,19 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/crypto"
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 	"text/template"
 )
 
 const (
-	keystoreTempDir = "./temporary"
+	keystoreDir = "./keystore"
 )
 
 func main() {
@@ -23,16 +26,20 @@ func main() {
 	}
 
 	keyStore := keystore.NewKeyStore(
-		keystoreTempDir,
+		keystoreDir,
 		keystore.StandardScryptN,
 		keystore.StandardScryptP,
 	)
 
-	defer os.RemoveAll(keystoreTempDir)
+	defer os.RemoveAll(keystoreDir)
 
-	var etherbase string
-	addresses := make([]string, count)
-	keyfiles := make([]string, count)
+	type keyfile struct {
+		Address    string
+		Json       string
+		PrivateKey string
+	}
+
+	keyfiles := make([]*keyfile, count)
 
 	for i := 0; i < count; i++ {
 		account, err := keyStore.NewAccount("password")
@@ -41,23 +48,25 @@ func main() {
 			return
 		}
 
-		address := account.Address.Hex()
-
-		if i == 0 {
-			etherbase = address
-		}
-
-		addresses[i] = address
-
-		keyfile, err := ioutil.ReadFile(account.URL.Path)
+		keyfileJson, err := ioutil.ReadFile(account.URL.Path)
 		if err != nil {
 			fmt.Printf("could not read keyfile: [%v]\n", err)
 			return
 		}
 
-		keyfiles[i] = string(keyfile)
+		key, err := keystore.DecryptKey(keyfileJson, "password")
+		if err != nil {
+			fmt.Printf("could not decrypt keyfile: [%v]\n", err)
+			return
+		}
 
-		fmt.Printf("generated account %v\n", address)
+		keyfiles[i] = &keyfile{
+			Address:    account.Address.Hex(),
+			Json:       string(keyfileJson),
+			PrivateKey: hex.EncodeToString(crypto.FromECDSA(key.PrivateKey)),
+		}
+
+		fmt.Printf("generated account %v\n", keyfiles[i].Address)
 	}
 
 	fmt.Printf("accounts generated\n")
@@ -67,8 +76,9 @@ func main() {
 	err = generateConfig(
 		"geth-configmap.yml",
 		map[string]interface{}{
-			"etherbase": etherbase,
-			"addresses": addresses,
+			"etherbase": keyfiles[0].Address,
+			"extradata": strings.ToLower(keyfiles[0].Address[2:]),
+			"keyfiles":  keyfiles,
 		},
 	)
 
@@ -83,7 +93,7 @@ func main() {
 
 	err = generateConfig(
 		"accounts-configmap.yml",
-		map[string][]string{
+		map[string]interface{}{
 			"keyfiles": keyfiles,
 		},
 	)

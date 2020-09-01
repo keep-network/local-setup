@@ -1,10 +1,21 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: accounts-config
+  name: accounts-keyfiles
   namespace: local-setup
 data:
   {{- range $index, $keyfile := .keyfiles }}
-  account-{{$index}}-keyfile: |
-    {{$keyfile}}
+  keyfile-{{ $index }}: |
+    {{ $keyfile.Json }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: accounts-private-keys
+  namespace: local-setup
+data:
+  {{- range $index, $keyfile := .keyfiles }}
+  private-key-{{ $index }}.txt: |
+    {{ $keyfile.PrivateKey }}
   {{- end }}

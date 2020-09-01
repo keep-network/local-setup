@@ -29,12 +29,21 @@ spec:
         - name: geth-data
           persistentVolumeClaim:
             claimName: geth-data
+        - name: accounts-private-keys
+          configMap:
+            name: accounts-private-keys
         - name: geth-genesis
           configMap:
             name: geth-config
             items:
               - key: genesis.json
                 path: genesis.json
+        - name: geth-password
+          configMap:
+            name: geth-config
+            items:
+              - key: password.txt
+                path: password.txt
       containers:
         - name: geth
           image: ethereum/client-go:v1.9.9
@@ -44,10 +53,15 @@ spec:
             - containerPort: 30303
           volumeMounts:
             - name: geth-data
-              mountPath: /root/geth/data
+              mountPath: /root/.ethereum
+            - name: accounts-private-keys
+              mountPath: /root/private-keys
             - name: geth-genesis
-              mountPath: /root/geth/genesis/genesis.json
+              mountPath: /root/genesis/genesis.json
               subPath: genesis.json
+            - name: geth-password
+              mountPath: /root/password/password.txt
+              subPath: password.txt
           env:
             - name: ETHERBASE
               valueFrom:
@@ -57,13 +71,15 @@ spec:
           command: [ "sh" ]
           args:
             - "-c"
-            - "geth --datadir=/root/geth/data init /root/geth/genesis/genesis.json && \
+            - "geth init /root/genesis/genesis.json && \
+               for filename in /root/private-keys/*.txt; do geth account import --password /root/password/password.txt $filename; done && \
                geth --networkid 1101 --identity \"somerandomidentity\" \
                --ws --wsaddr \"0.0.0.0\" --wsport \"8546\" --wsorigins \"*\" \
                --rpc --rpcport \"8545\" --rpcaddr \"0.0.0.0\" --rpccorsdomain \"*\" \
                --rpcapi \"db,ssh,miner,admin,eth,net,web3,personal,debug\" \
                --wsapi \"db,ssh,miner,admin,eth,net,web3,personal\" \
-               --datadir=/root/geth/data --syncmode \"fast\" \
+               --syncmode \"fast\" \
                --mine --miner.threads=1 --miner.etherbase=$ETHERBASE \
+               --unlock $ETHERBASE --password /root/password/password.txt \
                --allow-insecure-unlock"
 
