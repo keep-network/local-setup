@@ -78,7 +78,7 @@ spec:
               path: keyfile-{{ .clientIndex }}
       initContainers:
       - name: initcontainer-provision-keep-client
-        image: gcr.io/keep-dev-fe24/initcontainer-provision-keep-client
+        image: gcr.io/keep-dev-fe24/initcontainer-provision-keep-client-local
         imagePullPolicy: Always
         env:
           - name: ETH_RPC_URL
