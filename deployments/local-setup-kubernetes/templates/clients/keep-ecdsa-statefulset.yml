@@ -37,7 +37,7 @@ spec:
         id: '{{ .clientIndex }}'
     spec:
       containers:
-        - name: keep-ecdsa
+        - name: keep-ecdsa-{{ .clientIndex }}
           image: gcr.io/keep-dev-fe24/keep-ecdsa
           imagePullPolicy: Always
           ports:
@@ -49,9 +49,9 @@ spec:
                   name: geth-config
                   key: password.txt
             - name: LOG_LEVEL
-              value: 'keep*=debug tss-lib=warning'
+              value: "keep*=debug tss-lib=warning"
             - name: IPFS_LOGGING_FMT
-              value: nocolor
+              value: "nocolor"
           volumeMounts:
             - name: keep-ecdsa-config
               mountPath: /mnt/keep-ecdsa/config
@@ -72,27 +72,27 @@ spec:
           imagePullPolicy: Always
           env:
             - name: ETH_RPC_URL
-              value: http://geth.local-setup.svc.cluster.local:8545
+              value: "http://geth.local-setup.svc.cluster.local:8545"
             - name: ETH_WS_URL
-              value: ws://geth.local-setup.svc.cluster.local:8546
+              value: "ws://geth.local-setup.svc.cluster.local:8546"
             - name: ETH_NETWORK_ID
-              value: 1101
+              value: "1101"
             - name: CONTRACT_OWNER_ETH_ACCOUNT_ADDRESS
-              value: {{ .owner.Address }}
+              value: "{{ .owner.Address }}"
             - name: CONTRACT_OWNER_ETH_ACCOUNT_PRIVATE_KEY
-              value: {{ .owner.PrivateKey }}
+              value: "{{ .owner.PrivateKey }}"
             - name: KEEP_TECDSA_ETH_KEYFILE_PATH
-              value: /mnt/keep-ecdsa/keyfile/keyfile-{{ .clientIndex }}
+              value: "/mnt/keep-ecdsa/keyfile/keyfile-{{ .clientIndex }}"
             - name: KEEP_TECDSA_PEERS
-              value: {{ if eq .clientIndex 0 }}''{{ else }}/dns4/keep-ecdsa-0.local-setup.svc.cluster.local/tcp/3919/ipfs/{{ .bootstrapID }}{{ end }}
+              value: {{ if eq .clientIndex 0 }}""{{ else }}"/dns4/keep-ecdsa-0.local-setup.svc.cluster.local/tcp/3919/ipfs/{{ .bootstrapID }}"{{ end }}
             - name: KEEP_TECDSA_ANNOUNCED_ADDRESSES
-              value: ''
+              value: ""
             - name: KEEP_TECDSA_PORT
-              value: '3919'
+              value: "3919"
             - name: KEEP_DATA_DIR
-              value: /mnt/keep-ecdsa/data
+              value: "/mnt/keep-ecdsa/data"
             - name: SANCTIONED_APPLICATIONS
-              value: '{{ .sanctionedApp }}'
+              value: "{{ .sanctionedApp }}"
           volumeMounts:
             - name: keep-ecdsa-config
               mountPath: /mnt/keep-ecdsa/config
