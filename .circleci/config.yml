@@ -51,12 +51,6 @@ jobs:
           name: Install Protobuf
           command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-protobuf.sh
       - run:
-          name: Install Truffle
-          command: |
-            cd ~
-            echo "Using node: $(node -v)"
-            ./local-setup/deployments/local-setup-environment/provisioning/install-truffle.sh
-      - run:
           name: Initialize and run Geth
           command: |
             cd ~
