@@ -57,7 +57,7 @@ spec:
               mountPath: /mnt/keep-ecdsa/config
             - name: keep-ecdsa-data
               mountPath: /mnt/keep-ecdsa/data
-            - name: eth-account-keyfile
+            - name: account-keyfile
               mountPath: /mnt/keep-ecdsa/keyfile
           command:
             [
@@ -84,9 +84,9 @@ spec:
             - name: KEEP_TECDSA_ETH_KEYFILE_PATH
               value: "/mnt/keep-ecdsa/keyfile/keyfile-{{ .clientIndex }}"
             - name: KEEP_TECDSA_PEERS
-              value: {{ if eq .clientIndex 0 }}""{{ else }}"/dns4/keep-ecdsa-0.local-setup.svc.cluster.local/tcp/3919/ipfs/{{ .bootstrapID }}"{{ end }}
+              value: "/dns4/keep-ecdsa-0.local-setup.svc.cluster.local/tcp/3919/ipfs/{{ .bootstrapID }}"
             - name: KEEP_TECDSA_ANNOUNCED_ADDRESSES
-              value: ""
+              value: "/dns4/keep-ecdsa-{{ .clientIndex }}.local-setup.svc.cluster.local/tcp/3919"
             - name: KEEP_TECDSA_PORT
               value: "3919"
             - name: KEEP_DATA_DIR
