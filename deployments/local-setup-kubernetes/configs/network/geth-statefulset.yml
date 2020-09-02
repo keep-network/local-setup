@@ -71,11 +71,11 @@ spec:
           command: [ "sh" ]
           args:
             - "-c"
-            - "geth init /root/genesis/genesis.json && \
-               for filename in /root/private-keys/*.txt; do geth account import --password /root/password/password.txt $filename; done && \
+            - "if [ ! -d /root/.ethereum/geth ]; then geth init /root/genesis/genesis.json && for filename in /root/private-keys/*.txt; do geth account import --password /root/password/password.txt $filename; done; fi && \
                geth --networkid 1101 --identity \"somerandomidentity\" \
                --ws --wsaddr \"0.0.0.0\" --wsport \"8546\" --wsorigins \"*\" \
                --rpc --rpcport \"8545\" --rpcaddr \"0.0.0.0\" --rpccorsdomain \"*\" \
+               --rpcvhosts=* \
                --rpcapi \"db,ssh,miner,admin,eth,net,web3,personal,debug\" \
                --wsapi \"db,ssh,miner,admin,eth,net,web3,personal\" \
                --syncmode \"fast\" \
