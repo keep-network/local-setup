@@ -49,7 +49,7 @@ spec:
                   name: geth-config
                   key: password.txt
             - name: LOG_LEVEL
-              value: "keep*=debug tss-lib=warning"
+              value: "debug"
             - name: IPFS_LOGGING_FMT
               value: "nocolor"
           volumeMounts:
