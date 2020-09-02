@@ -1,6 +1,6 @@
 FROM node:14.3.0-alpine3.11
 
-ENV TBTCJS_VERSION 0.18.0-rc.1
+ENV TBTCJS_VERSION 0.18.0-rc.2
 
 RUN apk add --no-cache \
     jq \
