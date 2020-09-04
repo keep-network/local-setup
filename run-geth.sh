@@ -11,6 +11,8 @@ GETH_ETHEREUM_ACCOUNT="0x3d373d872b7ba29d92ed47caa8605b4dd6ec84ef"
 
 printf "${LOG_START}Starting geth...${LOG_END}"
 
+# --unlock unlocks the signer account for proof of authority block signing,
+# otherwise we can't run the network <_<
 geth --port 0 --networkid 1101 --identity "somerandomidentity" \
     --ws --wsaddr "127.0.0.1" --wsport "8546" --wsorigins "*" \
     --rpc --rpcport "8545" --rpcaddr "127.0.0.1" --rpccorsdomain "*" \
@@ -18,7 +20,5 @@ geth --port 0 --networkid 1101 --identity "somerandomidentity" \
     --wsapi "db,ssh,miner,admin,eth,net,web3,personal,debug" \
     --datadir=$GETH_DATA_DIR --syncmode "fast" \
     --miner.etherbase=$GETH_ETHEREUM_ACCOUNT --mine --miner.threads=1 \
-    # Unlock the signer account for proof of authority block signing, otherwise
-    # we can't run the network <_<
     --unlock $GETH_ETHEREUM_ACCOUNT --password <(echo "password") \
     --allow-insecure-unlock
