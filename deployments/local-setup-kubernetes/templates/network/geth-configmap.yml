@@ -11,7 +11,7 @@ data:
       "config": {
         "chainId": 1101,
         "clique": {
-          "period": 3
+          "period": 15
         },
         "homesteadBlock": 0,
         "byzantiumBlock": 0,
