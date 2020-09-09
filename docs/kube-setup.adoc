@@ -1,0 +1,120 @@
+= Setup on Kubernetes cluster
+
+== Prerequisites
+
+You need to have:
+
+- A working and configured Kubernetes cluster
+- https://kubernetes.io/docs/tasks/tools/install-kubectl/[`kubectl` tool installed on your local machine]
+
+This document assumes one use the `keep-dev` cluster provided by the
+Google Kubernetes Engine.
+
+== Introduction
+
+To run the `local-setup` on a k8s cluster, several steps need to be performed:
+
+1. Ethereum accounts have to be generated and pre-funded for the local
+Ethereum network.
+2. Local Ethereum and Bitcoin nodes should be deployed using the non-generated
+predefined configs.
+3. All `keep-core`, `keep-ecds` and `tbtc` smart contracts should be deployed
+on the local Ethereum network.
+4. `keep-core` and `keep-ecdsa` clients configs should be generated in order
+to be used for deployment.
+5. Optionally, the e2e test cron should be deployed on the cluster.
+
+== Config generator and directory structure
+
+All k8s configs mentioned in the introduction can be created manually but this
+can be cumbersome if a significant number of `keep-*` clients have to be deployed,
+for example, for the purpose of large-scale network tests. The easier way is to
+use a dedicated k8s config generator which lives in
+`infrastructure/kube/keep-dev/generator` directory.
+
+The `generator` directory consists of two subdirectories:
+
+- `templates`: this subdirectory contains all k8s config templates used by the
+generator to produce final configs
+- `configs`: this subdirectory is the target place for all generated configs.
+Several non-generated constant configs also live here.
+
+Both subdirectories are also divided into two next-level subdirectories:
+
+- `clients`: where all `keep-core` and `keep-ecdsa` related configs live
+- `network`: which contains Ethereum and Bitcoin networks related configs
+
+== Installing the system
+
+First, go to the generator directory:
+```
+cd ./infrastructure/kube/keep-dev/generator
+```
+
+Then, choose an arbitrary number of accounts which have to be generated and invoke:
+```
+ go run generate.go network <number-of-accounts>
+```
+
+A `keystore` directory will be generated. Also, two k8s configs named
+`accounts-configmap.yaml` and `geth-configmap.yaml` will land in the
+`configs/network` subdirectory.
+
+Once done, make sure your Google Container Registry contains `bitcoind-local`
+and `electrumx-local` images. If not, you have to build them using Dockerfiles
+from `bitcoin` directory and push them to the registry.
+
+Then, you can deploy all networks components on the cluster by doing:
+```
+kubectl apply -f ./infrastructure/kube/keep-dev/generator/configs/networks
+```
+
+Three workloads named `bitcoind`, `electrumx` and `geth` should be created
+along with their services.
+
+As a next step, all smart contracts should be deployed. Note the address
+of the `TBTCSystem` contract as it will be used as a sanctioned application
+in `keep-ecdsa` clients configs.
+
+Once contracts are deployed, make sure `keep-core` and `keep-ecdsa` images
+are present in the Google Container Registry. If not, you have to build
+and push them yourself using Dockerfiles placed in those repositories.
+
+Also, you have to prepare images for the init containers using Dockerfiles placed in:
+
+- `keep-core/infrastructure/kube/templates/keep-client/initcontainer/provision-keep-client` for `keep-core`
+- `keep-ecdsa/infrastructure/kube/templates/keep-ecdsa/initcontainer/provision-keep-ecdsa` for `keep-ecdsa`
+
+To build those images, you have to copy all needed contract JSONs generated
+during the deployment first, because they contain contract addresses and
+the current ABI. Once images are ready, tag them correctly using image
+names listed in `templates/clients/keep-*-statefulset.yaml` files and push to
+the GCR.
+
+Apart from that, you should also invoke the `relay-genesis/update-mock-relay.js`
+script to set the `MockRelay` contract to the right state.
+
+You can now generate client configs by doing:
+```
+go run generate.go clients <sanctioned-app-address>
+```
+All configs will be placed in the `configs/clients` subdirectory. One `keep-core`
+and one `keep-ecdsa` config will be generated for each account generated during the
+first step. You can then deploy those clients on the cluster by doing:
+```
+kubectl apply -f ./infrastructure/kube/keep-dev/generator/configs/clients
+```
+
+Once clients are ready, you can interact with your system using the e2e test
+cron job. In order to deploy it to the cluster, you have to prepare a Docker image
+using the Dockerfile from `e2e` directory. Keep in mind you have to alter
+the Dockerfile to replace the default `keep-core`, `keep-ecdsa` and `tbtc`
+packages fetched from npm with their local versions built during contract
+deployment process. This way the e2e test cron will interact with you local
+contracts instead of the ones defined in the original npm packages. Once
+the image is ready, you should create the `e2e-test-secret.yaml` using the sample
+from `infrastructure/kube/keep-dev/e2e-test` and deploy the cron using:
+```
+kubectl apply -f ./infrastructure/kube/keep-dev/e2e-test
+```
+

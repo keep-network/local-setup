@@ -33,3 +33,8 @@ Vagrant, please follow the <<./docs/auto-setup.adoc#title, automatic setup guide
 To install everything on your local machine by hand,
 please follow the <<./docs/manual-setup.adoc#title, manual setup guide>>.
 
+=== Installation on Kubernetes cluster
+
+To deploy everything on your Kubernetes cluster, follow the
+<<./docs/kube-setup.adoc#title, setup on Kubernetes guide>>.
+
