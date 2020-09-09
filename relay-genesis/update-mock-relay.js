@@ -15,8 +15,8 @@ module.exports = async function() {
 
         const mockRelay = await MockRelay.deployed()
 
-        await mockRelay.setCurrentEpochDifficulty(difficulty)
-        await mockRelay.setPrevEpochDifficulty(difficulty)
+        await mockRelay.setCurrentEpochDifficulty(Math.min(difficulty, 1))
+        await mockRelay.setPrevEpochDifficulty(Math.min(difficulty, 1))
     } catch (e) {
         console.log(e)
     }
