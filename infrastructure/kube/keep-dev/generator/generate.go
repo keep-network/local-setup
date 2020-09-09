@@ -97,8 +97,8 @@ func generateNetworkConfig(count int) error {
 	fmt.Printf("generating geth configmap...\n")
 
 	err := generateConfig(
-		"network/geth-configmap.yml",
-		"network/geth-configmap.yml",
+		"network/geth-configmap.yaml",
+		"network/geth-configmap.yaml",
 		map[string]interface{}{
 			"etherbase": keyfiles[0].Address,
 			"extradata": strings.ToLower(keyfiles[0].Address[2:]),
@@ -114,8 +114,8 @@ func generateNetworkConfig(count int) error {
 	fmt.Printf("generating accounts configmap...\n")
 
 	err = generateConfig(
-		"network/accounts-configmap.yml",
-		"network/accounts-configmap.yml",
+		"network/accounts-configmap.yaml",
+		"network/accounts-configmap.yaml",
 		map[string]interface{}{
 			"keyfiles": keyfiles,
 		},
@@ -157,8 +157,8 @@ func generateClientsConfig(sanctionedApp string) error {
 
 	for i := range keyfiles {
 		err = generateConfig(
-			"clients/keep-client-service.yml",
-			fmt.Sprintf("clients/keep-client-%v-service.yml", i),
+			"clients/keep-client-service.yaml",
+			fmt.Sprintf("clients/keep-client-%v-service.yaml", i),
 			map[string]interface{}{
 				"clientIndex": i,
 			},
@@ -168,8 +168,8 @@ func generateClientsConfig(sanctionedApp string) error {
 		}
 
 		err = generateConfig(
-			"clients/keep-client-statefulset.yml",
-			fmt.Sprintf("clients/keep-client-%v-statefulset.yml", i),
+			"clients/keep-client-statefulset.yaml",
+			fmt.Sprintf("clients/keep-client-%v-statefulset.yaml", i),
 			map[string]interface{}{
 				"clientIndex": i,
 				"bootstrapID": bootstrapID,
@@ -181,8 +181,8 @@ func generateClientsConfig(sanctionedApp string) error {
 		}
 
 		err = generateConfig(
-			"clients/keep-ecdsa-service.yml",
-			fmt.Sprintf("clients/keep-ecdsa-%v-service.yml", i),
+			"clients/keep-ecdsa-service.yaml",
+			fmt.Sprintf("clients/keep-ecdsa-%v-service.yaml", i),
 			map[string]interface{}{
 				"clientIndex": i,
 			},
@@ -192,8 +192,8 @@ func generateClientsConfig(sanctionedApp string) error {
 		}
 
 		err = generateConfig(
-			"clients/keep-ecdsa-statefulset.yml",
-			fmt.Sprintf("clients/keep-ecdsa-%v-statefulset.yml", i),
+			"clients/keep-ecdsa-statefulset.yaml",
+			fmt.Sprintf("clients/keep-ecdsa-%v-statefulset.yaml", i),
 			map[string]interface{}{
 				"clientIndex":   i,
 				"bootstrapID":   bootstrapID,
