@@ -16,8 +16,8 @@ printf "${LOG_START}Starting geth...${LOG_END}"
 geth --port 0 --networkid 1101 --identity "somerandomidentity" \
     --ws --wsaddr "127.0.0.1" --wsport "8546" --wsorigins "*" \
     --rpc --rpcport "8545" --rpcaddr "127.0.0.1" --rpccorsdomain "*" \
-    --rpcapi "db,ssh,miner,admin,eth,net,web3,personal,debug" \
-    --wsapi "db,ssh,miner,admin,eth,net,web3,personal,debug" \
+    --rpcapi "miner,admin,eth,net,web3,personal,debug" \
+    --wsapi "miner,admin,eth,net,web3,personal,debug" \
     --datadir=$GETH_DATA_DIR --syncmode "fast" \
     --miner.etherbase=$GETH_ETHEREUM_ACCOUNT --mine --miner.threads=1 \
     --unlock $GETH_ETHEREUM_ACCOUNT --password <(echo "password") \
