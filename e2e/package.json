@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@keep-network/tbtc.js": "file:../tbtc.js",
+    "@keep-network/keep-core": "1.1.2",
     "@0x/subproviders": "6.0.8",
     "web3": "1.2.8",
     "web3-provider-engine": "15.0.12",
