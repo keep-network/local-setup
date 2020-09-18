@@ -70,7 +70,15 @@ module.exports = async function() {
     }
 
     console.log(clc.yellow(`*** Beacon Operators ***`))
-    console.table(beaconSummary)
+    if (process.env.OUTPUT_MODE === "text") {
+        beaconSummary.forEach((s) => 
+            console.log(
+                `${s.address}    ${s.eligibleStakeKeep}    ${s.operatorBalanceEth}`
+            )
+        )
+    } else {
+        console.table(beaconSummary)
+    }
     console.log(``)
 
     const ecdsaOperators = ecdsaNodes.connected_peers.map((peer) => peer.ethereum_address)
@@ -110,7 +118,17 @@ module.exports = async function() {
     }
 
     console.log(clc.yellow(`*** ECDSA Operators ***`))
-    console.table(ecdsaSummary)
+    if (process.env.OUTPUT_MODE === "text") {
+        ecdsaSummary.forEach((s) =>
+          console.log(
+              `${s.address}    ${s.eligibleStakeKeep}    ${s.operatorBalanceEth}    ` +
+              `${s.unbondedValueEth}    ${s.isRegisteredInTbtcPool}    ${s.isUpToDateInTbtcPool}`
+          )
+        )
+    } else {
+        console.table(ecdsaSummary)
+    }
+    console.log(``)
 
     process.exit(0)
   } catch (error) {
