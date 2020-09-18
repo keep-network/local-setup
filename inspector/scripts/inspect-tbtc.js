@@ -3,11 +3,12 @@ const DepositFactoryJson = require("@keep-network/tbtc/artifacts/DepositFactory.
 const BondedECDSAKeepJson = require("@keep-network/keep-ecdsa/artifacts/BondedECDSAKeep.json")
 
 const truffleContract = require("@truffle/contract")
-
-const deploymentBlock = 10867764
+const contractHelper = require("./lib/contract-helper")
 
 module.exports = async function() {
     try {
+        const factoryDeploymentBlock = await contractHelper.getDeploymentBlockNumber(DepositFactoryJson, web3)
+
         const DepositFactory = truffleContract(DepositFactoryJson)
         DepositFactory.setProvider(web3.currentProvider)
         const Deposit = truffleContract(DepositJson)
@@ -18,7 +19,7 @@ module.exports = async function() {
         const depositCreatedEvents = await factory.getPastEvents(
             "DepositCloneCreated",
             {
-                fromBlock: deploymentBlock,
+                fromBlock: factoryDeploymentBlock,
                 toBlock: "latest",
             }
         )
@@ -122,7 +123,7 @@ async function provideRedemptionSignature(deposit, keepAddress) {
     const signatureSubmittedEvents = await keep.getPastEvents(
         "SignatureSubmitted",
         {
-            fromBlock: deploymentBlock,
+            fromBlock: factoryDeploymentBlock,
             toBlock: "latest",
         }
     )

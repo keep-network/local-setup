@@ -1,10 +1,12 @@
 const truffleContract = require("@truffle/contract")
 const KeepRandomBeaconOperatorJson = require("@keep-network/keep-core/artifacts/KeepRandomBeaconOperator.json")
 
-module.exports = async function() {
-    const deploymentBlock = 10834116
+const contractHelper = require("./lib/contract-helper")
 
+module.exports = async function() {
     try {
+        const deploymentBlock = await contractHelper.getDeploymentBlockNumber(KeepRandomBeaconOperatorJson, web3)
+        
         const KeepRandomBeaconOperator = truffleContract(KeepRandomBeaconOperatorJson)
         KeepRandomBeaconOperator.setProvider(web3.currentProvider)
 
