@@ -6,6 +6,7 @@ const TokenStakingJson = require("@keep-network/keep-core/artifacts/TokenStaking
 const KeepBondingJson = require("@keep-network/keep-ecdsa/artifacts/KeepBonding.json")
 const KeepRandomBeaconOperatorJson = require("@keep-network/keep-core/artifacts/KeepRandomBeaconOperator.json")
 const BondedECDSAKeepFactoryJson = require("@keep-network/keep-ecdsa/artifacts/BondedECDSAKeepFactory.json")
+const TBTCSystemJson = require("@keep-network/tbtc/artifacts/TBTCSystem.json")
 
 const tokenDecimalMultiplier = web3.utils.toBN(10).pow(web3.utils.toBN(18))
 
@@ -22,18 +23,21 @@ module.exports = async function() {
     const KeepBonding = truffleContract(KeepBondingJson)
     const KeepRandomBeaconOperator = truffleContract(KeepRandomBeaconOperatorJson)
     const BondedECDSAKeepFactory = truffleContract(BondedECDSAKeepFactoryJson)
+    const TBTCSystem = truffleContract(TBTCSystemJson)
 
     KeepToken.setProvider(web3.currentProvider)
     TokenStaking.setProvider(web3.currentProvider)
     KeepBonding.setProvider(web3.currentProvider)
     KeepRandomBeaconOperator.setProvider(web3.currentProvider)
     BondedECDSAKeepFactory.setProvider(web3.currentProvider)
+    TBTCSystem.setProvider(web3.currentProvider)
 
     const keepToken = await KeepToken.deployed()
     const tokenStaking = await TokenStaking.deployed()
     const keepRandomBeaconOperator = await KeepRandomBeaconOperator.deployed()
     const bondedEcdsaKeepFactory = await BondedECDSAKeepFactory.deployed()
     const keepBonding = await KeepBonding.deployed()
+    const tbtcSystem = await TBTCSystem.deployed()
 
     console.log(clc.yellow(`*** Contract Addresses ***`))
     console.log(`KeepToken:                ${keepToken.address}`)
@@ -41,6 +45,7 @@ module.exports = async function() {
     console.log(`KeepRandomBeaconOperator: ${keepRandomBeaconOperator.address}`)
     console.log(`BondedECDSAKeepFactory:   ${bondedEcdsaKeepFactory.address}`)
     console.log(`KeepBonding:              ${keepBonding.address}`)
+    console.log(`TBTCSystem:               ${tbtcSystem.address}`)
     console.log(``)
 
     const beaconOperators = beaconNodes.connected_peers.map((peer) => peer.ethereum_address)
@@ -48,7 +53,6 @@ module.exports = async function() {
     console.log(``)
 
     const beaconSummary = []
-
     for (let i = 0; i < beaconOperators.length; i++) {
         const operator = beaconOperators[i]
 
@@ -86,11 +90,22 @@ module.exports = async function() {
         const unbondedValue = await keepBonding.unbondedValue(operator)
         const unbondedValueEth = web3.utils.fromWei(unbondedValue)
 
+        const isRegisteredInTbtcPool = await bondedEcdsaKeepFactory.isOperatorRegistered(operator, tbtcSystem.address)
+        
+        let isUpToDateInTbtcPool
+        if (isRegisteredInTbtcPool) {
+            isUpToDateInTbtcPool = await bondedEcdsaKeepFactory.isOperatorUpToDate(operator, tbtcSystem.address)
+        } else {
+            isUpToDateInTbtcPool = "N/A"
+        }
+
         ecdsaSummary.push({
             address: operator,
             eligibleStakeKeep: eligibleStakeKeep.toString(),
             operatorBalanceEth: operatorBalanceEth.toString(),
-            unbondedValueEth: unbondedValueEth
+            unbondedValueEth: unbondedValueEth.toString(),
+            isRegisteredInTbtcPool: isRegisteredInTbtcPool,
+            isUpToDateInTbtcPool: isUpToDateInTbtcPool
         })
     }
 
