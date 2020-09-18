@@ -42,15 +42,6 @@ module.exports = async function () {
             console.log(``)
         }
 
-        // all operators who are members of keeps
-        console.log(`all operators = ${new Array(...allOperators).join(', ')}`)
-        console.log(``)
-
-        // if the operator is a member of at least one keep which generated
-        // a public key, it's here
-        console.log(`good operators = ${new Array(...goodOperators).join(', ')}`)
-        console.log(``)
-
         // if the operator is a member of at least one keep and that operator 
         // is NOT a member of at least one keep which successfully generated
         // a public key, this operator is here        
