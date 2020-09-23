@@ -1,6 +1,8 @@
 const truffleContract = require("@truffle/contract")
 const clc = require("cli-color")
 
+const contractHelper = require("./lib/contract-helper")
+
 const KeepTokenJson = require("@keep-network/keep-core/artifacts/KeepToken.json")
 const TokenStakingJson = require("@keep-network/keep-core/artifacts/TokenStaking.json")
 const KeepBondingJson = require("@keep-network/keep-ecdsa/artifacts/KeepBonding.json")
@@ -40,6 +42,11 @@ module.exports = async function () {
     const bondedEcdsaKeepFactory = await BondedECDSAKeepFactory.deployed()
     const keepBonding = await KeepBonding.deployed()
     const tbtcSystem = await TBTCSystem.deployed()
+
+    const deploymentBlock = await contractHelper.getDeploymentBlockNumber(
+      KeepBondingJson,
+      web3,
+    )
 
     console.log(clc.yellow(`*** Contract Addresses ***`))
     console.log(`KeepToken:                ${keepToken.address}`)
@@ -102,9 +109,36 @@ module.exports = async function () {
     )
     console.log(``)
 
+    const bondCreatedEvents = await keepBonding.getPastEvents("BondCreated", {
+      fromBlock: deploymentBlock,
+      toBlock: "latest",
+    })
+
+    const totalOperatorBondsAmount = {}
+    const totalBondedAmount = web3.utils.toBN(0)
+
+    for (let i = 0; i < bondCreatedEvents.length; i++) {
+      const event = bondCreatedEvents[i]
+
+      const operator = event.args.operator.toLowerCase()
+      const bondAmount = web3.utils.toBN(event.args.amount)
+
+      totalBondedAmount.iadd(bondAmount)
+
+      if (totalOperatorBondsAmount[operator] === undefined) {
+        totalOperatorBondsAmount[operator] = bondAmount
+      } else {
+        totalOperatorBondsAmount[operator].iadd(bondAmount)
+      }
+    }
+
+    console.log(
+      `Total bonded ETH: ${web3.utils.fromWei(totalBondedAmount).toString()}`,
+    )
+
     const ecdsaSummary = []
     for (let i = 0; i < ecdsaOperators.length; i++) {
-      const operator = ecdsaOperators[i]
+      const operator = ecdsaOperators[i].toLowerCase()
 
       const eligibleStake = await tokenStaking.eligibleStake(
         operator,
@@ -133,17 +167,23 @@ module.exports = async function () {
         isUpToDateInTbtcPool = "N/A"
       }
 
+      const bondsAmountEth = web3.utils.fromWei(
+        web3.utils.toBN(totalOperatorBondsAmount[operator] || 0),
+      )
+
       ecdsaSummary.push({
         address: operator,
         eligibleStakeKeep: eligibleStakeKeep.toString(),
         operatorBalanceEth: operatorBalanceEth.toString(),
         unbondedValueEth: unbondedValueEth.toString(),
+        bondsAmountEth: bondsAmountEth.toString(),
         isRegisteredInTbtcPool: isRegisteredInTbtcPool,
         isUpToDateInTbtcPool: isUpToDateInTbtcPool,
       })
     }
 
     console.log(clc.yellow(`*** ECDSA Operators ***`))
+
     if (process.env.OUTPUT_MODE === "text") {
       ecdsaSummary.forEach((s) =>
         console.log(
