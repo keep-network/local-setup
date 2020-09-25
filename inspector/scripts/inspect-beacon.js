@@ -3,6 +3,9 @@ const KeepRandomBeaconOperatorJson = require("@keep-network/keep-core/artifacts/
 
 const contractHelper = require("./lib/contract-helper")
 
+const abiDecoder = require('abi-decoder');
+abiDecoder.addABI(KeepRandomBeaconOperatorJson.abi)
+
 module.exports = async function () {
   try {
     const deploymentBlock = await contractHelper.getDeploymentBlockNumber(
@@ -74,12 +77,20 @@ module.exports = async function () {
 
       const { memberIndex, misbehaved } = dkgSubmittedEvent.returnValues
 
+      const submitDKGTransactionHash = dkgSubmittedEvent.transactionHash
+      const submitDKGTransaction = await web3.eth.getTransaction(submitDKGTransactionHash)
+      const submitDKGInput = abiDecoder.decodeMethod(submitDKGTransaction.input)
+      const signatures = submitDKGInput.params.find(p => p.name === "signatures").value
+      const signatureLength = 65
+      const signaturesCount = Buffer.from(signatures.slice(2), "hex").length / signatureLength
+
       console.log(`Group ${groupPubKey}:`)
       console.log(` - has index ${i}`)
       console.log(` - has ${groupMembers.length} members`)
       console.log(` - its DKG result was submitted by member ${memberIndex}`)
       console.log(` - misbehaved members bytes: ${misbehaved}`)
       console.log(` - has ${uniqueMembers.size} unique members`)
+      console.log(` - has ${signaturesCount} supporting signatures`)
       console.log(``)
     }
 
