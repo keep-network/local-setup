@@ -1,4 +1,5 @@
 const DepositJson = require("@keep-network/tbtc/artifacts/Deposit.json")
+const TbtcSystemJson = require("@keep-network/tbtc/artifacts/TBTCSystem.json")
 const DepositFactoryJson = require("@keep-network/tbtc/artifacts/DepositFactory.json")
 
 const truffleContract = require("@truffle/contract")
@@ -11,11 +12,14 @@ module.exports = async function () {
       web3,
     )
 
+    const TbtcSystem = truffleContract(TbtcSystemJson)
+    TbtcSystem.setProvider(web3.currentProvider)
     const DepositFactory = truffleContract(DepositFactoryJson)
     DepositFactory.setProvider(web3.currentProvider)
     const Deposit = truffleContract(DepositJson)
     Deposit.setProvider(web3.currentProvider)
 
+    const tbtcSystem = await TbtcSystem.deployed()
     const factory = await DepositFactory.deployed()
 
     const depositCreatedEvents = await factory.getPastEvents(
@@ -82,12 +86,25 @@ module.exports = async function () {
       const lotSizeSatoshis = await deposit.lotSizeSatoshis()
       const lotSizeTbtc = await deposit.lotSizeTbtc()
 
-      console.log(`deposit address: ${depositAddresses[i]}`)
-      console.log(`deposit index:   ${i}`)
-      console.log(`deposit state:   ${stateString}`)
-      console.log(`keep address:    ${keepAddress}`)
-      console.log(`lot size [sat]:  ${lotSizeSatoshis}`)
-      console.log(`lot size [tbtc]: ${lotSizeTbtc}`)
+      const pubKeyRegisteredEvents = await tbtcSystem.getPastEvents(
+        "RegisteredPubkey",        
+        {
+          filter: {
+            _depositContractAddress: deposit.address
+          },
+          fromBlock: factoryDeploymentBlock,
+          toBlock: "latest"
+        }
+      )
+      const pubKeyRegistered = pubKeyRegisteredEvents.length > 0
+
+      console.log(`deposit address:   ${depositAddresses[i]}`)
+      console.log(`deposit index:     ${i}`)
+      console.log(`deposit state:     ${stateString}`)
+      console.log(`keep address:      ${keepAddress}`)
+      console.log(`pubkey registered: ${pubKeyRegistered}`)
+      console.log(`lot size [sat]:    ${lotSizeSatoshis}`)
+      console.log(`lot size [tbtc]:   ${lotSizeTbtc}`)
 
       console.log(``)
     }
