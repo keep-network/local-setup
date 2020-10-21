@@ -33,29 +33,34 @@ async function run() {
 
     for (let groupIndex = 0; groupIndex < numberOfGroups; groupIndex++) {
         const groupPubKey = await operator.methods.getGroupPublicKey(groupIndex).call()
-        const groupMembers = await operator.methods.getGroupMembers(groupPubKey).call()
+        const isGroupStale = await operator.methods.isStaleGroup(groupPubKey).call()
 
-        const uniqueMembersInGroup = new Set()
-        groupMembers.forEach((member) => {
-            uniqueMembersInGroup.add(member)
-        })
+        console.log(`is group ${groupPubKey} stale? ${isGroupStale}`)
+        if (isGroupStale) {
+            const groupMembers = await operator.methods.getGroupMembers(groupPubKey).call()
 
-        console.log(`withdrawing rewards for group public key: ${groupPubKey}..`)
-        uniqueMembersInGroup.forEach((memberAddress) => {
-            console.log(`withdrawing rewards for member: ${memberAddress}..`)
-            try {
-                // await operator.methods.withdrawGroupMemberRewards(memberAddress, groupIndex).call()
-            } catch(err) {
-                console.log(`error occured while withdrawing rewards for ${memberAddress}..`, err)
-            }
-        })
-        console.log(`\n`)
+            const uniqueMembersInGroup = new Set()
+            groupMembers.forEach((member) => {
+                uniqueMembersInGroup.add(member)
+            })
+
+            console.log(`withdrawing rewards for group public key: ${groupPubKey}..`)
+            uniqueMembersInGroup.forEach((memberAddress) => {
+                console.log(`withdrawing rewards for member: ${memberAddress}..`)
+                try {
+                    // await operator.methods.withdrawGroupMemberRewards(memberAddress, groupIndex).call()
+                } catch(err) {
+                    console.log(`error occured while withdrawing rewards for ${memberAddress}..`, err)
+                }
+            })
+            console.log(`\n`)
+        }
     }
 }
 
 run()
     .then(() => {
-        console.log("Withdrawal of rewards completed successfully")
+        console.log("Script executed successfully")
 
         process.exit(0)
     })
