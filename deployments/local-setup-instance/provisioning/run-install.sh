@@ -38,7 +38,7 @@ done
 
 echo "Running install script..."
 
-./install.sh $1
+./install.sh
 
 echo "Install script executed successfully!"
 
