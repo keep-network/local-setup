@@ -3,9 +3,6 @@ version: 2.1
 workflows:
   version: 2
   nightly-e2e-tests:
-    branches:
-      only:
-        - do-not-merge-e2e-testing-purposes
     jobs:
       - run-e2e-tests
 
