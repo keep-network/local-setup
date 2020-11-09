@@ -15,7 +15,7 @@ set -e
 ./install-tbtc.sh
 
 # Do not install keep network dApps for e2e nightly test
-if [[ $1 != e2e-test ]]
+if [[ $E2E_TEST != true ]]
 then
     # Install Keep Dashboard.
     ./install-keep-dashboard.sh
