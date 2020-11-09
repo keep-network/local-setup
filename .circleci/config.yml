@@ -61,7 +61,7 @@ jobs:
           command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
       - run:
           name: Run install script
-          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-e2e-test-install.sh
+          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh e2e-test
       - run:
           name: Run Core and ECDSA clients
           command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
