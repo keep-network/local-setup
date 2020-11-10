@@ -18,7 +18,8 @@ jobs:
       - checkout
       - run:
           name: Install common tools
-          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-commons.sh
+          working_directory: ~/local-setup/deployments/local-setup-environment/provisioning
+          command: ./install-commons.sh
       - run:
           name: Install Node.js and NPM
           command: |
@@ -29,35 +30,43 @@ jobs:
             echo "Using node: $(node -v)"
       - run:
           name: Install Go
+          working_directory: ~/local-setup/deployments/local-setup-environment/provisioning
           command: |
-            cd ~
             sudo rm -rf /usr/local/go
-            ./local-setup/deployments/local-setup-environment/provisioning/install-go.sh
+            ./install-go.sh
             echo "Using Go: $(go version)"
       - run:
           name: Install Geth
-          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-geth.sh
+          working_directory: ~/local-setup/deployments/local-setup-environment/provisioning
+          command: ./install-geth.sh
       - run:
           name: Install Solidity
-          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-solidity.sh
+          working_directory: ~/local-setup/deployments/local-setup-environment/provisioning
+          command: ./install-solidity.sh
       - run:
           name: Install Protobuf
-          command: cd ~ && ./local-setup/deployments/local-setup-environment/provisioning/install-protobuf.sh
+          working_directory: ~/local-setup/deployments/local-setup-environment/provisioning
+          command: ./install-protobuf.sh
       - run:
           name: Initialize and run Geth
+          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
           command: |
-            cd ~
-            ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
-            ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
+            ./initialize-geth.sh
+            ./run-geth.sh
       - run:
           name: Run Bitcoin Core and ElectrumX
-          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
+          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
+          command: ./run-bitcoin.sh
       - run:
           name: Run install script
-          command: cd ~ && export E2E_TEST=true && ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
+          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
+          command: ./run-install.sh
+          environment:
+            E2E_TEST: true
       - run:
           name: Run Core and ECDSA clients
-          command: cd ~ && ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
+          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
+          command: ./run-clients.sh
       - run:
           name: Run E2E test scripts
           no_output_timeout: 30m
