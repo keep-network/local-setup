@@ -57,25 +57,20 @@ jobs:
       - run:
           name: Initialize and run Geth
           command: |
-            cd ~
-            ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
-            ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
+            ./deployments/local-setup-instance/provisioning/initialize-geth.sh
+            ./deployments/local-setup-instance/provisioning/run-geth.sh
       - run:
           name: Run Bitcoin Core and ElectrumX
-          command: |
-            cd ~
-            ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
+          command: ./deployments/local-setup-instance/provisioning/run-bitcoin.sh
       - run:
           name: Run install script
           command: |
-            cd ~
             export E2E_TEST=true
-            ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
+            ./deployments/local-setup-instance/provisioning/run-install.sh
       - run:
           name: Run Core and ECDSA clients
           command: |
-            cd ~
-            ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
+            ./deployments/local-setup-instance/provisioning/run-clients.sh
       - run:
           name: Run E2E test scripts
           no_output_timeout: 30m
