@@ -3,13 +3,13 @@ version: 2.1
 workflows:
   version: 2
   nightly-e2e-tests:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
+    # triggers:
+    #   - schedule:
+    #       cron: "0 0 * * *"
+    #       filters:
+    #         branches:
+    #           only:
+    #             - master
     jobs:
       - run-e2e-tests
 
@@ -83,4 +83,3 @@ jobs:
             nvm use 14.3.0
             echo "Using node: $(node -v)"
             ./run-e2e-test.sh
-
