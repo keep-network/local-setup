@@ -14,8 +14,6 @@ jobs:
     resource_class: large
     working_directory: ~/local-setup
     shell: /bin/bash -eo pipefail -l
-    environment:
-      E2E_TEST: true
     steps:
       - checkout
       - run:
@@ -64,6 +62,7 @@ jobs:
           name: Run install script
           command: |
             cd ~
+            export E2E_TEST=true
             ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
       - run:
           name: Run Core and ECDSA clients
