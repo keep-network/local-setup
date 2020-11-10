@@ -55,12 +55,12 @@ jobs:
           working_directory: ~/local-setup/deployments/local-setup-environment/provisioning
           command: ./install-protobuf.sh
       - run:
-          name: Initialize and run Geth
-          command: |
-            pwd
-            ls
-            ./deployments/local-setup-instance/provisioning/initialize-geth.sh
-            ./deployments/local-setup-instance/provisioning/run-geth.sh
+          name: Initialize Geth
+          command: ./initialize-geth.sh
+      - run:
+          name: Run Geth
+          command: ./run-geth.sh
+          background: true
       - run:
           name: Run Bitcoin Core and ElectrumX
           command: ./deployments/local-setup-instance/provisioning/run-bitcoin.sh
