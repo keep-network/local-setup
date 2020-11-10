@@ -49,24 +49,27 @@ jobs:
           command: ./install-protobuf.sh
       - run:
           name: Initialize and run Geth
-          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
           command: |
-            ./initialize-geth.sh
-            ./run-geth.sh
+            cd ~
+            ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
+            ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
       - run:
           name: Run Bitcoin Core and ElectrumX
-          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
-          command: ./run-bitcoin.sh
+          command: |
+            cd ~
+            ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
       - run:
           name: Run install script
-          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
-          command: ./run-install.sh
+          command: |
+            cd ~
+            ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
           environment:
             E2E_TEST: true
       - run:
           name: Run Core and ECDSA clients
-          working_directory: ~/local-setup/deployments/local-setup-instance/provisioning
-          command: ./run-clients.sh
+          command: |
+            cd ~
+            ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
       - run:
           name: Run E2E test scripts
           no_output_timeout: 30m
