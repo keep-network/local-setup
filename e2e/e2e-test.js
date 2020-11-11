@@ -41,7 +41,7 @@ const satoshiMultiplier = 10000000000 // 10^10
 const tbtcDepositAmount = program.lotSizeSatoshis * satoshiMultiplier
 const signerFee = signerFeeDivisor * tbtcDepositAmount
 const tbtcDepositAmountMinusSignerFee = tbtcDepositAmount - signerFee
-const satoshiRedemptionFee = 150
+const satoshiRedemptionFee = 2700
 
 bcoin.set(program.bitcoinNetwork)
 
