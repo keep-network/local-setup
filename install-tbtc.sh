@@ -55,6 +55,9 @@ printf "${LOG_START}Running install script...${LOG_END}"
 
 cd "$WORKDIR/tbtc"
 
+# Remove node modules for clean installation
+rm -rf /solidity/node_modules
+
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
 

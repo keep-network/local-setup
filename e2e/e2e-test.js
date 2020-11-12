@@ -30,7 +30,7 @@ program
     .option('--bitcoin-depositor-pk <privateKey>', "private key of the Bitcoin depositor in WIF format", "cTj6Z9fxMr4pzfpUhiN8KssVzZjgQz9zFCfh87UrH8ZLjh3hGZKF")
     .option('--ethereum-node <url>', "ethereum node url", "ws://127.0.0.1:8546")
     .option('--ethereum-pk <privateKey>', "private key of ethereum account", "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd")
-    .option('--lot-size-satoshis <lot>', "lot size in satoshis", (lot) => parseInt(lot, 10), 100000)
+    .option('--lot-size-satoshis <lot>', "lot size in satoshis", (lot) => parseInt(lot, 10), 1000000)
     .parse(process.argv)
 
 console.log("\nScript options values: ", program.opts(), "\n")
@@ -41,7 +41,7 @@ const satoshiMultiplier = 10000000000 // 10^10
 const tbtcDepositAmount = program.lotSizeSatoshis * satoshiMultiplier
 const signerFee = signerFeeDivisor * tbtcDepositAmount
 const tbtcDepositAmountMinusSignerFee = tbtcDepositAmount - signerFee
-const satoshiRedemptionFee = 150
+const satoshiRedemptionFee = 2700
 
 bcoin.set(program.bitcoinNetwork)
 
