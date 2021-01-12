@@ -18,6 +18,13 @@ First, go to the `deployments/local-setup-environment` directory and build the e
 ```
 packer build -only=vagrant packerfile.json
 ```
+
+[TIP]
+If you see an error "vagrant: error: SSH Port was not properly retrieved from
+SSHConfig." or "vagrant: strconv.Atoi: parsing "": invalid syntax" try to turn
+off your antivirus completely. You can also try to disable the SSL scanning in
+your antivirus options.
+
 An output directory named `vagrant-box` containing `package.box` file should be created.
 
 Then, switch the directory to `deployments/local-setup-instance` and import
