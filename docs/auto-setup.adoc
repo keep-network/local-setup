@@ -145,4 +145,6 @@ SSHConfig.` or `vagrant: strconv.Atoi: parsing "": invalid syntax` try to:
 
 - Turn off your antivirus completely. You can also try to disable the SSL scanning in your antivirus options.
 
-- If that doesn't help (as may happen after update to MacOS Big Sur), execute `csrutil enable && reboot` in the Recovery Mode (as described in this https://apple.stackexchange.com/a/410145[Stack Exchange answer])
+- If that doesn't help (as may happen after update to MacOS Big Sur), execute `csrutil enable && reboot` in the Recovery Mode (as described in this https://apple.stackexchange.com/a/410145[Stack Exchange answer]).
+
+- If all of the above fails you can also use `PACKER_LOG=1 packer build -only=vagrant packerfile.json` to debug the building process and see the exact issue.
