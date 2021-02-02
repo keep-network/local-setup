@@ -6,3 +6,4 @@ vagrant-box
 .vagrant
 *.log
 e2e/site/index.html
+.envrc
