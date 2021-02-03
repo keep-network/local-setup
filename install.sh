@@ -5,17 +5,8 @@ set -e
 # Install submodules.
 ./install-repositories.sh
 
-# Install KEEP-CORE.
-./install-keep-core.sh
-
-# Install KEEP-ECDSA.
-./install-keep-ecdsa.sh
-
-# Install tBTC.
-./install-tbtc.sh
-
-# Install tBTC dApp.
-./install-tbtc-dapp.sh
+# Install applications and their contracts
+./install-applications-with-contracts.sh
 
 # Do not install keep dashboard dApp for e2e nightly test
 if [[ $E2E_TEST != true ]]
