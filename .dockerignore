@@ -1,0 +1,11 @@
+*
+!ethereum/*
+!ethereum/**/*
+!keep-core/solidity/contracts/*
+!keep-core/solidity/contracts/**/*
+!keep-core/solidity/*.json
+!keep-core/solidity/*.js
+!keep-core/solidity/scripts/*.js
+!keep-core/solidity/scripts/**/*.js
+!keep-core/solidity/migrations/*.js
+!keep-core/solidity/migrations/**/*.js

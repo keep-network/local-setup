@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  geth:
+    # Before using, `docker run -it -v $(pwd)/ethereum:/root/.ethereum init?
+    container_name: geth
+    build:
+      context: .
+      dockerfile: ./contract.Dockerfile
+    entrypoint: ["/root/run-geth.sh"]
+    ports:
+      # Per https://geth.ethereum.org/docs/install-and-build/installing-geth#run-inside-docker-container
+     - 8545:8545 # RPC
+     - 8546:8546 # WebSocket
+     - 8547:8547 # GraphQL
+  bitcoind:
+    container_name: bitcoind
+    build: bitcoin/bitcoind
+    ports:
+      - 18332:18332
+  electrumx:
+    container_name: electrumx
+    build: bitcoin/electrumx
+    ports:
+      - 50001:50001
+      - 50002:50002
+      - 50003:50003
+      - 50004:50004
+      - 8000:8000
+    environment:
+      - DAEMON_URL=http://user:password@bitcoind:18332
+      - COIN=BitcoinSegwit
+      - NET=regtest
+      - SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002,ws://0.0.0.0:50003,wss://127.0.0.1:50004,rpc://0.0.0.0:8000
+      - COST_SOFT_LIMIT=0
+      - COST_HARD_LIMIT=0
