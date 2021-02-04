@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-modules
+#!/usr/bin/env node --experimental-modules --experimental-json-modules
 
 import { createRequire } from "module"
 import { sendToAddress, getNewAddress } from "./../index.js"
