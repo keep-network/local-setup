@@ -32,7 +32,7 @@ cd $WORKDIR/keep-core/solidity/dashboard
 
 npm install
 
-printf "${LOG_START}Updating Keep Dashboard dependnecies...${LOG_END}"
+printf "${LOG_START}Updating Keep Dashboard dependencies...${LOG_END}"
 
 cd $WORKDIR/keep-core/solidity
 npm link
@@ -46,8 +46,6 @@ npm link
 printf "${LOG_START}Updating Keep Dashboard configuration...${LOG_END}"
 
 cd $WORKDIR/keep-core/solidity/dashboard
-npm link @keep-network/keep-core
-npm link @keep-network/keep-ecdsa
-npm link @keep-network/tbtc
+npm link @keep-network/keep-core @keep-network/keep-ecdsa @keep-network/tbtc
 
 printf "${DONE_START}Keep Dashboard initialized successfully!${DONE_END}"
