@@ -170,7 +170,7 @@ We want to be able to test the deposit/redemption flow.
 First, we need a way to send bitcoins to the deposit address:
 
 ```
-npm install -g ./bitcoind-wallet
+$ npm install -g ./bitcoind-wallet
 ```
 
 Second, we need an ethereum wallet like metamask (this section will assume that's what we're using)
@@ -200,7 +200,7 @@ presented with a prompt to send BTC to an address.
 Copy the address and then run:
 
 ```
-bitcoind-wallet sendToAddress <wallet-address-from-the-website> <lot-size>
+$ bitcoind-wallet sendToAddress <wallet-address-from-the-website> <lot-size>
 # example: bitcoind-wallet sendToAddress bcrt1ra67pwcr96pvv05nt8mhvfanr73lg2zl9w7k5zr 0.5
 ```
 
@@ -225,7 +225,7 @@ in one of your TDT IDs (mine was 0x530D37eD3E2194EC1671DD2E153A03FCED5F80cD).
 
 Generate a bitcoin wallet address by running:
 ```
-bitcoind-wallet getNewAddress
+$ bitcoind-wallet getNewAddress
 ```
 
 (mine was `bcrt1q2c5ntlx6qddwfppqdk06hzv0hgj36mdk6zpjrt`)
