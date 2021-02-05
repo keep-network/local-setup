@@ -129,27 +129,90 @@ To run the Keep Dashboard dApp invoke:
 
 === tBTC dApp
 
-To run the tBTC dApp against the local Bitcoin network,
-make sure the tBTC dApp is configured to work with the local ElectrumX instance.
-You can configure this in `./tbtc-dapp/src/wrappers/web3.js` file,
-where `TBTC.withConfig` line occurs. Change it as follows:
-```
-const tbtc = await TBTC.withConfig({
-    web3: web3,
-    bitcoinNetwork: BitcoinHelpers.Network.REGTEST,
-    electrum: {
-        server: "127.0.0.1",
-        port: 50003,
-        protocol: "ws"
-    }
-})
-```
-
-Then, you can invoke:
+To run the tBTC dApp against the local Bitcoin network invoke:
 ```
 ./run-tbtc-dapp.sh
 ```
-The application will be available on `http://localhost:3000`.
+
+=== Testing the Deposit/Redemption Flow
+
+Now that we have everything in place:
+
+* Geth, bitcoin, and electrumx running
+* keep-core and 3 ecdsa client running
+* the tBTC dApp running
+
+We want to be able to test the deposit/redemption flow.
+
+First, we need a way to send bitcoins to the deposit address:
+
+```
+$ npm install -g ./bitcoind-wallet
+```
+
+Second, we need an ethereum wallet like metamask (this section will assume that's what we're using)
+
+Add a new ethereum network with the following parameters to your wallet:
+```
+name: Keep-Local (can be whatever you want)
+rpc url: http://localhost:8545
+chain id: 1101
+currency symbol: ETH
+```
+
+The above is accomplishable in metamask by opening up the browser extension,
+clicking the 3 dots in the top right, hitting expand view, clicking the network
+dropdown in the top right, and selecting "Custom RPC".
+
+Switch your wallet to use this network, and then navigate to the tBTC dApp (http://localhost:3000)
+
+Import an account into your wallet with type json file, and point the prompt to
+`ethereum/data/keystore/UTC--2019-08-01T13-12-46.081900000Z--3d373d872b7ba29d92ed47caa8605b4dd6ec84ef`
+
+Press the deposit button in the dApp, connect your newly imported wallet, and pick a lot size.
+
+Confirm all of the transactions through your wallet, and eventually you will be
+presented with a prompt to send BTC to an address.
+
+Copy the address and then run:
+
+```
+$ bitcoind-wallet sendToAddress <wallet-address-from-the-website> <lot-size>
+# example: bitcoind-wallet sendToAddress bcrt1ra67pwcr96pvv05nt8mhvfanr73lg2zl9w7k5zr 0.5
+```
+
+Confirm all of the ethereum transactions with your wallet until it completes.
+
+Note the TDT ID that the dApp gives you
+(0x530D37eD3E2194EC1671DD2E153A03FCED5F80cD was mine). This will be
+used in the redemption flow.
+
+To see how much TBTC you have, add a custom token to your wallet with the address from the result of:
+
+```
+$ cat tbtc/solidity/build/contracts/TBTCToken.json | jq '.networks["1101"].address'
+```
+(mine was `0xF355D8f5Dca13CE5019675f5f2b2bD821b9A40b9`)
+
+In order to test the redemption flow, you need an amount of TBTC equal to
+the lot size, which you won't currently have if you've only deposited once (due
+to fees). So, deposit more BTC using the same process as above. Then, once you
+have enough TBTC in your wallet to cover a deposit, press the Redeem button, and plug
+in one of your TDT IDs (mine was 0x530D37eD3E2194EC1671DD2E153A03FCED5F80cD).
+
+Generate a bitcoin wallet address by running:
+```
+$ bitcoind-wallet getNewAddress
+```
+
+(mine was `bcrt1q2c5ntlx6qddwfppqdk06hzv0hgj36mdk6zpjrt`)
+
+Confirm all of the transactions and verify that the TBTC has left your wallet. You did it!
+
+=== Troubleshooting
+
+* If you're getting an error initiating the deposit, try resetting your wallet in metamask
+  (top right -> Settings -> Advanced -> Reset Account)
 
 === E2E tests
 
