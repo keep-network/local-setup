@@ -235,7 +235,7 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
 === Troubleshooting
 
 * If you're getting an error initiating the deposit, try resetting your wallet in metamask
-(top right -> Settings -> Advanced -> Reset Account)
+  (top right -> Settings -> Advanced -> Reset Account)
 
 === E2E tests
 
