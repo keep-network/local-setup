@@ -210,11 +210,12 @@ Note the TDT ID that the dApp gives you
 (0x530D37eD3E2194EC1671DD2E153A03FCED5F80cD was mine). This will be
 used in the redemption flow.
 
-To see how much TBTC you have, add a custom token to your wallet with the address from:
+To see how much TBTC you have, add a custom token to your wallet with the address from the result of:
+
 ```
-tbtc/solidity/build/contracts/TBTCToken.json
+$ cat tbtc/solidity/build/contracts/TBTCToken.json | jq '.networks["1101"].address'
 ```
-and check the address at `networks.1101.address`. (mine is `0xF355D8f5Dca13CE5019675f5f2b2bD821b9A40b9`).
+(mine was `0xF355D8f5Dca13CE5019675f5f2b2bD821b9A40b9`)
 
 In order to test the redemption flow, you need an amount of TBTC equal to
 the lot size, which you won't currently have if you've only deposited once (due
