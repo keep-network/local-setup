@@ -88,8 +88,7 @@ printf "${LOG_START}TBTCSystem contract address is: ${TBTC_SYSTEM_CONTRACT_ADDRE
 
 cd "$WORKDIR/keep-ecdsa"
 
-# Run keep-ecdsa initialization script. Answer with ENTER on the first prompt
-# and with TBTCSystem contract address on the second one.
-printf '\n'${TBTC_SYSTEM_CONTRACT_ADDRESS}'\n' | ./scripts/initialize.sh
+# Run keep-ecdsa initialization script.
+./scripts/initialize.sh --network local --application-address $TBTC_SYSTEM_CONTRACT_ADDRESS
 
 printf "${DONE_START}keep-ecdsa initialized successfully!${DONE_END}"
