@@ -20,7 +20,7 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 
 == Node.js version notice
 
-Please use Node `v11.15.0` for everything but E2E test script.
+Please use Node `v15.8.0` for everything but E2E test script.
 To run the test script, please use Node `v14.3.0`.
 
 We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
@@ -213,6 +213,8 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
 
 * If you're getting an error initiating the deposit, try resetting your wallet in metamask
   (top right -> Settings -> Advanced -> Reset Account)
+* During the keep-ecdsa phase of running install.sh it may complain about sha3.
+  If that happens, cd into keep-ecdsa and run: `$ npm install --save-dev sha3`
 
 === E2E tests
 
