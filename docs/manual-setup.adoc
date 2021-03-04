@@ -150,7 +150,8 @@ First, we need a way to send bitcoins to the deposit address:
 $ npm install -g ./bitcoind-wallet
 ```
 
-Second, we need an ethereum wallet like metamask (this section will assume that's what we're using - it can be installed as a browser extension).
+Second, we need an ethereum wallet like metamask (this section will assume that's
+what we're using - it can be installed as a browser extension).
 
 Add a new ethereum network with the following parameters to your wallet:
 ```
@@ -166,8 +167,9 @@ dropdown in the top right, and selecting "Custom RPC".
 
 Switch your wallet to use this network, and then navigate to the tBTC dApp (http://localhost:3000)
 
-In metamask, go to "My Accounts" section (click on the colorful circle in the top-right corner) and choose "Import Account".
-Choose "JSON File" as type, navigate to file:
+In metamask, go to "My Accounts" section (click on the colorful circle in the
+top-right corner) and choose "Import Account". Choose "JSON File" as type,
+navigate to file:
 `local-setup/ethereum/data/keystore/UTC--2019-08-01T13-12-46.081900000Z--3d373d872b7ba29d92ed47caa8605b4dd6ec84ef`,
 type in "password" as password and click "Import".
 
@@ -217,12 +219,16 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
   (top right -> Settings -> Advanced -> Reset Account)
 * During the keep-ecdsa phase of running install.sh it may complain about sha3.
   If that happens, cd into keep-ecdsa and run: `$ npm install --save-dev sha3`
-* If you see an error coming from npm complaining about dependencies (e.g. babel-cli), try deleting package-lock.json
-  (e.g. if npm cannot find file local-setup/tbtc/solidity/node_modules/.staging/@keep-network/keep-ecdsa-64660964/node_modules/@babel/cli,
-  delete package-lock.json file located in local-setup/tbtc/solidity) and run the script again.
-* If you cannot execute commands with bitcoind-wallet, make sure you switched to version 15.8.0 of nvm.
-* If you pressed "Deposit" and got Unhandled Rejection error from dApp, make sure the wallet is connected to your local ethereum network
-  (in metamask go to My Accounts->Settings->Networks, Chain Id for Localhost:8545 should be 1101).
+* If you see an error coming from npm complaining about dependencies (e.g. babel-cli),
+  try deleting package-lock.json (e.g. if npm cannot find file
+  local-setup/tbtc/solidity/node_modules/.staging/@keep-network/keep-ecdsa-64660964/node_modules/@babel/cli,
+  delete package-lock.json file located in local-setup/tbtc/solidity) and run
+  the script again.
+* If you cannot execute commands with bitcoind-wallet, make sure you switched to
+  version 15.8.0 of nvm.
+* If you pressed "Deposit" and got Unhandled Rejection error from dApp, make sure
+  the wallet is connected to your local ethereum network (in metamask go to
+  My Accounts->Settings->Networks, Chain Id for Localhost:8545 should be 1101).
 
 === E2E tests
 
