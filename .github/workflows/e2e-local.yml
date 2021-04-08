@@ -57,6 +57,19 @@ jobs:
           sudo rm -rf /usr/local/go
           ./install-go.sh
           echo "Using Go: $(go version)"
+
+      - name: Set GOPATH variable
+        run: |
+            echo "GOPATH=$HOME/go" >> $GITHUB_ENV
+
+      - name: Append PATH variable
+        run: |
+            echo "/usr/local/go/bin" >> $GITHUB_PATH
+            echo "$GOPATH/bin" >> $GITHUB_PATH
+      
+      - name: DEBUG A # TODO: delete
+        # working-directory: ./deployments/local-setup-environment/provisioning/
+        run: env
          
       - name: Install Geth
         # working-directory: ./deployments/local-setup-environment/provisioning/
@@ -73,22 +86,22 @@ jobs:
       - name: Install and run Geth
         working-directory: ./
         run: |
-          ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
-          ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
+          ./deployments/local-setup-instance/provisioning/initialize-geth.sh
+          ./deployments/local-setup-instance/provisioning/run-geth.sh
 
       - name: Run Bitcoin Core and ElectrumX
         working-directory: ./
-        run: ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
+        run: ./deployments/local-setup-instance/provisioning/run-bitcoin.sh
 
       - name: Run install script
         working-directory: ./
         run: |
           export E2E_TEST=true
-          ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
+          ./deployments/local-setup-instance/provisioning/run-install.sh
 
       - name: Run Core and ECDSA clients
         working-directory: ./
-        run: ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
+        run: ./deployments/local-setup-instance/provisioning/run-clients.sh
 
       - name: Run E2E test scripts
         working-directory: ./
