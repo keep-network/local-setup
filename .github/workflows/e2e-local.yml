@@ -1,0 +1,98 @@
+name: E2E tests / Locally
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  push: # TODO: remove
+    branches:
+      - 'rfc-18/**'
+  # add workflow dispatch?
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [11.15.0]
+    defaults:
+      run:
+        working-directory: ./deployments/local-setup-environment/provisioning/
+        shell: bash
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install common tools
+        # working-directory: ./deployments/local-setup-environment/provisioning/
+        run: ./install-commons.sh
+
+        # - name: Install Node.js and NPM
+        #   working-directory: ./
+        #   run: |
+        #     nvm install 14.3.0
+        #     nvm install 11.15.0
+        #     nvm alias default 11.15.0
+        #     nvm use default
+        #     echo "Using node: $(node -v)"
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-solidity-node-modules
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+          
+      - name: Install Go
+        # working-directory: ./deployments/local-setup-environment/provisioning/
+        run: |
+          sudo rm -rf /usr/local/go
+          ./install-go.sh
+          echo "Using Go: $(go version)"
+         
+      - name: Install Geth
+        # working-directory: ./deployments/local-setup-environment/provisioning/
+        run: ./install-geth.sh
+
+      - name: Install Solidity
+        # working-directory: ./deployments/local-setup-environment/provisioning/
+        run: ./install-solidity.sh
+
+      - name: Install Protobuf
+        # working-directory: ./deployments/local-setup-environment/provisioning/
+        run: ./install-protobuf.sh
+
+      - name: Install and run Geth
+        working-directory: ./
+        run: |
+          ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
+          ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
+
+      - name: Run Bitcoin Core and ElectrumX
+        working-directory: ./
+        run: ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
+
+      - name: Run install script
+        working-directory: ./
+        run: |
+          export E2E_TEST=true
+          ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
+
+      - name: Run Core and ECDSA clients
+        working-directory: ./
+        run: ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
+
+      - name: Run E2E test scripts
+        working-directory: ./
+        run: |
+          nvm use 14.3.0
+          echo "Using node: $(node -v)"
+          ./run-e2e-test.sh
