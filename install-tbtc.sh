@@ -55,6 +55,9 @@ printf "${LOG_START}Running install script...${LOG_END}"
 
 cd "$WORKDIR/tbtc"
 
+# Remove node modules for clean installation
+rm -rf /solidity/node_modules
+
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
 
@@ -85,8 +88,7 @@ printf "${LOG_START}TBTCSystem contract address is: ${TBTC_SYSTEM_CONTRACT_ADDRE
 
 cd "$WORKDIR/keep-ecdsa"
 
-# Run keep-ecdsa initialization script. Answer with ENTER on the first prompt
-# and with TBTCSystem contract address on the second one.
-printf '\n'${TBTC_SYSTEM_CONTRACT_ADDRESS}'\n' | ./scripts/initialize.sh
+# Run keep-ecdsa initialization script.
+./scripts/initialize.sh --network local --application-address $TBTC_SYSTEM_CONTRACT_ADDRESS
 
 printf "${DONE_START}keep-ecdsa initialized successfully!${DONE_END}"
