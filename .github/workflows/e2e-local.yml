@@ -16,10 +16,12 @@ jobs:
         node-version: [11.15.0]
     defaults:
       run:
-        working-directory: ./deployments/local-setup-environment/provisioning/
+        working-directory: ./local-setup/deployments/local-setup-environment/provisioning/
         shell: bash
     steps:
       - uses: actions/checkout@v2
+        with:
+          path: local-setup
 
       - name: Install common tools
         # working-directory: ./deployments/local-setup-environment/provisioning/
@@ -54,18 +56,17 @@ jobs:
       - name: Install Go
         # working-directory: ./deployments/local-setup-environment/provisioning/
         run: |
-          sudo rm -rf /usr/local/go
+          sudo rm -rf /usr/local/go # needed?
           ./install-go.sh
           echo "Using Go: $(go version)"
 
       - name: Set GOPATH variable
-        run: |
-            echo "GOPATH=$HOME/go" >> $GITHUB_ENV
+        run: echo "GOPATH=$HOME/go" >> $GITHUB_ENV
 
       - name: Append PATH variable
         run: |
-            echo "/usr/local/go/bin" >> $GITHUB_PATH
-            echo "$GOPATH/bin" >> $GITHUB_PATH
+          echo "/usr/local/go/bin" >> $GITHUB_PATH
+          echo "$GOPATH/bin" >> $GITHUB_PATH
       
       - name: DEBUG A # TODO: delete
         # working-directory: ./deployments/local-setup-environment/provisioning/
@@ -83,28 +84,29 @@ jobs:
         # working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-protobuf.sh
 
-      - name: Install and run Geth
-        working-directory: ./
+      - name: Initialize and run Geth
+        working-directory: ${{ github.workspace }}
         run: |
-          ./deployments/local-setup-instance/provisioning/initialize-geth.sh
-          ./deployments/local-setup-instance/provisioning/run-geth.sh
+          # cd $GITHUB_WORKSPACE
+          ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
+          ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
 
       - name: Run Bitcoin Core and ElectrumX
-        working-directory: ./
-        run: ./deployments/local-setup-instance/provisioning/run-bitcoin.sh
+        working-directory: ${{ github.workspace }}
+        run: ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
 
       - name: Run install script
-        working-directory: ./
+        working-directory: ${{ github.workspace }}
         run: |
           export E2E_TEST=true
-          ./deployments/local-setup-instance/provisioning/run-install.sh
+          ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
 
       - name: Run Core and ECDSA clients
-        working-directory: ./
-        run: ./deployments/local-setup-instance/provisioning/run-clients.sh
+        working-directory: ${{ github.workspace }}
+        run: ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
 
       - name: Run E2E test scripts
-        working-directory: ./
+        working-directory: ${{ github.workspace }}
         run: |
           nvm use 14.3.0
           echo "Using node: $(node -v)"
