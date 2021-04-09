@@ -24,17 +24,7 @@ jobs:
           path: local-setup
 
       - name: Install common tools
-        # working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-commons.sh
-
-        # - name: Install Node.js and NPM
-        #   working-directory: ./
-        #   run: |
-        #     nvm install 14.3.0
-        #     nvm install 11.15.0
-        #     nvm alias default 11.15.0
-        #     nvm use default
-        #     echo "Using node: $(node -v)"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -54,7 +44,6 @@ jobs:
             ${{ runner.os }}-
           
       - name: Install Go
-        # working-directory: ./deployments/local-setup-environment/provisioning/
         run: |
           sudo rm -rf /usr/local/go # needed?
           ./install-go.sh
@@ -67,21 +56,14 @@ jobs:
         run: |
           echo "/usr/local/go/bin" >> $GITHUB_PATH
           echo "$GOPATH/bin" >> $GITHUB_PATH
-      
-      - name: DEBUG A # TODO: delete
-        # working-directory: ./deployments/local-setup-environment/provisioning/
-        run: env
          
       - name: Install Geth
-        # working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-geth.sh
 
       - name: Install Solidity
-        # working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-solidity.sh
 
       - name: Install Protobuf
-        # working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-protobuf.sh
 
       - name: Initialize and run Geth

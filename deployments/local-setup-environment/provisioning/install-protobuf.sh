@@ -13,13 +13,10 @@ mkdir ./protoc && unzip $PROTOC_PACKAGE -d ./protoc
 chmod 755 -R ./protoc
 sudo mv protoc/bin/protoc /usr/local/bin
 sudo mv protoc/include/* /usr/local/include
-echo "DEBUG 2" # TODO: delete
-env # TODO: delete
+
 go get -u github.com/gogo/protobuf/protoc-gen-gogoslick
 
 if ! [ -x "$(command -v protoc)" ]; then echo "protoc installation failed"; exit 1; fi
-echo "DEBUG 3" # TODO: delete
-env # TODO: delete
 if ! [ -x "$(command -v protoc-gen-gogoslick)" ]; then echo "protoc-gen-gogoslick installation failed"; exit 1; fi
 
 echo "Protobuf has been installed successfully!"
