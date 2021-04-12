@@ -19,6 +19,13 @@ jobs:
         # with:
         #   path: local-setup
 
+      - name: DEBUG - show github.workspace
+        run: echo ${{ github.workspace }}
+
+      - name: DEBUG - ls in github.workspace
+        working-directory: ${{ github.workspace }}
+        run: ls
+
       - name: Install common tools
         run: ./install-commons.sh
 
