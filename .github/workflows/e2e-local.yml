@@ -71,7 +71,7 @@ jobs:
 
       - name: Run Bitcoin Core and ElectrumX
         working-directory: ${{ github.workspace }}
-        run: ./run-bitcoin.sh
+        run: ./run-bitcoin.sh &
 
       - name: Run pre-install script
         working-directory: ${{ github.workspace }}
