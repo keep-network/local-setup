@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./local-setup/deployments/local-setup-environment/provisioning/
+        working-directory: ./deployments/local-setup-environment/provisioning/
         shell: bash
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: local-setup
+        # with:
+        #   path: local-setup
 
       - name: Install common tools
         run: ./install-commons.sh
@@ -66,22 +66,31 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           # cd $GITHUB_WORKSPACE
-          ./local-setup/deployments/local-setup-instance/provisioning/initialize-geth.sh
-          ./local-setup/deployments/local-setup-instance/provisioning/run-geth.sh
+          ./initialize-geth.sh
+          ./run-geth.sh &
 
       - name: Run Bitcoin Core and ElectrumX
         working-directory: ${{ github.workspace }}
-        run: ./local-setup/deployments/local-setup-instance/provisioning/run-bitcoin.sh
+        run: ./run-bitcoin.sh
+
+      - name: Run pre-install script
+        working-directory: ${{ github.workspace }}
+        run: |
+          ./pre-install.sh
 
       - name: Run install script
         working-directory: ${{ github.workspace }}
         run: |
           export E2E_TEST=true
-          ./local-setup/deployments/local-setup-instance/provisioning/run-install.sh
+          ./install.sh
 
       - name: Run Core and ECDSA clients
         working-directory: ${{ github.workspace }}
-        run: ./local-setup/deployments/local-setup-instance/provisioning/run-clients.sh
+        run: |
+          ./run-core-1.sh &
+          ./run-ecdsa-1.sh &
+          ./run-ecdsa-2.sh &
+          ./run-ecdsa-3.sh &
 
       - name: Use Node.js 14.3.0
         uses: actions/setup-node@v2
