@@ -12,21 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./deployments/local-setup-environment/provisioning/
         shell: bash
     steps:
       - uses: actions/checkout@v2
-        # with:
-        #   path: local-setup
-
-      - name: DEBUG - show github.workspace
-        run: echo ${{ github.workspace }}
-
-      - name: DEBUG - ls in github.workspace
-        working-directory: ${{ github.workspace }}
-        run: ls
 
       - name: Install common tools
+        working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-commons.sh
 
       - name: Use Node.js 12
@@ -47,6 +38,7 @@ jobs:
             ${{ runner.os }}-
           
       - name: Install Go
+        working-directory: ./deployments/local-setup-environment/provisioning/
         run: |
           sudo rm -rf /usr/local/go # needed?
           ./install-go.sh
@@ -61,38 +53,35 @@ jobs:
           echo "$GOPATH/bin" >> $GITHUB_PATH
          
       - name: Install Geth
+        working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-geth.sh
 
       - name: Install Solidity
+        working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-solidity.sh
 
       - name: Install Protobuf
+        working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-protobuf.sh
 
       - name: Initialize and run Geth
-        working-directory: ${{ github.workspace }}
         run: |
-          # cd $GITHUB_WORKSPACE
           ./initialize-geth.sh
           ./run-geth.sh &
 
       - name: Run Bitcoin Core and ElectrumX
-        working-directory: ${{ github.workspace }}
         run: ./run-bitcoin.sh &
 
       - name: Run pre-install script
-        working-directory: ${{ github.workspace }}
         run: |
           ./pre-install.sh
 
       - name: Run install script
-        working-directory: ${{ github.workspace }}
         run: |
           export E2E_TEST=true
           ./install.sh
 
       - name: Run Core and ECDSA clients
-        working-directory: ${{ github.workspace }}
         run: |
           ./run-core-1.sh &
           ./run-ecdsa-1.sh &
@@ -112,5 +101,4 @@ jobs:
       #     ./run-e2e-test.sh
 
       - name: Run E2E test scripts
-        working-directory: ${{ github.workspace }}
         run: ./run-e2e-test.sh
