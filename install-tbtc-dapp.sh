@@ -11,28 +11,27 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting tBTC dApp deployment...${LOG_END}"
 
-printf "${LOG_START}Preparing tbtc artifacts...${LOG_END}"
+printf "${LOG_START}Updating tbtc.js dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-ecdsa/solidity"
+npm link
 
 cd "$WORKDIR/tbtc/solidity"
-
-ln -sf build/contracts artifacts
-
-printf "${LOG_START}Updating tbtc.js configuration...${LOG_END}"
+npm link
 
 cd $WORKDIR/tbtc.js
-
-TBTC_DIR="$WORKDIR/tbtc/solidity" jq '.dependencies."@keep-network/tbtc" = env.TBTC_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
-KEEP_ECDSA_DIR="$WORKDIR/keep-ecdsa/solidity" jq '.dependencies."@keep-network/keep-ecdsa" = env.KEEP_ECDSA_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
+npm link @keep-network/keep-ecdsa @keep-network/tbtc
 
 printf "${LOG_START}Install tbtc.js dependencies...${LOG_END}"
 
+cd $WORKDIR/tbtc.js
 npm install
+npm link
 
-printf "${LOG_START}Updating tbtc-dapp configuration...${LOG_END}"
+printf "${LOG_START}Updating tbtc-dapp dependencies...${LOG_END}"
 
 cd $WORKDIR/tbtc-dapp
-
-TBTC_JS_DIR="$WORKDIR/tbtc.js" jq '.dependencies."@keep-network/tbtc.js" = env.TBTC_JS_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
+npm link @keep-network/tbtc.js
 
 printf "${LOG_START}Install tbtc-dapp dependencies...${LOG_END}"
 

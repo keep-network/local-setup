@@ -20,6 +20,14 @@ done
 
 printf "${LOG_START}Starting tBTC deployment...${LOG_END}"
 
+printf "${LOG_START}Updating tBTC dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-ecdsa/solidity"
+npm link
+
+cd "$WORKDIR/tbtc/solidity"
+npm link @keep-network/keep-ecdsa
+
 printf "${LOG_START}Using $BTC_NETWORK Bitcoin network${LOG_END}"
 
 cd "$WORKDIR/relay-genesis"
@@ -39,24 +47,9 @@ if [ "$BTC_NETWORK" == "testnet" ]; then
   jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 fi
 
-printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
-
-cd "$WORKDIR/keep-ecdsa/solidity"
-
-ln -sf build/contracts artifacts
-
-printf "${LOG_START}Updating tBTC configuration...${LOG_END}"
-
-cd "$WORKDIR/tbtc/solidity"
-
-KEEP_ECDSA_DIR="$WORKDIR/keep-ecdsa/solidity" jq '.dependencies."@keep-network/keep-ecdsa" = env.KEEP_ECDSA_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
-
 printf "${LOG_START}Running install script...${LOG_END}"
 
 cd "$WORKDIR/tbtc"
-
-# Remove node modules for clean installation
-rm -rf /solidity/node_modules
 
 # Run tBTC install script.  Answer with ENTER on emerging prompt.
 printf '\n' | ./scripts/install.sh
@@ -68,6 +61,12 @@ if [ "$BTC_NETWORK" == "regtest" ]; then
 
   npx truffle exec "$WORKDIR/relay-genesis/update-mock-relay.js"
 fi
+
+printf "${LOG_START}Preparing tbtc artifacts...${LOG_END}"
+
+cd "$WORKDIR/tbtc/solidity"
+
+ln -sf build/contracts artifacts
 
 printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
