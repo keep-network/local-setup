@@ -71,9 +71,9 @@ jobs:
       - name: Run Bitcoin Core and ElectrumX
         run: ./run-bitcoin.sh &
 
-      - name: Run pre-install script
-        run: |
-          ./pre-install.sh
+      # - name: Run pre-install script
+      #   run: |
+      #     ./pre-install.sh
 
       - name: Run install script
         run: |
