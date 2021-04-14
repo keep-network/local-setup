@@ -67,7 +67,6 @@ jobs:
       - name: Initialize and run Geth
         run: |
           ./initialize-geth.sh
-          ./run-geth.sh &
 
       - name: Run Bitcoin Core and ElectrumX
         run: ./run-bitcoin.sh &
@@ -78,6 +77,7 @@ jobs:
 
       - name: Run install script
         run: |
+          ./run-geth.sh &
           export E2E_TEST=true
           ./install.sh
 
