@@ -27,4 +27,6 @@ jobs:
         run: ./initialize-geth.sh
 
       - name: Run Geth
-        run: ./run-geth.sh
+        run: |
+          ./run-geth.sh &
+          ./loop.sh
