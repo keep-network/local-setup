@@ -1,17 +1,12 @@
-FROM ubuntu:18.04
+FROM rust:alpine3.13
 
-RUN apt-get update && apt-get install -y curl bash wget lsb-release software-properties-common && rm -rf /var/lib/apt/lists/*
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /rust-install.sh
-RUN sh /rust-install.sh -y
-RUN rm /rust-install.sh
-ENV PATH="/root/.cargo/bin:/usr/bin:${PATH}"
-RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-ENV LLVM_CONFIG_PATH=/usr/bin/llvm-config-12
-RUN apt-get install -y clang cmake gcc build-essential libssl-dev
+RUN apk add clang-dev build-base linux-headers
+RUN rustup component add rustfmt
 WORKDIR /workdir
 COPY ./electrs /workdir/electrs
 WORKDIR /workdir/electrs
 EXPOSE 3002
+ENV RUSTFLAGS -Ctarget-feature=-crt-static
 RUN cargo build --release --locked --bin electrs
 CMD ./target/release/electrs --cookie 'user:password' \
 	--http-addr 0.0.0.0:3002 \
