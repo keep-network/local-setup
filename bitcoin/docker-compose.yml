@@ -5,6 +5,8 @@ services:
     container_name: bitcoind
     ports:
       - 18332:18332
+    volumes:
+      - ./bitcoind/data:/workdir/datadir
     build: ./bitcoind
   electrumx:
     container_name: electrumx
