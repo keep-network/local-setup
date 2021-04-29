@@ -30,5 +30,7 @@ services:
       - 3002:3002
     volumes:
       - ./bitcoind/data:/workdir/bitcoin-data
-    build:
-      ./electrs
+    environment:
+      - DAEMON_RPC_ADDR=bitcoind:18332
+      - NETWORK=regtest
+    build: ./electrs
