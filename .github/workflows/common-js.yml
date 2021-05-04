@@ -9,6 +9,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: common.js
+
 jobs:
   common-js-detect-changes:
     runs-on: ubuntu-latest
@@ -31,9 +35,6 @@ jobs:
       github.event_name != 'pull_request'
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./common-js
     steps:
       - uses: actions/checkout@v2
 
@@ -53,9 +54,6 @@ jobs:
       github.event_name != 'pull_request'
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./common-js
     steps:
       - uses: actions/checkout@v2
 
@@ -75,9 +73,6 @@ jobs:
       github.ref == 'refs/heads/master'
         && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./solidity
     steps:
       - uses: actions/checkout@v2
 
