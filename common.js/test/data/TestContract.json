@@ -1,0 +1,13 @@
+{
+    "networks": {
+        "1707": {
+            "address": "0xa90505c0EC23F776631557143ABF3ff5602D0947"
+        },
+        "2": {
+            "address": "0xEDDD3D1737021e3B716FE88433c1382D9eBCEF76"
+        },
+        "13": {
+            "address": ""
+        }
+    }
+}
