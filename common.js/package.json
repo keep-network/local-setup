@@ -19,6 +19,7 @@
     "url": "https://github.com/keep-network/local-setup/issues"
   },
   "devDependencies": {
+    "eslint": "^7.25.0",
     "chai": "^4.3.4",
     "eslint-config-keep": "github:keep-network/eslint-config-keep",
     "mocha": "^8.3.2",
