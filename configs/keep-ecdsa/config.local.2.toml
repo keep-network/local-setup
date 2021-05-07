@@ -8,6 +8,8 @@
   BondedECDSAKeepFactory = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   TBTCSystem = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 
+[TSS]
+  PreParamsTargetPoolSize = 2
 
 [Storage]
   DataDir = "WORKDIR/storage/keep-ecdsa/2"
