@@ -51,13 +51,6 @@ cd ..
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
-# Run keep-ecdsa install script.  Answer with ENTER twice on emerging prompts.
-printf '\n\n' | ./scripts/install.sh
-
-printf "${LOG_START}Updating keep-ecdsa node_modules...${LOG_END}"
-
-cd $WORKDIR
-rm -rf keep-ecdsa/solidity/node_modules/@keep-network/keep-core
-cp -R keep-core/solidity/. keep-ecdsa/solidity/node_modules/@keep-network/keep-core
+./scripts/install.sh
 
 printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"
