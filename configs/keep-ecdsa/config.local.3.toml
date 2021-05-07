@@ -6,9 +6,8 @@
 
 [ethereum.ContractAddresses]
   BondedECDSAKeepFactory = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  TBTCSystem = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 
-[SanctionedApplications]
-    Addresses = ["0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"]
 
 [Storage]
   DataDir = "WORKDIR/storage/keep-ecdsa/3"
