@@ -1,8 +1,8 @@
 [ethereum]
-    URL = "ws://127.0.0.1:8546"
+  URL = "ws://127.0.0.1:8546"
 
 [ethereum.account]
-    KeyFile = "WORKDIR/ethereum/data/keystore/UTC--2019-08-01T13-19-33.224673000Z--65849fc91f8289b401e9d8f6d306b814b7f055c3"
+  KeyFile = "WORKDIR/ethereum/data/keystore/UTC--2019-08-01T13-19-33.224673000Z--65849fc91f8289b401e9d8f6d306b814b7f055c3"
 
 [ethereum.ContractAddresses]
   BondedECDSAKeepFactory = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -11,7 +11,7 @@
     Addresses = ["0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"]
 
 [Storage]
-    DataDir = "WORKDIR/storage/keep-ecdsa/1"
+  DataDir = "WORKDIR/storage/keep-ecdsa/1"
 
 [LibP2P]
-    Port = 3920
+  Port = 3920
