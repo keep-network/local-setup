@@ -16,6 +16,3 @@
 [submodule "relays"]
 	path = relays
 	url = https://github.com/keep-network/relays.git
-[submodule "bitcoin/electrs/electrs"]
-	path = bitcoin/electrs/electrs
-	url = https://github.com/Blockstream/electrs
