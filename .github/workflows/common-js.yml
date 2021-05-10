@@ -67,23 +67,30 @@ jobs:
       - name: Lint
         run: yarn run lint
 
-  common-js-publish:
-    needs: [common-js-test, common-js-lint]
-    if: |
-      github.ref == 'refs/heads/master'
-        && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # Publishing of the common.js package has been switched off due to problems
+  # with package versioning. Below configuration can succesfully publish the
+  # package, but commiting of the information about bumped-up version to the Git
+  # repository doesn't work - commiter's user name and e-mail are required.
+  # Without this update of the version info, next runs of the common-js-publish
+  # generate the same version of package as before, and upload is not accepted.
+  # We may want to resolve that in the future.
+  # common-js-publish:
+  #   needs: [common-js-test, common-js-lint]
+  #   if:
+  #     github.ref == 'refs/heads/master'
+  #       && github.event_name != 'pull_request' 
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "12.x"
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "12.x"
 
-      - name: Install dependencies
-        run: yarn install
+  #     - name: Install dependencies
+  #       run: yarn install
 
-      - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn publish --prerelease --access public
+  #     - name: Publish to npm
+  #       env:
+  #         NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #       run: yarn publish --prerelease --access public
