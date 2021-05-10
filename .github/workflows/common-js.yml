@@ -1,0 +1,89 @@
+name: common.js
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "common.js/**"
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: common.js
+
+jobs:
+  common-js-detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      path-filter: ${{ steps.filter.outputs.path-filter }}
+    steps:
+    - uses: actions/checkout@v2
+      if: github.event_name == 'pull_request' 
+    - uses: dorny/paths-filter@v2
+      if: github.event_name == 'pull_request' 
+      id: filter
+      with:
+        filters: |
+          path-filter:
+            - './common.js/**'
+
+  common-js-test:
+    needs: common-js-detect-changes
+    if: |
+      github.event_name != 'pull_request'
+        || needs.common-js-detect-changes.outputs.path-filter == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests
+        run: yarn test
+
+  common-js-lint:
+    needs: common-js-detect-changes
+    if: |
+      github.event_name != 'pull_request'
+        || needs.common-js-detect-changes.outputs.path-filter == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint
+        run: yarn run lint
+
+  common-js-publish:
+    needs: [common-js-test, common-js-lint]
+    if: |
+      github.ref == 'refs/heads/master'
+        && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: yarn publish --prerelease --access public
