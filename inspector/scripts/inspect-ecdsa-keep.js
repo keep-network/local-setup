@@ -13,7 +13,7 @@ module.exports = async function () {
 
     const factoryDeploymentBlock = await contractHelper.getDeploymentBlockNumber(
       BondedECDSAKeepFactoryJson,
-      web3,
+      web3
     )
 
     const factory = await BondedECDSAKeepFactory.deployed()
@@ -37,7 +37,7 @@ module.exports = async function () {
         {
           fromBlock: factoryDeploymentBlock,
           toBlock: "latest",
-        },
+        }
       )
 
       console.log(`keep address:        ${keepAddress}`)
@@ -53,7 +53,7 @@ module.exports = async function () {
         console.log(`signature requested: no`)
       } else {
         console.log(
-          `signature requested: yes, [${signatureRequestedEvents.length}] times`,
+          `signature requested: yes, [${signatureRequestedEvents.length}] times`
         )
 
         const signatureSubmittedEvents = await keep.getPastEvents(
@@ -61,13 +61,13 @@ module.exports = async function () {
           {
             fromBlock: factoryDeploymentBlock,
             toBlock: "latest",
-          },
+          }
         )
         if (signatureRequestedEvents.length == 0) {
           console.log(`signature submitted: no`)
         } else {
           console.log(
-            `signature submitted: yes, [${signatureSubmittedEvents.length}] times`,
+            `signature submitted: yes, [${signatureSubmittedEvents.length}] times`
           )
         }
       }
@@ -89,8 +89,8 @@ module.exports = async function () {
     }
     console.log(
       `potentially bad operators = ${new Array(...potentiallyBadOperators).join(
-        ", ",
-      )}`,
+        ", "
+      )}`
     )
 
     process.exit()

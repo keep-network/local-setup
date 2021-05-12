@@ -3,18 +3,18 @@ const KeepRandomBeaconOperatorJson = require("@keep-network/keep-core/artifacts/
 
 const contractHelper = require("./lib/contract-helper")
 
-const abiDecoder = require('abi-decoder');
+const abiDecoder = require("abi-decoder")
 abiDecoder.addABI(KeepRandomBeaconOperatorJson.abi)
 
 module.exports = async function () {
   try {
     const deploymentBlock = await contractHelper.getDeploymentBlockNumber(
       KeepRandomBeaconOperatorJson,
-      web3,
+      web3
     )
 
     const KeepRandomBeaconOperator = truffleContract(
-      KeepRandomBeaconOperatorJson,
+      KeepRandomBeaconOperatorJson
     )
     KeepRandomBeaconOperator.setProvider(web3.currentProvider)
 
@@ -26,21 +26,21 @@ module.exports = async function () {
       {
         fromBlock: deploymentBlock,
         toBlock: "latest",
-      },
+      }
     )
     const entrySubmittedEvents = await keepRandomBeaconOperator.getPastEvents(
       "RelayEntrySubmitted",
       {
         fromBlock: deploymentBlock,
         toBlock: "latest",
-      },
+      }
     )
     const timeoutEvents = await keepRandomBeaconOperator.getPastEvents(
       "RelayEntryTimeoutReported",
       {
         fromBlock: deploymentBlock,
         toBlock: "latest",
-      },
+      }
     )
 
     console.log(`Number of groups:            ${numberOfGroups}`)
@@ -54,7 +54,7 @@ module.exports = async function () {
       {
         fromBlock: deploymentBlock,
         toBlock: "latest",
-      },
+      }
     )
 
     const allOperators = new Set()
@@ -62,7 +62,7 @@ module.exports = async function () {
     for (i = 0; i < numberOfGroups; i++) {
       const groupPubKey = await keepRandomBeaconOperator.getGroupPublicKey(i)
       const groupMembers = await keepRandomBeaconOperator.getGroupMembers(
-        groupPubKey,
+        groupPubKey
       )
 
       const uniqueMembers = new Set()
