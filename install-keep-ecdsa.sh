@@ -47,9 +47,15 @@ cd keep-ecdsa/solidity
 TMP_FILE=$(mktemp /tmp/truffle.js.XXXXXXXXXX)
 sed -e 's/\port\:.*/\port\: '8546,'/g;s/\websockets\:.*/\websockets\: 'true,'/g' truffle.js > $TMP_FILE
 mv $TMP_FILE truffle.js
-cd ..
+
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+npm link
 
 printf "${LOG_START}Running install script...${LOG_END}"
+
+cd "$WORKDIR/keep-ecdsa"
 
 ./scripts/install.sh
 

@@ -41,6 +41,14 @@ fi
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+npm link
+
+cd "$WORKDIR/keep-ecdsa/solidity"
+npm link
+
 cd "$WORKDIR/tbtc"
 
 # Remove node modules for clean installation

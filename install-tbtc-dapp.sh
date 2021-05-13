@@ -11,6 +11,14 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting tBTC dApp deployment...${LOG_END}"
 
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd $WORKDIR/keep-ecdsa/solidity
+npm link
+
+cd $WORKDIR/tbtc/solidity
+npm link
+
 printf "${LOG_START}Install tbtc.js dependencies...${LOG_END}"
 
 cd $WORKDIR/tbtc.js
