@@ -47,17 +47,16 @@ cd keep-ecdsa/solidity
 TMP_FILE=$(mktemp /tmp/truffle.js.XXXXXXXXXX)
 sed -e 's/\port\:.*/\port\: '8546,'/g;s/\websockets\:.*/\websockets\: 'true,'/g' truffle.js > $TMP_FILE
 mv $TMP_FILE truffle.js
-cd ..
+
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+npm link
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
-# Run keep-ecdsa install script.  Answer with ENTER twice on emerging prompts.
-printf '\n\n' | ./scripts/install.sh
+cd "$WORKDIR/keep-ecdsa"
 
-printf "${LOG_START}Updating keep-ecdsa node_modules...${LOG_END}"
-
-cd $WORKDIR
-rm -rf keep-ecdsa/solidity/node_modules/@keep-network/keep-core
-cp -R keep-core/solidity/. keep-ecdsa/solidity/node_modules/@keep-network/keep-core
+./scripts/install.sh
 
 printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"

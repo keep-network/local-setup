@@ -34,7 +34,7 @@ printf "${LOG_START}Running install script...${LOG_END}"
 
 cd keep-core
 
-# Run keep-core install script. Answer with ENTER twice on emerging prompts.
-printf '\n\n' | ./scripts/install.sh
+# Run keep-core install script.
+./scripts/install.sh
 
 printf "${DONE_START}keep-core deployed successfully!${DONE_END}"
