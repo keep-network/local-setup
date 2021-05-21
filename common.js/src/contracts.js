@@ -20,7 +20,7 @@ const { resolve } = require("path")
 function readExternalContractAddress(
   packageName,
   contractName,
-  deployerOrNetworkID,
+  deployerOrNetworkID
 ) {
   let networkID
   // Support truffle's deployer object used in migrations.
@@ -33,7 +33,7 @@ function readExternalContractAddress(
   let artifactRaw
   try {
     artifactRaw = readFileSync(
-      resolve(`./node_modules/${packageName}/artifacts/${contractName}.json`),
+      resolve(`./node_modules/${packageName}/artifacts/${contractName}.json`)
     )
   } catch (err) {
     throw new Error(`failed to read artifact file: ${err.message}`)
@@ -48,13 +48,13 @@ function readExternalContractAddress(
 
   if (!artifact.networks[networkID]) {
     throw new Error(
-      `configuration for network ${networkID} not found in ${contractName}`,
+      `configuration for network ${networkID} not found in ${contractName}`
     )
   }
 
   if (!artifact.networks[networkID].address) {
     throw new Error(
-      `missing address for network ${networkID} in ${contractName}`,
+      `missing address for network ${networkID} in ${contractName}`
     )
   }
 

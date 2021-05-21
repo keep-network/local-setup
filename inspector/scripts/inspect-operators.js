@@ -22,7 +22,7 @@ module.exports = async function () {
     const TokenStaking = truffleContract(TokenStakingJson)
     const KeepBonding = truffleContract(KeepBondingJson)
     const KeepRandomBeaconOperator = truffleContract(
-      KeepRandomBeaconOperatorJson,
+      KeepRandomBeaconOperatorJson
     )
     const BondedECDSAKeepFactory = truffleContract(BondedECDSAKeepFactoryJson)
     const TBTCSystem = truffleContract(TBTCSystemJson)
@@ -51,12 +51,12 @@ module.exports = async function () {
     console.log(``)
 
     const beaconOperators = beaconNodes.connected_peers.map(
-      (peer) => peer.ethereum_address,
+      (peer) => peer.ethereum_address
     )
     console.log(
       clc.italic(
-        `Fetching staking info for [${beaconOperators.length}] beacon operators...`,
-      ),
+        `Fetching staking info for [${beaconOperators.length}] beacon operators...`
+      )
     )
     console.log(``)
 
@@ -66,7 +66,7 @@ module.exports = async function () {
 
       const eligibleStake = await tokenStaking.eligibleStake(
         operator,
-        keepRandomBeaconOperator.address,
+        keepRandomBeaconOperator.address
       )
       const eligibleStakeKeep = eligibleStake.div(tokenDecimalMultiplier)
 
@@ -84,8 +84,8 @@ module.exports = async function () {
     if (process.env.OUTPUT_MODE === "text") {
       beaconSummary.forEach((s) =>
         console.log(
-          `${s.address}    ${s.eligibleStakeKeep}    ${s.operatorBalanceEth}`,
-        ),
+          `${s.address}    ${s.eligibleStakeKeep}    ${s.operatorBalanceEth}`
+        )
       )
     } else {
       console.table(beaconSummary)
@@ -93,12 +93,12 @@ module.exports = async function () {
     console.log(``)
 
     const ecdsaOperators = ecdsaNodes.connected_peers.map(
-      (peer) => peer.ethereum_address,
+      (peer) => peer.ethereum_address
     )
     console.log(
       clc.italic(
-        `Fetching staking info for [${ecdsaOperators.length}] ECDSA operators...`,
-      ),
+        `Fetching staking info for [${ecdsaOperators.length}] ECDSA operators...`
+      )
     )
     console.log(``)
 
@@ -108,7 +108,7 @@ module.exports = async function () {
 
       const eligibleStake = await tokenStaking.eligibleStake(
         operator,
-        keepRandomBeaconOperator.address,
+        keepRandomBeaconOperator.address
       )
       const eligibleStakeKeep = eligibleStake.div(tokenDecimalMultiplier)
 
@@ -120,14 +120,14 @@ module.exports = async function () {
 
       const isRegisteredInTbtcPool = await bondedEcdsaKeepFactory.isOperatorRegistered(
         operator,
-        tbtcSystem.address,
+        tbtcSystem.address
       )
 
       let isUpToDateInTbtcPool
       if (isRegisteredInTbtcPool) {
         isUpToDateInTbtcPool = await bondedEcdsaKeepFactory.isOperatorUpToDate(
           operator,
-          tbtcSystem.address,
+          tbtcSystem.address
         )
       } else {
         isUpToDateInTbtcPool = "N/A"
@@ -148,8 +148,8 @@ module.exports = async function () {
       ecdsaSummary.forEach((s) =>
         console.log(
           `${s.address}    ${s.eligibleStakeKeep}    ${s.operatorBalanceEth}    ` +
-            `${s.unbondedValueEth}    ${s.isRegisteredInTbtcPool}    ${s.isUpToDateInTbtcPool}`,
-        ),
+            `${s.unbondedValueEth}    ${s.isRegisteredInTbtcPool}    ${s.isUpToDateInTbtcPool}`
+        )
       )
     } else {
       console.table(ecdsaSummary)

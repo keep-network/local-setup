@@ -9,7 +9,7 @@ module.exports = async function () {
   try {
     const factoryDeploymentBlock = await contractHelper.getDeploymentBlockNumber(
       DepositFactoryJson,
-      web3,
+      web3
     )
 
     const TbtcSystem = truffleContract(TbtcSystemJson)
@@ -27,14 +27,14 @@ module.exports = async function () {
       {
         fromBlock: factoryDeploymentBlock,
         toBlock: "latest",
-      },
+      }
     )
 
     console.log(`Number of created deposits: ${depositCreatedEvents.length} \n`)
 
     const depositAddresses = []
     depositCreatedEvents.forEach((event) =>
-      depositAddresses.push(event.args.depositCloneAddress),
+      depositAddresses.push(event.args.depositCloneAddress)
     )
 
     for (i = 0; i < depositAddresses.length; i++) {
@@ -87,13 +87,13 @@ module.exports = async function () {
       const lotSizeTbtc = await deposit.lotSizeTbtc()
 
       const pubKeyRegisteredEvents = await tbtcSystem.getPastEvents(
-        "RegisteredPubkey",        
+        "RegisteredPubkey",
         {
           filter: {
-            _depositContractAddress: deposit.address
+            _depositContractAddress: deposit.address,
           },
           fromBlock: factoryDeploymentBlock,
-          toBlock: "latest"
+          toBlock: "latest",
         }
       )
       const pubKeyRegistered = pubKeyRegisteredEvents.length > 0
