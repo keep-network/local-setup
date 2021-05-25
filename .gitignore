@@ -1,5 +1,6 @@
 .idea
 /ethereum/data/geth/
+/bitcoin/bitcoind/data/
 /storage/
 node_modules
 vagrant-box

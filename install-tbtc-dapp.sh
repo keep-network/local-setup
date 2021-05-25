@@ -11,32 +11,30 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting tBTC dApp deployment...${LOG_END}"
 
-printf "${LOG_START}Updating tbtc.js dependencies...${LOG_END}"
+printf "${LOG_START}Linking dependencies...${LOG_END}"
 
-cd "$WORKDIR/keep-ecdsa/solidity"
+cd $WORKDIR/keep-ecdsa/solidity
 npm link
 
-cd "$WORKDIR/tbtc/solidity"
+cd $WORKDIR/tbtc/solidity
 npm link
-
-cd $WORKDIR/tbtc.js
-npm link @keep-network/keep-ecdsa @keep-network/tbtc
 
 printf "${LOG_START}Install tbtc.js dependencies...${LOG_END}"
 
 cd $WORKDIR/tbtc.js
+
 npm install
+
 npm link
 
-printf "${LOG_START}Updating tbtc-dapp dependencies...${LOG_END}"
-
-cd $WORKDIR/tbtc-dapp
-npm link @keep-network/tbtc.js
+npm link @keep-network/keep-ecdsa @keep-network/tbtc
 
 printf "${LOG_START}Install tbtc-dapp dependencies...${LOG_END}"
 
 cd $WORKDIR/tbtc-dapp
 
 npm install
+
+npm link @keep-network/tbtc.js
 
 printf "${DONE_START}tbtc-dapp initialized successfully!${DONE_END}"

@@ -11,22 +11,12 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting keep-ecdsa deployment...${LOG_END}"
 
-printf "${LOG_START}Updating keep-ecdsa dependencies...${LOG_END}"
-
-cd "$WORKDIR/keep-core/solidity"
-npm link
-
-cd "$WORKDIR/keep-ecdsa/solidity"
-npm link @keep-network/keep-core
-
 printf "${LOG_START}Copying config files...${LOG_END}"
-
-cd "$WORKDIR"
 
 # Copy all config files to the right keep-ecdsa directory.
 cp -R configs/keep-ecdsa/. keep-ecdsa/configs/
 
-cd "$WORKDIR/keep-ecdsa/configs"
+cd keep-ecdsa/configs
 
 # Fill absolute paths in config files with actual working directory.
 TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
@@ -43,7 +33,7 @@ mv $TMP_FILE config.local.3.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
 
-cd "$WORKDIR"
+cd $WORKDIR
 
 # Create storage directories for keep-ecdsa clients.
 mkdir -p storage/keep-ecdsa/1
@@ -53,21 +43,20 @@ mkdir -p storage/keep-ecdsa/3
 printf "${LOG_START}Updating keep-ecdsa configuration...${LOG_END}"
 
 # Set correct Geth WS port.
-cd "$WORKDIR/keep-ecdsa/solidity"
+cd keep-ecdsa/solidity
 TMP_FILE=$(mktemp /tmp/truffle.js.XXXXXXXXXX)
 sed -e 's/\port\:.*/\port\: '8546,'/g;s/\websockets\:.*/\websockets\: 'true,'/g' truffle.js > $TMP_FILE
 mv $TMP_FILE truffle.js
-cd ..
+
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+npm link
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
-# Run keep-ecdsa install script.  Answer with ENTER twice on emerging prompts.
-printf '\n\n' | ./scripts/install.sh
+cd "$WORKDIR/keep-ecdsa"
 
-printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
-
-cd "$WORKDIR/keep-ecdsa/solidity"
-
-ln -sf build/contracts artifacts
+./scripts/install.sh
 
 printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"

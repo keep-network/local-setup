@@ -16,7 +16,7 @@ printf "${LOG_START}Copying config files...${LOG_END}"
 # Copy all config files to the right keep-core directory.
 cp -R configs/keep-core/. keep-core/configs/
 
-cd "$WORKDIR/keep-core/configs"
+cd keep-core/configs
 
 # Fill absolute paths in config file with actual working directory.
 TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
@@ -25,22 +25,16 @@ mv $TMP_FILE config.local.1.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
 
-cd "$WORKDIR"
+cd $WORKDIR
 
 # Create storage directory for keep-core client.
 mkdir -p storage/keep-core/1
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
-cd "$WORKDIR/keep-core"
+cd keep-core
 
-# Run keep-core install script. Answer with ENTER twice on emerging prompts.
-printf '\n\n' | ./scripts/install.sh
-
-printf "${LOG_START}Preparing keep-core artifacts...${LOG_END}"
-
-cd "$WORKDIR/keep-core/solidity"
-
-ln -sf build/contracts artifacts
+# Run keep-core install script.
+./scripts/install.sh
 
 printf "${DONE_START}keep-core deployed successfully!${DONE_END}"
