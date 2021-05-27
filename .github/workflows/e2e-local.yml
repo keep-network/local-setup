@@ -6,6 +6,7 @@ on:
   push: # TODO: remove
     branches:
       - 'rfc-18/**'
+  workflow_dispatch:
 
 jobs:
   build:
