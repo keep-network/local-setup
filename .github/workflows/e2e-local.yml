@@ -71,7 +71,7 @@ jobs:
           ./initialize-geth.sh
 
       - name: Run Bitcoin Core and ElectrumX
-        run: ./run-bitcoin.sh # TODO: change to `./run-bitcoin.sh &`
+        run: ./run-bitcoin.sh &
 
       # - name: Run pre-install script
       #   run: |
