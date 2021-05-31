@@ -9,7 +9,7 @@ cd ../keep-ecdsa/solidity
 npm install --save-dev sha3
 
 echo "Linking..."
-cd ../keep-core/solidity
+cd ../../keep-core/solidity
 npm link
 cd ../../keep-ecdsa/solidity
 npm link
