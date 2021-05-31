@@ -5,6 +5,8 @@ set -e
 echo "Running npm install..."
 cd e2e
 npm install
+cd ../keep-ecdsa/solidity
+npm install --save-dev sha3
 
 echo "Linking..."
 cd ../keep-core/solidity
