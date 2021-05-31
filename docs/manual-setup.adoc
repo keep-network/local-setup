@@ -21,18 +21,18 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 == Node.js version notice
 
 Please use Node `v15.8.0` for everything but E2E test script.
-To run the test script, please use Node `v14.3.0`.
+To run the test script, please use Node `v14.17.0`.
 
 We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
 You can install both versions by doing:
 ```
 $ nvm install 11.15.0
-$ nvm install 14.3.0
+$ nvm install 14.17.0
 ```
 And use the specific version:
 ```
 $ nvm use 11.15.0
-$ nvm use 14.3.0
+$ nvm use 14.17.0
 ```
 
 == Installing the system
@@ -232,9 +232,9 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
 
 === E2E tests
 
-To run the automated end-to-end scenario switch to Node 14.3.0:
+To run the automated end-to-end scenario switch to Node 14.17.0:
 ```
-$ nvm use 14.3.0
+$ nvm use 14.17.0
 ```
 Then invoke:
 ```
