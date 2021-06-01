@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  e2e-tests:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,21 +41,21 @@ jobs:
       - name: Install Go
         working-directory: ./deployments/local-setup-environment/provisioning/
         run: |
-          sudo rm -rf /usr/local/go # needed?
+          sudo rm -rf /usr/local/go
           ./install-go.sh
-          echo "Using Go: $(go version)"
-
-      - name: Set GOPATH variable
-        run: echo "GOPATH=$HOME/go" >> $GITHUB_ENV
-
-      - name: Append PATH variable
-        run: |
+          echo "GOPATH=$HOME/go" >> $GITHUB_ENV
           echo "/usr/local/go/bin" >> $GITHUB_PATH
           echo "$GOPATH/bin" >> $GITHUB_PATH
+          echo "Using Go: $(go version)"
+          echo $GITHUB_ENV # TODO: remove
+          echo $GITHUB_PATH # TODO: remove
          
       - name: Install Geth
         working-directory: ./deployments/local-setup-environment/provisioning/
-        run: ./install-geth.sh
+        run: |
+          echo $GITHUB_ENV # TODO: remove
+          echo $GITHUB_PATH # TODO: remove
+          ./install-geth.sh
 
       - name: Install Solidity
         working-directory: ./deployments/local-setup-environment/provisioning/
@@ -67,16 +67,14 @@ jobs:
 
       - name: Initialize and run Geth
         run: |
-          ls -l ethereum/data
           ./initialize-geth.sh
+          ./run-geth.sh &
 
       - name: Run Bitcoin Core and ElectrumX
         run: ./run-bitcoin.sh &
 
       - name: Run install script
         run: |
-          ls -l ethereum/data
-          ./run-geth.sh &
           export E2E_TEST=true
           ./install.sh
 
