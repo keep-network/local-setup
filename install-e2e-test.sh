@@ -6,8 +6,12 @@ echo "Running npm install..."
 cd e2e
 npm install
 
+echo "Rebuilding..."
+cd ../keep-ecdsa/solidity
+npm rebuild
+
 echo "Linking..."
-cd ../keep-core/solidity
+cd ../../keep-core/solidity
 npm link
 cd ../../keep-ecdsa/solidity
 npm link
