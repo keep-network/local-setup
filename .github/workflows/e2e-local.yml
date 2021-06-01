@@ -44,10 +44,10 @@ jobs:
           sudo rm -rf /usr/local/go
           ./install-go.sh
           echo "Using Go: $(go version)"
+          echo "GOPATH=$HOME/go" >> $GITHUB_ENV
 
-      - name: Set GOPATH variable
-        run: echo "GOPATH=$HOME/go" >> $GITHUB_ENV
-
+      # Below step cannot be combined with the above, as $GOPATH env variable
+      # becomes available only after above step gets executed.
       - name: Append PATH variable
         run: |
           echo "/usr/local/go/bin" >> $GITHUB_PATH
