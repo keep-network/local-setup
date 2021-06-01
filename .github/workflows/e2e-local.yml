@@ -3,9 +3,6 @@ name: E2E tests / Locally
 on:
   schedule:
     - cron: '0 0 * * *'
-  push: # TODO: remove
-    branches:
-      - 'rfc-18/**'
   workflow_dispatch:
 
 jobs:
