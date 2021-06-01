@@ -44,11 +44,19 @@ jobs:
           sudo rm -rf /usr/local/go
           ./install-go.sh
           echo "GOPATH=$HOME/go" >> $GITHUB_ENV
+          echo A $GOPATH # TODO: remove
+          echo B $GITHUB_ENV # TODO: remove
+          echo C $GITHUB_PATH # TODO: remove
+
+      - name: Set GITHUB_PATH
+        working-directory: ./deployments/local-setup-environment/provisioning/
+        run: |
           echo "/usr/local/go/bin" >> $GITHUB_PATH
           echo "$GOPATH/bin" >> $GITHUB_PATH
           echo "Using Go: $(go version)"
-          echo $GITHUB_ENV # TODO: remove
-          echo $GITHUB_PATH # TODO: remove
+          echo A $GOPATH # TODO: remove
+          echo B $GITHUB_ENV # TODO: remove
+          echo C $GITHUB_PATH # TODO: remove
          
       - name: Install Geth
         working-directory: ./deployments/local-setup-environment/provisioning/
