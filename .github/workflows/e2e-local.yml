@@ -43,27 +43,14 @@ jobs:
         run: |
           sudo rm -rf /usr/local/go
           ./install-go.sh
-          echo "GOPATH=$HOME/go" >> $GITHUB_ENV
-          echo A $GOPATH # TODO: remove
-          echo B $GITHUB_ENV # TODO: remove
-          echo C $GITHUB_PATH # TODO: remove
-
-      - name: Set GITHUB_PATH
-        working-directory: ./deployments/local-setup-environment/provisioning/
-        run: |
-          echo "/usr/local/go/bin" >> $GITHUB_PATH
-          echo "$GOPATH/bin" >> $GITHUB_PATH
           echo "Using Go: $(go version)"
-          echo A $GOPATH # TODO: remove
-          echo B $GITHUB_ENV # TODO: remove
-          echo C $GITHUB_PATH # TODO: remove
+          echo "GOPATH=$HOME/go" >> $GITHUB_ENV
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+          echo "/usr/local/go/bin" >> $GITHUB_PATH
          
       - name: Install Geth
         working-directory: ./deployments/local-setup-environment/provisioning/
-        run: |
-          echo $GITHUB_ENV # TODO: remove
-          echo $GITHUB_PATH # TODO: remove
-          ./install-geth.sh
+        run: ./install-geth.sh
 
       - name: Install Solidity
         working-directory: ./deployments/local-setup-environment/provisioning/
@@ -80,6 +67,9 @@ jobs:
 
       - name: Run Bitcoin Core and ElectrumX
         run: ./run-bitcoin.sh &
+
+      - name: Run pre-install script
+        run: ./pre-install.sh
 
       - name: Run install script
         run: |
