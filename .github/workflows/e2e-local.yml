@@ -42,13 +42,8 @@ jobs:
           ./install-go.sh
           echo "Using Go: $(go version)"
           echo "GOPATH=$HOME/go" >> $GITHUB_ENV
-
-      # Below step cannot be combined with the above, as $GOPATH env variable
-      # becomes available only after above step gets executed.
-      - name: Append PATH variable
-        run: |
+          echo "$HOME/go/bin" >> $GITHUB_PATH
           echo "/usr/local/go/bin" >> $GITHUB_PATH
-          echo "$GOPATH/bin" >> $GITHUB_PATH
          
       - name: Install Geth
         working-directory: ./deployments/local-setup-environment/provisioning/
