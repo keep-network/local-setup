@@ -12,7 +12,7 @@ WORKDIR esplora
 
 RUN git checkout f6da494a9a0080ae2ae13842bcf53b259e3a3360
 
-RUN npm install
+RUN npm install --unsafe-perm
 
 ENV CORS_ALLOW="*"
 ENV FLAVOR="bitcoin-regtest"
