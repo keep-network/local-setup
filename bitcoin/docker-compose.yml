@@ -34,3 +34,11 @@ services:
       - DAEMON_RPC_ADDR=bitcoind:18332
       - NETWORK=regtest
     build: ./electrs
+  esplora:
+    container_name: esplora
+    ports: 
+      - 8094:80
+    build: 
+      context: ./esplora
+      args:
+        - API_URL=http://localhost:3002/ # electrs
