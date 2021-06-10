@@ -1,4 +1,0 @@
-#check https://github.com/keep-network/eslint-config-keep/blob/master/index.js
-#for the correct prettier config used across keep projects
-#FIXME: use the cross-repo config
-semi: false

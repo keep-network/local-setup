@@ -1,0 +1,7 @@
+# Following directories have their own formatting configuration:
+keep-core/
+keep-ecdsa/
+tbtc/
+tbtc-dapp/
+tbtc.js/
+relays/
