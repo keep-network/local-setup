@@ -7,7 +7,7 @@ metadata:
     app: tbtc
     type: e2e-test
 spec:
-  schedule: '0 */4 * * *'
+  schedule: "0 */4 * * *"
   concurrencyPolicy: Replace
   jobTemplate:
     metadata:
@@ -19,51 +19,59 @@ spec:
       template:
         spec:
           containers:
-          - name: e2e-test
-            image: gcr.io/keep-test-f3e0/e2e-test
-            args: [
-              "--bitcoin-electrum-host", "$(BITCOIN_ELECTRUM_HOST)",
-              "--bitcoin-electrum-port", "$(BITCOIN_ELECTRUM_PORT)",
-              "--bitcoin-network", "$(BITCOIN_NETWORK)",
-              "--bitcoin-depositor-pk", "$(BITCOIN_DEPOSITOR_PK)",
-              "--ethereum-node", "$(ETHEREUM_NODE)",
-              "--ethereum-pk", "$(ETHEREUM_PK)",
-              "--lot-size-satoshis", "$(LOT_SIZE_SATOSHIS)"
-            ]
-            env:
-              - name: BITCOIN_ELECTRUM_HOST
-                valueFrom:
-                  configMapKeyRef:
-                    name: e2e-test-config
-                    key: bitcoin-electrum-host
-              - name: BITCOIN_ELECTRUM_PORT
-                valueFrom:
-                  configMapKeyRef:
-                    name: e2e-test-config
-                    key: bitcoin-electrum-port
-              - name: BITCOIN_NETWORK
-                valueFrom:
-                  configMapKeyRef:
-                    name: e2e-test-config
-                    key: bitcoin-network
-              - name: BITCOIN_DEPOSITOR_PK
-                valueFrom:
-                  secretKeyRef:
-                    name: e2e-test-secret
-                    key: bitcoin-depositor-pk
-              - name: ETHEREUM_NODE
-                valueFrom:
-                  configMapKeyRef:
-                    name: e2e-test-config
-                    key: ethereum-node
-              - name: ETHEREUM_PK
-                valueFrom:
-                  secretKeyRef:
-                    name: e2e-test-secret
-                    key: ethereum-pk
-              - name: LOT_SIZE_SATOSHIS
-                valueFrom:
-                  configMapKeyRef:
-                    name: e2e-test-config
-                    key: lot-size-satoshis
+            - name: e2e-test
+              image: gcr.io/keep-test-f3e0/e2e-test
+              args:
+                [
+                  "--bitcoin-electrum-host",
+                  "$(BITCOIN_ELECTRUM_HOST)",
+                  "--bitcoin-electrum-port",
+                  "$(BITCOIN_ELECTRUM_PORT)",
+                  "--bitcoin-network",
+                  "$(BITCOIN_NETWORK)",
+                  "--bitcoin-depositor-pk",
+                  "$(BITCOIN_DEPOSITOR_PK)",
+                  "--ethereum-node",
+                  "$(ETHEREUM_NODE)",
+                  "--ethereum-pk",
+                  "$(ETHEREUM_PK)",
+                  "--lot-size-satoshis",
+                  "$(LOT_SIZE_SATOSHIS)",
+                ]
+              env:
+                - name: BITCOIN_ELECTRUM_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: e2e-test-config
+                      key: bitcoin-electrum-host
+                - name: BITCOIN_ELECTRUM_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: e2e-test-config
+                      key: bitcoin-electrum-port
+                - name: BITCOIN_NETWORK
+                  valueFrom:
+                    configMapKeyRef:
+                      name: e2e-test-config
+                      key: bitcoin-network
+                - name: BITCOIN_DEPOSITOR_PK
+                  valueFrom:
+                    secretKeyRef:
+                      name: e2e-test-secret
+                      key: bitcoin-depositor-pk
+                - name: ETHEREUM_NODE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: e2e-test-config
+                      key: ethereum-node
+                - name: ETHEREUM_PK
+                  valueFrom:
+                    secretKeyRef:
+                      name: e2e-test-secret
+                      key: ethereum-pk
+                - name: LOT_SIZE_SATOSHIS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: e2e-test-config
+                      key: lot-size-satoshis
           restartPolicy: Never

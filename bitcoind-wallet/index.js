@@ -16,12 +16,13 @@ export async function getNewAddress() {
 }
 
 export async function sendRawTransaction(transaction) {
-	return bitcoinRpc.sendrawtransactionAsync(transaction)
+  return bitcoinRpc.sendrawtransactionAsync(transaction)
 }
 
 export async function getBalance(address) {
-	await bitcoinRpc.importaddressAsync(address)
-	const balance = (await bitcoinRpc.getreceivedbyaddressAsync(address, 0)).result
-	console.log(balance)
-	return balance
+  await bitcoinRpc.importaddressAsync(address)
+  const balance = (await bitcoinRpc.getreceivedbyaddressAsync(address, 0))
+    .result
+  console.log(balance)
+  return balance
 }

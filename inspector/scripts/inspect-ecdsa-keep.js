@@ -11,10 +11,11 @@ module.exports = async function () {
     BondedECDSAKeepFactory.setProvider(web3.currentProvider)
     BondedECDSAKeep.setProvider(web3.currentProvider)
 
-    const factoryDeploymentBlock = await contractHelper.getDeploymentBlockNumber(
-      BondedECDSAKeepFactoryJson,
-      web3
-    )
+    const factoryDeploymentBlock =
+      await contractHelper.getDeploymentBlockNumber(
+        BondedECDSAKeepFactoryJson,
+        web3
+      )
 
     const factory = await BondedECDSAKeepFactory.deployed()
 

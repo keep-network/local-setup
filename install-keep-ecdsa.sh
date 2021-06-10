@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -20,15 +20,15 @@ cd keep-ecdsa/configs
 
 # Fill absolute paths in config files with actual working directory.
 TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml >$TMP_FILE
 mv $TMP_FILE config.local.1.toml
 
 TMP_FILE=$(mktemp /tmp/config.local.2.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.2.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':' config.local.2.toml >$TMP_FILE
 mv $TMP_FILE config.local.2.toml
 
 TMP_FILE=$(mktemp /tmp/config.local.3.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.3.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':' config.local.3.toml >$TMP_FILE
 mv $TMP_FILE config.local.3.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
@@ -45,7 +45,7 @@ printf "${LOG_START}Updating keep-ecdsa configuration...${LOG_END}"
 # Set correct Geth WS port.
 cd keep-ecdsa/solidity
 TMP_FILE=$(mktemp /tmp/truffle.js.XXXXXXXXXX)
-sed -e 's/\port\:.*/\port\: '8546,'/g;s/\websockets\:.*/\websockets\: 'true,'/g' truffle.js > $TMP_FILE
+sed -e 's/\port\:.*/\port\: '8546,'/g;s/\websockets\:.*/\websockets\: 'true,'/g' truffle.js >$TMP_FILE
 mv $TMP_FILE truffle.js
 
 printf "${LOG_START}Linking dependencies...${LOG_END}"

@@ -19,15 +19,15 @@ jobs:
     outputs:
       path-filter: ${{ steps.filter.outputs.path-filter }}
     steps:
-    - uses: actions/checkout@v2
-      if: github.event_name == 'pull_request' 
-    - uses: dorny/paths-filter@v2
-      if: github.event_name == 'pull_request' 
-      id: filter
-      with:
-        filters: |
-          path-filter:
-            - './common.js/**'
+      - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
+      - uses: dorny/paths-filter@v2
+        if: github.event_name == 'pull_request'
+        id: filter
+        with:
+          filters: |
+            path-filter:
+              - './common.js/**'
 
   common-js-test:
     needs: common-js-detect-changes
@@ -78,7 +78,7 @@ jobs:
   #   needs: [common-js-test, common-js-lint]
   #   if:
   #     github.ref == 'refs/heads/master'
-  #       && github.event_name != 'pull_request' 
+  #       && github.event_name != 'pull_request'
   #   runs-on: ubuntu-latest
   #   steps:
   #     - uses: actions/checkout@v2

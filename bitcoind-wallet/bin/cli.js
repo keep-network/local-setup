@@ -1,7 +1,12 @@
 #!/usr/bin/env node --experimental-modules --experimental-json-modules
 
 import { createRequire } from "module"
-import { sendToAddress, getNewAddress, sendRawTransaction, getBalance } from "./../index.js"
+import {
+  sendToAddress,
+  getNewAddress,
+  sendRawTransaction,
+  getBalance,
+} from "./../index.js"
 
 const meow = createRequire(import.meta.url)("meow")
 
@@ -18,16 +23,16 @@ const cli = meow(`
 
 const [cmd, ...args] = cli.input
 
-if (cmd === 'sendToAddress') {
+if (cmd === "sendToAddress") {
   sendToAddress(...args)
-} else if (cmd === 'getNewAddress') {
+} else if (cmd === "getNewAddress") {
   getNewAddress()
-} else if (cmd === 'sendRawTransaction') {
+} else if (cmd === "sendRawTransaction") {
   sendRawTransaction(...args)
-} else if (cmd === 'getBalance') {
+} else if (cmd === "getBalance") {
   getBalance(...args)
 } else if (cmd) {
-  console.error('Unknown command')
+  console.error("Unknown command")
   process.exit(1)
 } else {
   cli.showHelp(2)
