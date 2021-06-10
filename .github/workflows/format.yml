@@ -17,7 +17,7 @@ jobs:
           node-version: "12.x"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install
 
       - name: Check formatting
-        run: npm run format
+        run: yarn run format
