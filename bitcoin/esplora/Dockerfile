@@ -15,11 +15,13 @@ RUN git checkout f6da494a9a0080ae2ae13842bcf53b259e3a3360
 RUN npm install
 
 ENV CORS_ALLOW="*"
+ENV FLAVOR="bitcoin-regtest"
+ENV BASE_HREF="/"
 
 ARG API_URL
 ENV API_URL=$API_URL
 
-RUN npm run dist
+RUN npm run dist $FLAVOR
 
 FROM nginx:1.21-alpine
 
