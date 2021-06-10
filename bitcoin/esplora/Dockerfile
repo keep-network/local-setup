@@ -21,7 +21,7 @@ ENV API_URL=$API_URL
 
 RUN npm run dist
 
-FROM nginx:1.17-alpine
+FROM nginx:1.21-alpine
 
 COPY --from=build /workdir/esplora/dist /usr/share/nginx/html
 
