@@ -6,7 +6,7 @@ services:
     ports:
       - 18332:18332
     volumes:
-      - ./bitcoind/data:/workdir/datadir
+      - ./data/bitcoind:/workdir/datadir
     build: ./bitcoind
   electrumx:
     container_name: electrumx
@@ -29,7 +29,8 @@ services:
     ports:
       - 3002:3002
     volumes:
-      - ./bitcoind/data:/workdir/bitcoin-data
+      - ./data/electrs:/workdir/data
+      - ./data/bitcoind:/workdir/bitcoin-data
     environment:
       - DAEMON_RPC_ADDR=bitcoind:18332
       - NETWORK=regtest
