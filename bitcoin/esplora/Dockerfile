@@ -14,7 +14,7 @@ RUN git checkout f6da494a9a0080ae2ae13842bcf53b259e3a3360
 
 RUN npm install
 
-ENV CORS_ALLOW=*
+ENV CORS_ALLOW="*"
 
 ARG API_URL
 ENV API_URL=$API_URL

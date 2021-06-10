@@ -42,4 +42,4 @@ services:
     build: 
       context: ./esplora
       args:
-        - API_URL=http://localhost:3002/ # electrs
+        API_URL: http://localhost:3002/ # electrs
