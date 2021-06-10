@@ -19,7 +19,7 @@ ENV CORS_ALLOW=*
 ARG API_URL
 ENV API_URL=$API_URL
 
-RUN npm run dist "bitcoin-regtest"
+RUN npm run dist
 
 FROM nginx:1.17-alpine
 
