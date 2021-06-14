@@ -20,8 +20,6 @@ RUN apk --no-cache add musl libgcc libstdc++
 
 WORKDIR /workdir
 
-COPY --from=electrsbuild /workdir/electrs/target/release/electrs .
-
 EXPOSE 3002
 
 CMD ./electrs --cookie 'user:password' \
