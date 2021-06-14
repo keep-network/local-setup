@@ -1,8 +1,8 @@
 FROM node:14-alpine3.13 AS build
 
 RUN apk add --update --no-cache \
-    git \
-    bash
+  git \
+  bash
 
 WORKDIR /workdir
 
@@ -26,6 +26,9 @@ RUN npm run dist $FLAVOR
 FROM nginx:1.21-alpine
 
 COPY --from=build /workdir/esplora/dist /usr/share/nginx/html
+
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d
 
 EXPOSE 80
 

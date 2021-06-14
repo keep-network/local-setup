@@ -37,9 +37,9 @@ services:
     build: ./electrs
   esplora:
     container_name: esplora
-    ports: 
+    ports:
       - 8094:80
-    build: 
+    build:
       context: ./esplora
       args:
         API_URL: http://localhost:3002/ # electrs
