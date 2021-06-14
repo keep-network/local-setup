@@ -1,6 +1,5 @@
 FROM rust:alpine3.13 AS electrsbuild
 
-RUN apk add --no-cache clang-dev build-base linux-headers git
 RUN rustup component add rustfmt
 
 WORKDIR /workdir
