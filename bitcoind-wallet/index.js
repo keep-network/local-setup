@@ -9,8 +9,14 @@ export async function sendToAddress(address, btc) {
   return bitcoinRpc.sendtoaddressAsync(address, btc)
 }
 
-export async function getNewAddress() {
-  const address = (await bitcoinRpc.getnewaddressAsync()).result
+/**
+ * Returns a new Bitcoin address for receiving payments.
+ * @param {string} [addressType=bech32] The address type to use. Options are:
+ * legacy, p2sh-segwit, and bech32.
+ * @returns {string} Address.
+ */
+export async function getNewAddress(addressType = "bech32") {
+  const address = (await bitcoinRpc.getnewaddressAsync("", addressType)).result
   console.log(address)
   return address
 }

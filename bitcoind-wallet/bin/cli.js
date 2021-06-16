@@ -11,7 +11,8 @@ const cli = meow(`
 
   Commands
     sendToAddress         [address] [btc] Send btc to an address
-    getNewAddress         Get an address to receive btc
+    getNewAddress         [addressType=bech32] Get an address to receive btc (optional)
+                            Values: legacy, p2sh-segwit, bech32
     sendRawTransaction    [transaction] Broadcast a raw transaction
     getBalance            [address] Get the balance of an address
 `)
@@ -21,7 +22,7 @@ const [cmd, ...args] = cli.input
 if (cmd === 'sendToAddress') {
   sendToAddress(...args)
 } else if (cmd === 'getNewAddress') {
-  getNewAddress()
+  getNewAddress(...args)
 } else if (cmd === 'sendRawTransaction') {
   sendRawTransaction(...args)
 } else if (cmd === 'getBalance') {
