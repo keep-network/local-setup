@@ -10,11 +10,11 @@ const cli = meow(`
     $ bitcoind-wallet <command> <arg...>
 
   Commands
-    sendToAddress         [address] [btc] Send btc to an address
-    getNewAddress         [addressType=bech32] Get an address to receive btc (optional)
-                            Values: legacy, p2sh-segwit, bech32
-    sendRawTransaction    [transaction] Broadcast a raw transaction
-    getBalance            [address] Get the balance of an address
+    sendToAddress         <address> <btc> Send btc to an address
+    getNewAddress         [address_type] Get an address to receive btc
+                            Values: legacy, p2sh-segwit, bech32 (default)
+    sendRawTransaction    <transaction> Broadcast a raw transaction
+    getBalance            <address> Get the balance of an address
 `)
 
 const [cmd, ...args] = cli.input
