@@ -3,7 +3,7 @@ name: common.js
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "common.js/**"
   pull_request:
@@ -77,7 +77,7 @@ jobs:
   # common-js-publish:
   #   needs: [common-js-test, common-js-lint]
   #   if:
-  #     github.ref == 'refs/heads/master'
+  #     github.ref == 'refs/heads/main'
   #       && github.event_name != 'pull_request' 
   #   runs-on: ubuntu-latest
   #   steps:
