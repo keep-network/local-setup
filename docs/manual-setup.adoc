@@ -1,7 +1,7 @@
 = Manual setup on local machine
 
 == Prerequisites
-If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-core/blob/master/scripts/macos-setup.sh[macos-setup.sh] script to setup all necessary tools.
+If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-core/blob/main/scripts/macos-setup.sh[macos-setup.sh] script to setup all necessary tools.
 
 If you are not on macOS or you don't have Homebrew, you need to install:
 

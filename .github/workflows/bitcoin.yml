@@ -3,7 +3,7 @@ name: bitcoin
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "bitcoin/**"
   pull_request:
