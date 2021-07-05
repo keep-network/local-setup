@@ -1,0 +1,45 @@
+name: E2E tests / Testnet
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+  pull_request: # TODO: remove this trigger before merging to main
+
+jobs:
+  e2e-testnet-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+
+      # TODO: Temprorarily we use fixed version of tbtc.js. Ultimately, we would
+      # need to point to the latest deployed version.
+      - run: npm install --save-exact @keep-network/tbtc.js@0.19.4-ropsten.4
+
+      - name: Cache Global NPM Cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-global-npm-cache
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Run e2e tests
+        run: |
+          ./e2e-test.js \
+            --bitcoin-electrum-host=${{ secrets.KEEP_TEST_ELECTRUMX_HOSTNAME }} \
+            --bitcoin-electrum-port=${{ secrets.KEEP_TEST_ELECTRUMX_PORT }} \
+            --bitcoin-network="testnet" \
+            --ethereum-node=${{ secrets.KEEP_TEST_ETH_HOSTNAME }} \
+            --lot-size-satoshis="1000000"

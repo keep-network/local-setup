@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-modules
+#!/usr/bin/env -S node --experimental-json-modules
 
 import Web3 from "web3"
 import ProviderEngine from "web3-provider-engine"
