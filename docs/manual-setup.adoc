@@ -49,6 +49,13 @@ You can skip this step if your local geth is already initialized. This script cl
 ```
 $ ./run-geth.sh
 ```
+. Initialize bitcoin using:
++
+```
+$ ./initialize-bitcoin.sh
+```
+You can skip this step if your local bitcoin is alread initialized.
+
 . Run local Bitcoin Core node and ElectrumX using:
 +
 ```
