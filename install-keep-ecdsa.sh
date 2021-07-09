@@ -9,10 +9,6 @@ DONE_END='\n\n\e[0m'    # new line + reset
 
 WORKDIR=$PWD
 
-printf "${LOG_START}Installing bitcoind-wallet...${LOG_END}"
-
-npm install -g "$WORKDIR/bitcoind-wallet"
-
 printf "${LOG_START}Starting keep-ecdsa deployment...${LOG_END}"
 
 printf "${LOG_START}Copying config files...${LOG_END}"
