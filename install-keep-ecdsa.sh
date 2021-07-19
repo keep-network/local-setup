@@ -18,29 +18,22 @@ cp -R configs/keep-ecdsa/. keep-ecdsa/configs/
 
 cd keep-ecdsa/configs
 
-# Fill absolute paths in config files with actual working directory.
-TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml > $TMP_FILE
-# Generate a new btc wallet address
+# Fill absolute paths in config files with actual working directory, generate
+# a new btc wallet address and set the address at
+# Extensions.TBTC.Bitcoin.BeneficiaryAddress
 BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
-# Set the address at Extensions.TBTC.Bitcoin.BeneficiaryAddress
-sed -i '' "s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g" $TMP_FILE
+TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
+sed 's:WORKDIR:'$WORKDIR':;s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g' config.local.1.toml > $TMP_FILE
 mv $TMP_FILE config.local.1.toml
 
-TMP_FILE=$(mktemp /tmp/config.local.2.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.2.toml > $TMP_FILE
-# Generate a new btc wallet address
 BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
-# Set the address at Extensions.TBTC.Bitcoin.BeneficiaryAddress
-sed -i '' "s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g" $TMP_FILE
+TMP_FILE=$(mktemp /tmp/config.local.2.toml.XXXXXXXXXX)
+sed 's:WORKDIR:'$WORKDIR':;s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g' config.local.2.toml > $TMP_FILE
 mv $TMP_FILE config.local.2.toml
 
-TMP_FILE=$(mktemp /tmp/config.local.3.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.3.toml > $TMP_FILE
-# Generate a new btc wallet address
 BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
-# Set the address at Extensions.TBTC.Bitcoin.BeneficiaryAddress
-sed -i '' "s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g" $TMP_FILE
+TMP_FILE=$(mktemp /tmp/config.local.3.toml.XXXXXXXXXX)
+sed 's:WORKDIR:'$WORKDIR':;s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g' config.local.3.toml > $TMP_FILE
 mv $TMP_FILE config.local.3.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
