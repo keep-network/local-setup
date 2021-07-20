@@ -24,7 +24,7 @@ cd keep-ecdsa/configs
 BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
 echo BENEFICIARY_ADDRESS=$BENEFICIARY_ADDRESS #TODO: remove before merging to main
 TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':;s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g' config.local.1.toml > $TMP_FILE
+sed 's/WORKDIR/'$WORKDIR'/g;s/BENEFICIARY_ADDRESS/'$BENEFICIARY_ADDRESS'/g' config.local.1.toml > $TMP_FILE
 mv $TMP_FILE config.local.1.toml
 echo "config.local.1.toml" #TODO: remove before merging to main
 cat config.local.1.toml #TODO: remove before merging to main
@@ -32,7 +32,7 @@ cat config.local.1.toml #TODO: remove before merging to main
 BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
 echo BENEFICIARY_ADDRESS=$BENEFICIARY_ADDRESS #TODO: remove before merging to main
 TMP_FILE=$(mktemp /tmp/config.local.2.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':;s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g' config.local.2.toml > $TMP_FILE
+'s/WORKDIR/'$WORKDIR'/g;s/BENEFICIARY_ADDRESS/'$BENEFICIARY_ADDRESS'/g' config.local.2.toml > $TMP_FILE
 mv $TMP_FILE config.local.2.toml
 echo "config.local.2.toml" #TODO: remove before merging to main
 cat config.local.2.toml #TODO: remove before merging to main
@@ -40,7 +40,7 @@ cat config.local.2.toml #TODO: remove before merging to main
 BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
 echo BENEFICIARY_ADDRESS=$BENEFICIARY_ADDRESS #TODO: remove before merging to main
 TMP_FILE=$(mktemp /tmp/config.local.3.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':;s/BENEFICIARY_ADDRESS/$BENEFICIARY_ADDRESS/g' config.local.3.toml > $TMP_FILE
+'s/WORKDIR/'$WORKDIR'/g;s/BENEFICIARY_ADDRESS/'$BENEFICIARY_ADDRESS'/g' config.local.3.toml > $TMP_FILE
 mv $TMP_FILE config.local.3.toml
 echo "config.local.2.toml" #TODO: remove before merging to main
 cat config.local.2.toml #TODO: remove before merging to main
