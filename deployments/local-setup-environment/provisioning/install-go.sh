@@ -4,7 +4,7 @@ set -e
 
 echo "Installing Go..."
 
-GOLANG_PACKAGE=go1.13.4.linux-amd64.tar.gz
+GOLANG_PACKAGE=go1.16.6.linux-amd64.tar.gz
 
 curl -O https://storage.googleapis.com/golang/$GOLANG_PACKAGE
 
