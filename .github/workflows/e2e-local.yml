@@ -34,13 +34,14 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-          
-      - name: Install Go
-        working-directory: ./deployments/local-setup-environment/provisioning/
+
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16
+
+      - name: Set up Go environment variables
         run: |
-          sudo rm -rf /usr/local/go
-          ./install-go.sh
-          echo "Using Go: $(go version)"
           echo "GOPATH=$HOME/go" >> $GITHUB_ENV
           echo "$HOME/go/bin" >> $GITHUB_PATH
          
