@@ -11,7 +11,20 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting coverage-pools deployment...${LOG_END}"
 
-cd coverage-pools
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+yarn link
+
+cd "$WORKDIR/tbtc/solidity"
+yarn link
+
+cd "$WORKDIR/coverage-pools"
+
+# Remove node modules for clean installation
+rm -rf ./node_modules
+
+printf "${LOG_START}Running install script...${LOG_END}"
 
 # Run coverage-pools install script.
 ./scripts/install.sh
