@@ -5,7 +5,7 @@ If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-
 
 If you are not on macOS or you don't have Homebrew, you need to install:
 
-- Go compiler, at least 1.14
+- Go compiler, at least 1.16
 - Geth (Ethereum client) 1.10.3-stable
 - Solidity, at least 0.5.17
 - Protobuf compiler, at least 3.11.4
