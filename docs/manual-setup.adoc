@@ -5,7 +5,7 @@ If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-
 
 If you are not on macOS or you don't have Homebrew, you need to install:
 
-- Go compiler, at least 1.14
+- Go compiler, at least 1.16
 - Geth (Ethereum client) 1.10.3-stable
 - Solidity, at least 0.5.17
 - Protobuf compiler, at least 3.11.4
@@ -15,6 +15,7 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 Regardless you use `macos-setup.sh` or not, you should also install:
 
 - https://docs.docker.com/get-docker[Docker] & https://docs.docker.com/compose/install/[Docker Compose]
+- https://classic.yarnpkg.com/en/docs/install[Yarn]
 - https://github.com/pyenv/pyenv[pyenv], at least 1.2.18 (optional - only if testnet relay is used)
 - https://github.com/pypa/pipenv[pipenv], at least 2018.11.26 (optional - only if testnet relay is used)
 
@@ -67,13 +68,24 @@ $ ./run-bitcoin.sh
 $ ./install.sh
 ```
 +
-This script will fetch `keep-core`, `keep-ecdsa`, and `tbtc` source code, deploy contracts of `keep-core`, `keep-ecdsa`, and `tbtc`. It will also build `keep-core` and `keep-ecdsa` off-chain clients.
+This script will fetch `keep-core`, `keep-ecdsa`, `tbtc` and `coverage-pools`
+source code, deploy contracts of `keep-core`, `keep-ecdsa`, `tbtc` and
+`coverage-pools`. It will also build `keep-core` and `keep-ecdsa` off-chain clients.
 +
-Later on, if you decide to update `tbtc`, you can run just `install-tbtc.sh`.
+Keep in mind that `coverage-pools` depend on `tbtc`, `tbtc` depends on
+`keep-ecdsa` and `keep-ecdsa` depends on `keep-core`.
 +
-Keep in mind, `tbtc` depends on `keep-ecdsa` and `keep-ecdsa` depends on `keep-core` so if you decide to update `keep-ecdsa`, you can run `install-keep-ecdsa.sh` followed by `install-tbtc.sh`.
+If you decide to update `coverage-pools`, you can run `install-coverage-pools.sh`.
 +
-If you decide to update `keep-core`, you have to run `install-keep-core.sh` followed by `install-keep-ecdsa.sh` followed by `install-tbtc.sh` or just the entire `install.sh` again.
+If you decide to update `tbtc`, you can run `install-tbtc.sh` followed by
+`install-coverage-pools.sh`.
++
+If you decide to update `keep-ecdsa`, you can run `install-keep-ecdsa.sh`
+followed by `install-tbtc.sh` and `install-coverage-pools.sh`.
++
+If you decide to update `keep-core`, you have to run `install-keep-core.sh`
+followed by `install-keep-ecdsa.sh` followed by `install-tbtc.sh` followed by
+`install-coverage-pools.sh` or just run the entire `install.sh` again.
 
 == Run clients
 The above installation script will configure:
