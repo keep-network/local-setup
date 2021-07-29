@@ -4,6 +4,5 @@ set -e
 
 cd e2e
 
-npm install
-
+echo "Running tests..."
 node --experimental-json-modules e2e-test.js

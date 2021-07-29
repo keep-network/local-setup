@@ -1,12 +1,12 @@
 = Manual setup on local machine
 
 == Prerequisites
-If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-core/blob/master/scripts/macos-setup.sh[macos-setup.sh] script to setup all necessary tools.
+If you’re on macOS, install Homebrew and https://github.com/keep-network/keep-core/blob/main/scripts/macos-setup.sh[macos-setup.sh] script to setup all necessary tools.
 
 If you are not on macOS or you don't have Homebrew, you need to install:
 
-- Go compiler, at least 1.14
-- Geth (Ethereum client) 1.9.9-stable
+- Go compiler, at least 1.16
+- Geth (Ethereum client) 1.10.3-stable
 - Solidity, at least 0.5.17
 - Protobuf compiler, at least 3.11.4
 - `protoc-gen-gogoslick` toolchain
@@ -15,24 +15,25 @@ If you are not on macOS or you don't have Homebrew, you need to install:
 Regardless you use `macos-setup.sh` or not, you should also install:
 
 - https://docs.docker.com/get-docker[Docker] & https://docs.docker.com/compose/install/[Docker Compose]
+- https://classic.yarnpkg.com/en/docs/install[Yarn]
 - https://github.com/pyenv/pyenv[pyenv], at least 1.2.18 (optional - only if testnet relay is used)
 - https://github.com/pypa/pipenv[pipenv], at least 2018.11.26 (optional - only if testnet relay is used)
 
 == Node.js version notice
 
 Please use Node `v15.8.0` for everything but E2E test script.
-To run the test script, please use Node `v14.3.0`.
+To run the test script, please use Node `v14.17.0`.
 
 We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
 You can install both versions by doing:
 ```
 $ nvm install 11.15.0
-$ nvm install 14.3.0
+$ nvm install 14.17.0
 ```
 And use the specific version:
 ```
 $ nvm use 11.15.0
-$ nvm use 14.3.0
+$ nvm use 14.17.0
 ```
 
 == Installing the system
@@ -49,6 +50,13 @@ You can skip this step if your local geth is already initialized. This script cl
 ```
 $ ./run-geth.sh
 ```
+. Initialize bitcoin using:
++
+```
+$ ./initialize-bitcoin.sh
+```
+You can skip this step if your local bitcoin is alread initialized.
+
 . Run local Bitcoin Core node and ElectrumX using:
 +
 ```
@@ -60,13 +68,24 @@ $ ./run-bitcoin.sh
 $ ./install.sh
 ```
 +
-This script will fetch `keep-core`, `keep-ecdsa`, and `tbtc` source code, deploy contracts of `keep-core`, `keep-ecdsa`, and `tbtc`. It will also build `keep-core` and `keep-ecdsa` off-chain clients.
+This script will fetch `keep-core`, `keep-ecdsa`, `tbtc` and `coverage-pools`
+source code, deploy contracts of `keep-core`, `keep-ecdsa`, `tbtc` and
+`coverage-pools`. It will also build `keep-core` and `keep-ecdsa` off-chain clients.
 +
-Later on, if you decide to update `tbtc`, you can run just `install-tbtc.sh`.
+Keep in mind that `coverage-pools` depend on `tbtc`, `tbtc` depends on
+`keep-ecdsa` and `keep-ecdsa` depends on `keep-core`.
 +
-Keep in mind, `tbtc` depends on `keep-ecdsa` and `keep-ecdsa` depends on `keep-core` so if you decide to update `keep-ecdsa`, you can run `install-keep-ecdsa.sh` followed by `install-tbtc.sh`.
+If you decide to update `coverage-pools`, you can run `install-coverage-pools.sh`.
 +
-If you decide to update `keep-core`, you have to run `install-keep-core.sh` followed by `install-keep-ecdsa.sh` followed by `install-tbtc.sh` or just the entire `install.sh` again.
+If you decide to update `tbtc`, you can run `install-tbtc.sh` followed by
+`install-coverage-pools.sh`.
++
+If you decide to update `keep-ecdsa`, you can run `install-keep-ecdsa.sh`
+followed by `install-tbtc.sh` and `install-coverage-pools.sh`.
++
+If you decide to update `keep-core`, you have to run `install-keep-core.sh`
+followed by `install-keep-ecdsa.sh` followed by `install-tbtc.sh` followed by
+`install-coverage-pools.sh` or just run the entire `install.sh` again.
 
 == Run clients
 The above installation script will configure:
@@ -232,9 +251,9 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
 
 === E2E tests
 
-To run the automated end-to-end scenario switch to Node 14.3.0:
+To run the automated end-to-end scenario switch to Node 14.17.0:
 ```
-$ nvm use 14.3.0
+$ nvm use 14.17.0
 ```
 Then invoke:
 ```

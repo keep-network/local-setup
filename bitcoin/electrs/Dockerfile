@@ -28,6 +28,7 @@ CMD ./electrs --cookie 'user:password' \
     --http-addr 0.0.0.0:3002 \
     --db-dir /workdir/data \
     --daemon-rpc-addr $DAEMON_RPC_ADDR \
-    --network $NETWORK \
     --daemon-dir /workdir/bitcoin-data/ \
-    --cors '*'
+    --network $NETWORK \
+    --cors '*' \
+    --lightmode
