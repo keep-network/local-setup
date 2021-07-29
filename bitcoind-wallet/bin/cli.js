@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-modules --experimental-json-modules
+#!/usr/bin/env -S node --experimental-modules --experimental-json-modules
 
 import { createRequire } from "module"
 import { sendToAddress, getNewAddress, sendRawTransaction, getBalance } from "./../index.js"
