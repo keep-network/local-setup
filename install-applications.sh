@@ -11,6 +11,9 @@ set -e
 # Install tBTC.
 ./install-tbtc.sh
 
+# Install Coverage Pools.
+./install-coverage-pools.sh
+
 # Install tBTC dApp.
 ./install-tbtc-dapp.sh
 

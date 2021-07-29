@@ -8,6 +8,14 @@
   BondedECDSAKeepFactory = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   TBTCSystem = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 
+[Extensions.TBTC]
+  LiquidationRecoveryTimeout = "48h"
+
+[Extensions.TBTC.Bitcoin]
+  BeneficiaryAddress = "BENEFICIARY_ADDRESS"
+  BitcoinChainName = "regtest"
+  ElectrsURL = "http://localhost:3002"
+
 [TSS]
   PreParamsTargetPoolSize = 2
 

@@ -16,3 +16,6 @@
 [submodule "relays"]
 	path = relays
 	url = https://github.com/keep-network/relays.git
+[submodule "coverage-pools"]
+	path = coverage-pools
+	url = https://github.com/keep-network/coverage-pools.git
