@@ -19,9 +19,7 @@ jobs:
         with:
           node-version: "14.x"
 
-      # TODO: Temprorarily we use fixed version of tbtc.js. Ultimately, we would
-      # need to point to the latest deployed version.
-      - run: npm install --save-exact @keep-network/tbtc.js@0.19.4-ropsten.4
+      - run: npm install --save-exact @keep-network/tbtc.js@ropsten
 
       - name: Cache Global NPM Cache
         uses: actions/cache@v2
