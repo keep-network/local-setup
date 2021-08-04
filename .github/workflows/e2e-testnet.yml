@@ -41,4 +41,4 @@ jobs:
             --bitcoin-network="testnet" \
             --bitcoin-depositor-pk=${{ secrets.KEEP_TEST_BTC_DEPOSITOR_PK }} \
             --ethereum-node=${{ secrets.KEEP_TEST_ETH_HOSTNAME }} \
-            --lot-size-satoshis="1000"
+            --lot-size-satoshis="10000"
