@@ -197,6 +197,11 @@ async function createDeposit(tbtc, satoshiLotSize, keyRing) {
         web3.utils.toBN(satoshiLotSize)
     )
 
+    deposit.onError((err) => {
+        console.error(err)
+        process.exit(1)
+    })
+
     deposit.autoSubmit()
 
     return new Promise(async (resolve, reject) => {
@@ -250,8 +255,6 @@ async function redeemDeposit(tbtc, depositAddress, redeemerAddress) {
             redemption.autoSubmit()
 
             redemption.onWithdrawn(transactionID => {
-                console.log()
-
                 resolve(
                     `Redeemed deposit ${deposit.address} with Bitcoin transaction ` +
                     `${transactionID}.`
