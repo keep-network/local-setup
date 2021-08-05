@@ -2,7 +2,7 @@ name: E2E tests / Testnet
 
 on:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '2 0 * * *'
   workflow_dispatch:
   pull_request: # TODO: remove this trigger before merging to main
 
