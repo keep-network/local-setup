@@ -38,8 +38,8 @@ jobs:
       - name: Run e2e tests
         run: |
           ./e2e-test.js \
-            --bitcoin-electrum-host=${{ secrets.KEEP_TEST_ELECTRUMX_HOSTNAME_WS }} \
+            --bitcoin-electrum-host=${{ secrets.KEEP_TEST_ELECTRUMX_HOSTNAME }} \
             --bitcoin-electrum-port=${{ secrets.KEEP_TEST_ELECTRUMX_PORT }} \
             --bitcoin-network="testnet" \
-            --ethereum-node=${{ secrets.KEEP_TEST_ETH_HOSTNAME }} \
+            --ethereum-node=${{ secrets.KEEP_TEST_ETH_HOSTNAME_WS }} \
             --lot-size-satoshis="1000000"
