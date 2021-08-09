@@ -2,7 +2,7 @@ name: E2E tests / Testnet
 
 on:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '2 0 * * *'
   workflow_dispatch:
   pull_request: # TODO: remove this trigger before merging to main
 
@@ -19,10 +19,13 @@ jobs:
         with:
           node-version: "14.x"
 
-      # TODO: Temprorarily we use fixed version of tbtc.js. Ultimately, we would
-      # need to point to the latest deployed version.
-      - run: npm install --save-exact @keep-network/tbtc.js@0.19.4-ropsten.4
+      - run: npm install --save-exact @keep-network/tbtc.js@ropsten
 
+      # In the future we could switch to using cache functionality built-in to
+      # the `setup-node` action. Right now the functionality does not support
+      # cases when package.json resides outside of the root directory, but there's
+      # an open issue (https://github.com/actions/setup-node/issues/275) in the
+      # works for that.
       - name: Cache Global NPM Cache
         uses: actions/cache@v2
         env:
@@ -41,5 +44,6 @@ jobs:
             --bitcoin-electrum-host=${{ secrets.KEEP_TEST_ELECTRUMX_HOSTNAME }} \
             --bitcoin-electrum-port=${{ secrets.KEEP_TEST_ELECTRUMX_PORT }} \
             --bitcoin-network="testnet" \
+            --bitcoin-depositor-pk=${{ secrets.KEEP_TEST_BTC_DEPOSITOR_PK }} \
             --ethereum-node=${{ secrets.KEEP_TEST_ETH_HOSTNAME_WS }} \
-            --lot-size-satoshis="1000000"
+            --lot-size-satoshis="10000"
