@@ -197,7 +197,10 @@ async function createDeposit(tbtc, satoshiLotSize, keyRing) {
         web3.utils.toBN(satoshiLotSize)
     )
 
-    deposit.onError(console.error)
+    deposit.onError((err) => {
+        console.error(err)
+        process.exit(1)
+    })
 
     deposit.autoSubmit()
 
