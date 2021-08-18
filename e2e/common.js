@@ -51,7 +51,18 @@ export const sendBitcoinTransaction = async(
 ) => {
     const sourceAddress = keyRing.getAddress("string");
 
-    console.log(`Sending transaction from ${sourceAddress} to ${targetAddress}`)
+    const sourceAddressBalance = await BitcoinHelpers.withElectrumClient(
+        async electrumClient => {
+            return electrumClient.getBalanceOfScript(
+                bcoin.Script.fromAddress(sourceAddress)
+            )
+        }
+    )
+
+    console.log(
+        `Sending transaction from ${sourceAddress} to ${targetAddress}; ` +
+        `BTC balance of source address is ${sourceAddressBalance.confirmed}`
+    )
 
     const utxos = await BitcoinHelpers.Transaction.findAllUnspent(sourceAddress)
 
