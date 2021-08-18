@@ -60,7 +60,7 @@ export const sendBitcoinTransaction = async(
     )
 
     console.log(
-        `Sending transaction from ${sourceAddress} to ${targetAddress}; ` +
+        `Sending transaction from ${sourceAddress} to ${targetAddress}\n` +
         `BTC balance of source address is ${sourceAddressBalance.confirmed}`
     )
 
