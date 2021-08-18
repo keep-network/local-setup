@@ -58,6 +58,18 @@ const web3 = new Web3(engine)
 engine.start()
 
 async function run() {
+    const btcBlock = await BitcoinHelpers.withElectrumClient(
+        async electrumClient => {
+            return electrumClient.latestBlockHeight()
+        }
+    )
+
+    const ethBlock = await web3.eth.getBlockNumber()
+
+    console.log(
+        `Starting e2e test at BTC block ${btcBlock} and ETH block ${ethBlock}`
+    )
+
     // Set first account as the default account.
     web3.eth.defaultAccount = (await web3.eth.getAccounts())[0]
 
