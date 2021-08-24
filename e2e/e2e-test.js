@@ -33,8 +33,6 @@ program
     .option('--lot-size-satoshis <lot>', "lot size in satoshis", (lot) => parseInt(lot, 10), 1000000)
     .parse(process.argv)
 
-console.log("\nScript options values: ", program.opts(), "\n")
-
 const signerFeeDivisor = 0.0005 // 0.05%
 const satoshiMultiplier = 10000000000 // 10^10
 const tbtcDepositAmount = program.lotSizeSatoshis * satoshiMultiplier
