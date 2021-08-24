@@ -51,7 +51,14 @@ export const sendBitcoinTransaction = async(
 ) => {
     const sourceAddress = keyRing.getAddress("string");
 
-    console.log(`Sending transaction from ${sourceAddress} to ${targetAddress}`)
+    const sourceAddressBalance = await BitcoinHelpers.Transaction.getBalance(
+        sourceAddress
+    )
+
+    console.log(
+        `Sending transaction from ${sourceAddress} to ${targetAddress}\n` +
+        `BTC balance of source address is ${sourceAddressBalance}`
+    )
 
     const utxos = await BitcoinHelpers.Transaction.findAllUnspent(sourceAddress)
 
@@ -60,10 +67,10 @@ export const sendBitcoinTransaction = async(
 
     // Start from the oldest UTXO.
     for (const utxo of utxos.reverse()) {
-        // Make sure the selected coins amount covers the 110% of the amount.
-        // The additional 10% is taken as a big reserve to make sure that input
+        // Make sure the selected coins amount covers the 120% of the amount.
+        // The additional 20% is taken as a big reserve to make sure that input
         // coins will cover the transaction fee.
-        if (coinsAmount >= 1.1 * amount.toNumber()) {
+        if (coinsAmount >= 1.2 * amount.toNumber()) {
             break
         }
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-modules
+#!/usr/bin/env -S node --experimental-json-modules
 
 import Web3 from "web3"
 import ProviderEngine from "web3-provider-engine"
@@ -33,9 +33,6 @@ program
     .option('--lot-size-satoshis <lot>', "lot size in satoshis", (lot) => parseInt(lot, 10), 1000000)
     .parse(process.argv)
 
-console.log("\nScript options values: ", program.opts(), "\n")
-
-const depositsCount = 2
 const signerFeeDivisor = 0.0005 // 0.05%
 const satoshiMultiplier = 10000000000 // 10^10
 const tbtcDepositAmount = program.lotSizeSatoshis * satoshiMultiplier
@@ -72,6 +69,18 @@ async function run() {
         }
     })
 
+    const btcBlock = await BitcoinHelpers.withElectrumClient(
+        async electrumClient => {
+            return electrumClient.latestBlockHeight()
+        }
+    )
+
+    const ethBlock = await web3.eth.getBlockNumber()
+
+    console.log(
+        `Starting e2e test at BTC block ${btcBlock} and ETH block ${ethBlock}`
+    )
+
     const bitcoinWalletDB = new bcoin.WalletDB({db: 'memory'})
     await bitcoinWalletDB.open()
     const bitcoinWallet = await bitcoinWalletDB.create()
@@ -93,9 +102,18 @@ async function run() {
         web3.eth.defaultAccount
     )
 
+    // When a deposit is opened, the total tBTC value received by the requester
+    // is smaller than the deposit amount due to the signer fee. On the other
+    // hand, the redeemer needs to provide an exact deposit amount to redeem
+    // a deposit. Because of that, we need to check the account's tBTC balance
+    // and open two deposits if the amount doesn't allow to make the redemption.
+    const depositsCount =
+        initialTbtcAccountBalance.lt(web3.utils.toBN(tbtcDepositAmount)) ? 2 : 1
+
     console.log(
         `Initial TBTC balance for account ${web3.eth.defaultAccount} ` +
-        `is: ${initialTbtcAccountBalance}`
+        `is: ${initialTbtcAccountBalance} - ${depositsCount} deposit(s) ` +
+        `will be opened`
     )
 
     const deposits = []
@@ -189,6 +207,11 @@ async function createDeposit(tbtc, satoshiLotSize, keyRing) {
         web3.utils.toBN(satoshiLotSize)
     )
 
+    deposit.onError((err) => {
+        console.error(err)
+        process.exit(1)
+    })
+
     deposit.autoSubmit()
 
     return new Promise(async (resolve, reject) => {
@@ -242,8 +265,6 @@ async function redeemDeposit(tbtc, depositAddress, redeemerAddress) {
             redemption.autoSubmit()
 
             redemption.onWithdrawn(transactionID => {
-                console.log()
-
                 resolve(
                     `Redeemed deposit ${deposit.address} with Bitcoin transaction ` +
                     `${transactionID}.`
