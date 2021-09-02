@@ -25,11 +25,10 @@ COPY --from=electrsbuild /workdir/electrs/target/release/electrs .
 EXPOSE 3002
 
 CMD ./electrs --cookie 'user:password' \
-    --http-addr 0.0.0.0:3002 \
-    --db-dir /workdir/data \
-    --daemon-rpc-addr $DAEMON_RPC_ADDR \
-    --daemon-dir /workdir/bitcoin-data/ \
-    --network $NETWORK \
-    --cors '*' \
-    --lightmode
-
+  --http-addr 0.0.0.0:3002 \
+  --db-dir /workdir/data \
+  --daemon-rpc-addr $DAEMON_RPC_ADDR \
+  --daemon-dir /workdir/bitcoin-data/ \
+  --network $NETWORK \
+  --cors '*' \
+  --lightmode
