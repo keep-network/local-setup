@@ -65,7 +65,9 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          labels: revision=${{ github.sha }}
+          labels: |
+            revision=${{ github.sha }}
+            github-run-id=${{ github.run_id }}
           # push: ${{ github.event_name != 'pull_request' }}
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
