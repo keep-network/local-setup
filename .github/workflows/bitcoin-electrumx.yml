@@ -49,7 +49,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Login to GitHub Container Registry
-        # if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -68,8 +68,7 @@ jobs:
           labels: |
             revision=${{ github.sha }}
             github-run-id=${{ github.run_id }}
-          # push: ${{ github.event_name != 'pull_request' }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
