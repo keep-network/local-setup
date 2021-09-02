@@ -27,7 +27,9 @@ services:
       - SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002,ws://0.0.0.0:50003,wss://127.0.0.1:50004,rpc://0.0.0.0:8000
       - COST_SOFT_LIMIT=0
       - COST_HARD_LIMIT=0
-    build: ./electrumx
+    depends_on:
+      - bitcoind
+
   electrs:
     container_name: electrs
     image: ghcr.io/keep-network/local-setup/electrs
@@ -41,6 +43,8 @@ services:
     environment:
       - DAEMON_RPC_ADDR=bitcoind:18332
       - NETWORK=regtest
+    depends_on:
+      - bitcoind
 
   esplora:
     container_name: esplora
@@ -51,3 +55,5 @@ services:
     #     API_URL: http://localhost:3002/ # electrs
     ports:
       - 8094:80
+    depends_on:
+      - electrs
