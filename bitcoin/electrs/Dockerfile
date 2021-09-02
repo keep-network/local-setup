@@ -32,3 +32,4 @@ CMD ./electrs --cookie 'user:password' \
     --network $NETWORK \
     --cors '*' \
     --lightmode
+

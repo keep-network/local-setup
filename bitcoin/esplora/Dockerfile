@@ -34,3 +34,4 @@ EXPOSE 80
 
 ## Set `daemon off` so the nginx is run in the foreground.
 CMD ["nginx", "-g", "daemon off;"]
+
