@@ -1,5 +1,5 @@
 .idea
-/ethereum/data/geth/
+/ethereum/.data/
 /bitcoin/.data/
 /storage/
 node_modules
