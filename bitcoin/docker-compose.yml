@@ -3,13 +3,17 @@ version: "3"
 services:
   bitcoind:
     container_name: bitcoind
+    image: ghcr.io/keep-network/local-setup/bitcoind
+    # build: ./bitcoind
     ports:
       - 18332:18332
     volumes:
       - ./data/bitcoind:/workdir/datadir
-    build: ./bitcoind
+
   electrumx:
     container_name: electrumx
+    image: ghcr.io/keep-network/local-setup/electrumx
+    # build: ./electrumx
     ports:
       - 50001:50001
       - 50002:50002
@@ -26,7 +30,10 @@ services:
     build: ./electrumx
   electrs:
     container_name: electrs
+    image: ghcr.io/keep-network/local-setup/electrs
+    # build: ./electrs
     ports:
+      # esplora image expects that electrs API is exposed at port 3002
       - 3002:3002
     volumes:
       - ./data/electrs:/workdir/data
@@ -34,12 +41,13 @@ services:
     environment:
       - DAEMON_RPC_ADDR=bitcoind:18332
       - NETWORK=regtest
-    build: ./electrs
+
   esplora:
     container_name: esplora
+    image: ghcr.io/keep-network/local-setup/esplora
+    # build:
+    #   context: ./esplora
+    #   args:
+    #     API_URL: http://localhost:3002/ # electrs
     ports:
       - 8094:80
-    build:
-      context: ./esplora
-      args:
-        API_URL: http://localhost:3002/ # electrs
