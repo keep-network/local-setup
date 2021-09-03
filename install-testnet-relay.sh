@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -33,7 +33,7 @@ cd "$WORKDIR/relays/maintainer/maintainer/config"
 
 # Fill SUMMA_RELAY_CONTRACT env in config file with their actual value.
 TMP_FILE=$(mktemp /tmp/.my_env_file.env.XXXXXXXXXX)
-sed 's:RELAYCONTRACT:'$TESTNET_RELAY_CONTRACT_ADDRESS':' .my_env_file.env > $TMP_FILE
+sed 's:RELAYCONTRACT:'$TESTNET_RELAY_CONTRACT_ADDRESS':' .my_env_file.env >$TMP_FILE
 mv $TMP_FILE .my_env_file.env
 
 cd $WORKDIR

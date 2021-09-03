@@ -34,11 +34,9 @@ btccli generatetoaddress 1000 "$address"
 trap "exit" INT
 
 # Run mining loop.
-while true
-do
-    hash=$(btccli generatetoaddress 1 "$address" | tr -d '[" \n"]')
-    count=$(btccli getblockcount)
-    printf "Generated block number $count ($hash) using miner address $address\n"
-    sleep 30 # mine a block every 30 seconds
+while true; do
+  hash=$(btccli generatetoaddress 1 "$address" | tr -d '[" \n"]')
+  count=$(btccli getblockcount)
+  printf "Generated block number $count ($hash) using miner address $address\n"
+  sleep 30 # mine a block every 30 seconds
 done
-

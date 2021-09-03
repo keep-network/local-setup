@@ -1,21 +1,21 @@
 [submodule "keep-core"]
-	path = keep-core
-	url = https://github.com/keep-network/keep-core.git
+path = keep-core
+url = https://github.com/keep-network/keep-core.git
 [submodule "keep-ecdsa"]
-	path = keep-ecdsa
-	url = https://github.com/keep-network/keep-ecdsa.git
+path = keep-ecdsa
+url = https://github.com/keep-network/keep-ecdsa.git
 [submodule "tbtc"]
-	path = tbtc
-	url = https://github.com/keep-network/tbtc.git
+path = tbtc
+url = https://github.com/keep-network/tbtc.git
 [submodule "tbtc-dapp"]
-	path = tbtc-dapp
-	url = https://github.com/keep-network/tbtc-dapp.git
+path = tbtc-dapp
+url = https://github.com/keep-network/tbtc-dapp.git
 [submodule "tbtc.js"]
-	path = tbtc.js
-	url = https://github.com/keep-network/tbtc.js.git
+path = tbtc.js
+url = https://github.com/keep-network/tbtc.js.git
 [submodule "relays"]
-	path = relays
-	url = https://github.com/keep-network/relays.git
+path = relays
+url = https://github.com/keep-network/relays.git
 [submodule "coverage-pools"]
-	path = coverage-pools
-	url = https://github.com/keep-network/coverage-pools.git
+path = coverage-pools
+url = https://github.com/keep-network/coverage-pools.git

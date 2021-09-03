@@ -3,7 +3,7 @@
 set -e
 
 LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_END='\n\e[0m'      # new line + reset color
 
 ETHEREUM_DIR="$PWD/ethereum"
 GETH_DATA_DIR="$ETHEREUM_DIR/data"
