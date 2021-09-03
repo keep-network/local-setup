@@ -22,6 +22,5 @@ geth --port 0 --networkid 1101 --identity "somerandomidentity" \
     --miner.etherbase=$GETH_ETHEREUM_ACCOUNT --mine --miner.threads=1 \
     --unlock $GETH_ETHEREUM_ACCOUNT --password <(echo "password") \
     --allow-insecure-unlock \
-    --rpc.allow-unprotected-txs \
     --snapshot=false \
     --nodiscover --maxpeers 0
