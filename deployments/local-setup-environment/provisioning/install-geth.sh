@@ -4,7 +4,7 @@ set -e
 
 echo "Installing go-ethereum..."
 
-GETH_PACKAGE=geth-alltools-linux-amd64-1.9.9-01744997.tar.gz
+GETH_PACKAGE=geth-alltools-linux-amd64-1.10.3-991384a7.tar.gz
 
 curl -O https://gethstore.blob.core.windows.net/builds/$GETH_PACKAGE
 

@@ -18,17 +18,22 @@ cp -R configs/keep-ecdsa/. keep-ecdsa/configs/
 
 cd keep-ecdsa/configs
 
-# Fill absolute paths in config files with actual working directory.
+# Fill absolute paths in config files with actual working directory, generate
+# a new btc wallet address and set the address at
+# Extensions.TBTC.Bitcoin.BeneficiaryAddress
+BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
 TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':g;s:BENEFICIARY_ADDRESS:'$BENEFICIARY_ADDRESS':g' config.local.1.toml > $TMP_FILE
 mv $TMP_FILE config.local.1.toml
 
+BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
 TMP_FILE=$(mktemp /tmp/config.local.2.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.2.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':g;s:BENEFICIARY_ADDRESS:'$BENEFICIARY_ADDRESS':g' config.local.2.toml > $TMP_FILE
 mv $TMP_FILE config.local.2.toml
 
+BENEFICIARY_ADDRESS=$(NODE_NO_WARNINGS=1 bitcoind-wallet getNewAddress | sed 's/ *$//g')
 TMP_FILE=$(mktemp /tmp/config.local.3.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.3.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':g;s:BENEFICIARY_ADDRESS:'$BENEFICIARY_ADDRESS':g' config.local.3.toml > $TMP_FILE
 mv $TMP_FILE config.local.3.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
@@ -47,17 +52,16 @@ cd keep-ecdsa/solidity
 TMP_FILE=$(mktemp /tmp/truffle.js.XXXXXXXXXX)
 sed -e 's/\port\:.*/\port\: '8546,'/g;s/\websockets\:.*/\websockets\: 'true,'/g' truffle.js > $TMP_FILE
 mv $TMP_FILE truffle.js
-cd ..
+
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+npm link
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
-# Run keep-ecdsa install script.  Answer with ENTER twice on emerging prompts.
-printf '\n\n' | ./scripts/install.sh
+cd "$WORKDIR/keep-ecdsa"
 
-printf "${LOG_START}Updating keep-ecdsa node_modules...${LOG_END}"
-
-cd $WORKDIR
-rm -rf keep-ecdsa/solidity/node_modules/@keep-network/keep-core
-cp -R keep-core/solidity/. keep-ecdsa/solidity/node_modules/@keep-network/keep-core
+./scripts/install.sh
 
 printf "${DONE_START}keep-ecdsa deployed successfully!${DONE_END}"

@@ -5,6 +5,8 @@ services:
     container_name: bitcoind
     ports:
       - 18332:18332
+    volumes:
+      - ./data/bitcoind:/workdir/datadir
     build: ./bitcoind
   electrumx:
     container_name: electrumx
@@ -19,4 +21,25 @@ services:
       - COIN=BitcoinSegwit
       - NET=regtest
       - SERVICES=tcp://0.0.0.0:50001,ssl://0.0.0.0:50002,ws://0.0.0.0:50003,wss://127.0.0.1:50004,rpc://0.0.0.0:8000
+      - COST_SOFT_LIMIT=0
+      - COST_HARD_LIMIT=0
     build: ./electrumx
+  electrs:
+    container_name: electrs
+    ports:
+      - 3002:3002
+    volumes:
+      - ./data/electrs:/workdir/data
+      - ./data/bitcoind:/workdir/bitcoin-data
+    environment:
+      - DAEMON_RPC_ADDR=bitcoind:18332
+      - NETWORK=regtest
+    build: ./electrs
+  esplora:
+    container_name: esplora
+    ports:
+      - 8094:80
+    build:
+      context: ./esplora
+      args:
+        API_URL: http://localhost:3002/ # electrs

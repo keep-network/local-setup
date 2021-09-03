@@ -1,8 +1,9 @@
-import {getTBTCTokenBalance, getReceivedBtcAmount} from "./common.js";
+import {getBtcBalance} from "./common.js";
+import Web3 from "web3"
 
-export const assertMintedTbtcAmount = (web3, deposit, expectedTbtcAmount) => {
-    const actualTbtcAmountBn = web3.utils.toBN(deposit.tbtcAmount)
-    const expectedTbtcAmountBn = web3.utils.toBN(expectedTbtcAmount)
+export const assertMintedTbtcAmount = (tbtcAmount, expectedTbtcAmount) => {
+    const actualTbtcAmountBn = Web3.utils.toBN(tbtcAmount)
+    const expectedTbtcAmountBn = Web3.utils.toBN(expectedTbtcAmount)
 
     if (!actualTbtcAmountBn.eq(expectedTbtcAmountBn)) {
         throw new Error(
@@ -14,13 +15,11 @@ export const assertMintedTbtcAmount = (web3, deposit, expectedTbtcAmount) => {
 }
 
 export const assertTbtcAccountBalance = async (
-    web3,
-    tbtc,
     account,
+    actualTbtcBalanceBn,
     expectedTbtcBalance
 ) => {
-    const actualTbtcBalanceBn = await getTBTCTokenBalance(web3, tbtc, account)
-    const expectedTbtcBalanceBn = web3.utils.toBN(expectedTbtcBalance)
+    const expectedTbtcBalanceBn = Web3.utils.toBN(expectedTbtcBalance)
 
     if (!actualTbtcBalanceBn.eq(expectedTbtcBalanceBn)) {
         throw new Error(
@@ -31,18 +30,19 @@ export const assertTbtcAccountBalance = async (
     }
 }
 
-export const assertReceivedBtcAmount = async (
-    bitcoinRpc,
+export const assertBtcBalance = async (
+    BitcoinHelpers,
     address,
-    expectedReceivedBtcAmount
+    expectedBtcBalance
 ) => {
-    const actualReceivedBtcAmount = await getReceivedBtcAmount(bitcoinRpc, address)
+    const actualBtcBalanceBn = await getBtcBalance(BitcoinHelpers, address)
+    const expectedBtcBalanceBn = Web3.utils.toBN(expectedBtcBalance)
 
-    if (actualReceivedBtcAmount !== expectedReceivedBtcAmount) {
+    if (!actualBtcBalanceBn.eq(expectedBtcBalanceBn)) {
         throw new Error(
-            `unexpected received BTC amount for address ${address}:
-                actual:   ${actualReceivedBtcAmount}
-                expected: ${expectedReceivedBtcAmount}`
+            `unexpected BTC balance for address ${address}:
+                actual:   ${actualBtcBalanceBn}
+                expected: ${expectedBtcBalanceBn}`
         )
     }
 }

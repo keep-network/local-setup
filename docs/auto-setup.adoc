@@ -18,6 +18,11 @@ First, go to the `deployments/local-setup-environment` directory and build the e
 ```
 packer build -only=vagrant packerfile.json
 ```
+
+[TIP]
+If you see an error `vagrant: error: SSH Port was not properly retrieved from
+SSHConfig.` or `vagrant: strconv.Atoi: parsing "": invalid syntax` refer to <<ssh-port,Troubleshooting>>.
+
 An output directory named `vagrant-box` containing `package.box` file should be created.
 
 Then, switch the directory to `deployments/local-setup-instance` and import
@@ -37,7 +42,7 @@ A new virtual machine will be created and provisioned accordingly. When
 this command terminates successfully, the machine should be ready to work
 and have all the auxiliary software like Geth, Bitcoin Core, ElectrumX
 and Core/ECDSA clients running. Worth noting, `keep-core` and `keep-ecdsa` client
-executables are always built from their recent master versions.
+executables are always built from their recent main versions.
 
 == How to interact with the system
 
@@ -151,3 +156,17 @@ If you wish editing code on your local machine, follow these steps:
 
 All of the steps above need to be executed once except copying file(s) to a destination 
 folder after each update to a file.
+
+== Troubleshooting
+
+[#ssh-port]
+=== SSH Port was not properly retrieved from SSHConfig
+
+If you see an error `vagrant: error: SSH Port was not properly retrieved from
+SSHConfig.` or `vagrant: strconv.Atoi: parsing "": invalid syntax` try to:
+
+- Turn off your antivirus completely. You can also try to disable the SSL scanning in your antivirus options.
+
+- If that doesn't help (as may happen after update to MacOS Big Sur), execute `csrutil enable && reboot` in the Recovery Mode (as described in this https://apple.stackexchange.com/a/410145[Stack Exchange answer]).
+
+- If all of the above fails you can also use `PACKER_LOG=1 packer build -only=vagrant packerfile.json` to debug the building process and see the exact issue.

@@ -1,7 +1,9 @@
 .idea
 /ethereum/data/geth/
+/bitcoin/data/
 /storage/
 node_modules
 vagrant-box
 .vagrant
 *.log
+.envrc
