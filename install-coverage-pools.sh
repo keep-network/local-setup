@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -23,6 +23,10 @@ cd "$WORKDIR/coverage-pools"
 
 # Remove node modules for clean installation
 rm -rf ./node_modules
+
+# Remove deployment artifacts for clean deployment
+rm -rf ./artifacts
+rm -rf ./deployments
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
