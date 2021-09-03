@@ -39,24 +39,23 @@ if [ "$BTC_NETWORK" == "testnet" ]; then
   jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 fi
 
-printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
+printf "${LOG_START}Running install script...${LOG_END}"
+
+printf "${LOG_START}Linking dependencies...${LOG_END}"
+
+cd "$WORKDIR/keep-core/solidity"
+npm link
 
 cd "$WORKDIR/keep-ecdsa/solidity"
-
-ln -sf build/contracts artifacts
-
-printf "${LOG_START}Updating tBTC configuration...${LOG_END}"
-
-cd "$WORKDIR/tbtc/solidity"
-
-KEEP_ECDSA_DIR="$WORKDIR/keep-ecdsa/solidity" jq '.dependencies."@keep-network/keep-ecdsa" = env.KEEP_ECDSA_DIR' package.json > package.json.tmp && mv package.json.tmp package.json
-
-printf "${LOG_START}Running install script...${LOG_END}"
+npm link
 
 cd "$WORKDIR/tbtc"
 
-# Run tBTC install script.  Answer with ENTER on emerging prompt.
-printf '\n' | ./scripts/install.sh
+# Remove node modules for clean installation
+rm -rf /solidity/node_modules
+
+# Run tBTC install script.
+./scripts/install.sh
 
 cd "$WORKDIR/tbtc/solidity"
 
@@ -72,9 +71,13 @@ printf "${DONE_START}tBTC deployed successfully!${DONE_END}"
 
 printf "${LOG_START}Initializing keep-ecdsa...${LOG_END}"
 
+cd "$WORKDIR/keep-ecdsa/solidity"
+
 # Get network ID.
-NETWORK_ID_OUTPUT=$(npx truffle exec ./scripts/get-network-id.js)
+NETWORK_ID_OUTPUT=$(npx truffle exec ./scripts/get-network-id.js --network local)
 NETWORK_ID=$(echo "$NETWORK_ID_OUTPUT" | tail -1)
+
+printf "${LOG_START}Network ID: ${NETWORK_ID}${LOG_END}"
 
 # Extract TBTCSystem contract address.
 JSON_QUERY=".networks.\"${NETWORK_ID}\".address"
@@ -85,8 +88,7 @@ printf "${LOG_START}TBTCSystem contract address is: ${TBTC_SYSTEM_CONTRACT_ADDRE
 
 cd "$WORKDIR/keep-ecdsa"
 
-# Run keep-ecdsa initialization script. Answer with ENTER on the first prompt
-# and with TBTCSystem contract address on the second one.
-printf '\n'${TBTC_SYSTEM_CONTRACT_ADDRESS}'\n' | ./scripts/initialize.sh
+# Run keep-ecdsa initialization script.
+./scripts/initialize.sh --application-address $TBTC_SYSTEM_CONTRACT_ADDRESS
 
 printf "${DONE_START}keep-ecdsa initialized successfully!${DONE_END}"
