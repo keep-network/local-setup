@@ -1,6 +1,8 @@
 name: common.js
 
 on:
+  schedule:
+    - cron: '0 0 * * *'
   push:
     branches:
       - main
@@ -53,6 +55,7 @@ jobs:
     if: |
       github.event_name != 'pull_request'
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
+        || github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
