@@ -15,6 +15,6 @@ npm install -g "$WORKDIR/bitcoind-wallet"
 
 printf "${LOG_START}Cleaning up data directory...${LOG_END}"
 
-rm -rf $PWD/bitcoin/.data
+rm -rf $WORKDIR/bitcoin/.data
 
 printf "${LOG_START}Bitcoin initialization complete!${LOG_END}"
