@@ -3,10 +3,12 @@
 set -e
 
 LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_END='\n\e[0m'      # new line + reset color
 
-ETHEREUM_DIR="$PWD/ethereum"
-GETH_DATA_DIR="$ETHEREUM_DIR/data"
+WORK_DIR="$(realpath "$(dirname "$0")")"
+
+ETHEREUM_DIR="$WORK_DIR/ethereum"
+GETH_DATA_DIR="$ETHEREUM_DIR/.data"
 GETH_ETHEREUM_ACCOUNT="0x3d373d872b7ba29d92ed47caa8605b4dd6ec84ef"
 
 printf "${LOG_START}Starting geth...${LOG_END}"
