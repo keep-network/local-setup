@@ -16,7 +16,13 @@ sudo mv protoc/include/* /usr/local/include
 
 go get -u github.com/gogo/protobuf/protoc-gen-gogoslick
 
-if ! [ -x "$(command -v protoc)" ]; then echo "protoc installation failed"; exit 1; fi
-if ! [ -x "$(command -v protoc-gen-gogoslick)" ]; then echo "protoc-gen-gogoslick installation failed"; exit 1; fi
+if ! [ -x "$(command -v protoc)" ]; then
+  echo "protoc installation failed"
+  exit 1
+fi
+if ! [ -x "$(command -v protoc-gen-gogoslick)" ]; then
+  echo "protoc-gen-gogoslick installation failed"
+  exit 1
+fi
 
 echo "Protobuf has been installed successfully!"

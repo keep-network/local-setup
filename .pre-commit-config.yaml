@@ -1,0 +1,12 @@
+repos:
+  - repo: https://github.com/keep-network/pre-commit-hooks.git
+    rev: 63e729f
+    hooks:
+      - id: check-added-large-files
+  - repo: local
+    hooks:
+      - id: format
+        name: "code formatting"
+        entry: /usr/bin/env bash -c "npm run format"
+        language: script
+        description: "Checks files formatting with prettier"

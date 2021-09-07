@@ -7,10 +7,8 @@ const contractHelper = require("./lib/contract-helper")
 
 module.exports = async function () {
   try {
-    const factoryDeploymentBlock = await contractHelper.getDeploymentBlockNumber(
-      DepositFactoryJson,
-      web3
-    )
+    const factoryDeploymentBlock =
+      await contractHelper.getDeploymentBlockNumber(DepositFactoryJson, web3)
 
     const TbtcSystem = truffleContract(TbtcSystemJson)
     TbtcSystem.setProvider(web3.currentProvider)

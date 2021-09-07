@@ -5,11 +5,11 @@ set -e
 echo "Installing Docker..."
 
 sudo apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
+  apt-transport-https \
+  ca-certificates \
+  curl \
+  gnupg-agent \
+  software-properties-common
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
@@ -21,6 +21,9 @@ sudo add-apt-repository \
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-if ! [ -x "$(command -v docker)" ]; then echo "Docker installation failed"; exit 1; fi
+if ! [ -x "$(command -v docker)" ]; then
+  echo "Docker installation failed"
+  exit 1
+fi
 
 echo "Docker has been installed successfully!"
