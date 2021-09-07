@@ -53,9 +53,9 @@ jobs:
   common-js-lint:
     needs: common-js-detect-changes
     if: |
-      github.event_name != 'pull_request'
+      (github.event_name != 'pull_request'
+        && github.event_name != 'schedule')
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
-        || github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
