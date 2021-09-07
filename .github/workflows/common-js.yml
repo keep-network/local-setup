@@ -1,6 +1,8 @@
 name: common.js
 
 on:
+  schedule:
+    - cron: '0 0 * * *'
   push:
     branches:
       - main
@@ -51,7 +53,8 @@ jobs:
   common-js-lint:
     needs: common-js-detect-changes
     if: |
-      github.event_name != 'pull_request'
+      (github.event_name != 'pull_request'
+        && github.event_name != 'schedule')
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
     runs-on: ubuntu-latest
     steps:
