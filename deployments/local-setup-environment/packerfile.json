@@ -12,16 +12,15 @@
       "image": "ubuntu:xenial",
       "commit": true,
       "run_command": [
-        "-d", "-i", "-t",
+        "-d",
+        "-i",
+        "-t",
         "-w=/root",
         "--entrypoint=/bin/bash",
         "--",
         "{{.Image}}"
       ],
-      "changes": [
-        "WORKDIR /root",
-        "ENTRYPOINT /bin/bash -l"
-      ]
+      "changes": ["WORKDIR /root", "ENTRYPOINT /bin/bash -l"]
     }
   ],
   "provisioners": [

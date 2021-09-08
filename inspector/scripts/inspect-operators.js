@@ -118,10 +118,11 @@ module.exports = async function () {
       const unbondedValue = await keepBonding.unbondedValue(operator)
       const unbondedValueEth = web3.utils.fromWei(unbondedValue)
 
-      const isRegisteredInTbtcPool = await bondedEcdsaKeepFactory.isOperatorRegistered(
-        operator,
-        tbtcSystem.address
-      )
+      const isRegisteredInTbtcPool =
+        await bondedEcdsaKeepFactory.isOperatorRegistered(
+          operator,
+          tbtcSystem.address
+        )
 
       let isUpToDateInTbtcPool
       if (isRegisteredInTbtcPool) {

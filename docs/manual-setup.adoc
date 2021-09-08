@@ -21,20 +21,30 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 
 == Node.js version notice
 
-Please use Node `v15.8.0` for everything but E2E test script.
-To run the test script, please use Node `v14.17.0`.
+All modules work with Node `v14`.
 
 We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
-You can install both versions by doing:
+
+=== nvm
+
+You can install a specific node version by doing:
 ```
-$ nvm install 11.15.0
-$ nvm install 14.17.0
+$ nvm install 14
 ```
 And use the specific version:
 ```
-$ nvm use 11.15.0
-$ nvm use 14.17.0
+$ nvm use 14
 ```
+
+To change the default node version globally run:
+```
+$ nvm alias default 14 
+```
+
+=== brew
+
+On macOS, you can also use `brew install node@14` to install Node 14, and use
+`brew link --force node@14` to make it your default local install.
 
 == Installing the system
 . Initialize local `geth` using:

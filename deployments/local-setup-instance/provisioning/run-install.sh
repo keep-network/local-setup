@@ -11,7 +11,3 @@ echo "Running install script..."
 ./install.sh
 
 echo "Install script executed successfully!"
-
-
-
-

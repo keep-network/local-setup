@@ -8,8 +8,7 @@ services:
     ports:
       - 18332:18332
     volumes:
-      - ./data/bitcoind:/workdir/datadir
-
+      - ./.data/bitcoind:/workdir/datadir
   electrumx:
     container_name: electrumx
     image: ghcr.io/keep-network/local-setup/electrumx
@@ -38,8 +37,8 @@ services:
       # esplora image expects that electrs API is exposed at port 3002
       - 3002:3002
     volumes:
-      - ./data/electrs:/workdir/data
-      - ./data/bitcoind:/workdir/bitcoin-data
+      - ./.data/electrs:/workdir/data
+      - ./.data/bitcoind:/workdir/bitcoin-data
     environment:
       - DAEMON_RPC_ADDR=bitcoind:18332
       - NETWORK=regtest

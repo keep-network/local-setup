@@ -12,6 +12,9 @@ chmod 755 solc-static-linux
 sudo mv solc-static-linux /usr/local/bin
 sudo ln -s -f /usr/local/bin/solc-static-linux /usr/local/bin/solc
 
-if ! [ -x "$(command -v solc)" ]; then echo "Solidity installation failed"; exit 1; fi
+if ! [ -x "$(command -v solc)" ]; then
+  echo "Solidity installation failed"
+  exit 1
+fi
 
 echo "Solidity has been installed successfully!"
