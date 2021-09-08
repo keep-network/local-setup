@@ -1,8 +1,6 @@
 name: Bitcoin / Electrs
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
   push:
     branches:
       - main
