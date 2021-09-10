@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -20,7 +20,7 @@ cd keep-core/configs
 
 # Fill absolute paths in config file with actual working directory.
 TMP_FILE=$(mktemp /tmp/config.local.1.toml.XXXXXXXXXX)
-sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml > $TMP_FILE
+sed 's:WORKDIR:'$WORKDIR':' config.local.1.toml >$TMP_FILE
 mv $TMP_FILE config.local.1.toml
 
 printf "${LOG_START}Creating storage directories...${LOG_END}"
