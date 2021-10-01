@@ -18,22 +18,11 @@ jobs:
         working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-commons.sh
 
-      - name: Use Node.js 12
+      - name: Use Node.js 14
         uses: actions/setup-node@v2
         with:
-          node-version: "12"
-
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-solidity-node-modules
-        with:
-          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          node-version: "14"
+          cache: "npm"
 
       - name: Set up Go 1.16
         uses: actions/setup-go@v1
@@ -81,11 +70,6 @@ jobs:
           ./run-ecdsa-1.sh &
           ./run-ecdsa-2.sh &
           ./run-ecdsa-3.sh &
-
-      - name: Use Node.js 14.17.0
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14.17.0"
 
       - name: Prepare environment for running E2E test scripts
         run: ./install-e2e-test.sh
