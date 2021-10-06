@@ -13,7 +13,7 @@ printf "${LOG_START}Starting coverage-pools deployment...${LOG_END}"
 
 printf "${LOG_START}Linking dependencies...${LOG_END}"
 
-cd "$WORKDIR/keep-core/solidity"
+cd "$WORKDIR/keep-core/solidity-v1"
 yarn link
 
 cd "$WORKDIR/tbtc/solidity"
