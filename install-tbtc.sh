@@ -43,7 +43,7 @@ printf "${LOG_START}Running install script...${LOG_END}"
 
 printf "${LOG_START}Linking dependencies...${LOG_END}"
 
-cd "$WORKDIR/keep-core/solidity"
+cd "$WORKDIR/keep-core/solidity-v1"
 npm link
 
 cd "$WORKDIR/keep-ecdsa/solidity"
