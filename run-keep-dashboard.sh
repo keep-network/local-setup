@@ -11,6 +11,6 @@ WORKDIR=$PWD
 
 printf "${LOG_START}Starting Keep Dashboard...${LOG_END}"
 
-cd $WORKDIR/keep-core/solidity/dashboard
+cd $WORKDIR/keep-core/solidity-v1/dashboard
 
 npm run start

@@ -55,7 +55,7 @@ mv $TMP_FILE truffle.js
 
 printf "${LOG_START}Linking dependencies...${LOG_END}"
 
-cd "$WORKDIR/keep-core/solidity"
+cd "$WORKDIR/keep-core/solidity-v1"
 npm link
 
 printf "${LOG_START}Running install script...${LOG_END}"

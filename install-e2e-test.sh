@@ -7,7 +7,7 @@ cd e2e
 npm install
 
 echo "Linking..."
-cd ../keep-core/solidity
+cd ../keep-core/solidity-v1
 npm link
 cd ../../keep-ecdsa/solidity
 npm link
