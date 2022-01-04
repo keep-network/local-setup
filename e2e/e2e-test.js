@@ -259,7 +259,7 @@ async function run() {
 }
 
 async function createDeposit(tbtc, satoshiLotSize, keyRing) {
-  const web3 = { tbtc }
+  const { web3 } = tbtc.config
 
   const deposit = await tbtc.Deposit.withSatoshiLotSize(
     web3.utils.toBN(satoshiLotSize)
