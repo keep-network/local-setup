@@ -47,6 +47,7 @@ program
     "private key of ethereum account",
     "f95e1da038f1fd240cb0c966d8826fb5c0369407f76f34736a5c381da7ca0ecd"
   )
+  .option("--ethereum-chain-id <network id>", "chain id of ethereum network")
   .option(
     "--lot-size-satoshis <lot>",
     "lot size in satoshis",
@@ -64,18 +65,30 @@ const satoshiRedemptionFee = 2700
 
 bcoin.set(program.bitcoinNetwork)
 
-const engine = new ProviderEngine({ pollingInterval: 1000 })
+async function initWeb3() {
+  let chainId = program.ethereumChainId
+  if (!chainId) {
+    const web3 = new Web3(program.ethereumNode)
+    chainId = await web3.eth.getChainId()
+  }
 
-engine.addProvider(
-  new Subproviders.PrivateKeyWalletSubprovider(program.ethereumPk)
-)
-engine.addProvider(new WebsocketSubprovider({ rpcUrl: program.ethereumNode }))
+  const engine = new ProviderEngine({ pollingInterval: 1000 })
 
-const web3 = new Web3(engine)
+  engine.addProvider(
+    new Subproviders.PrivateKeyWalletSubprovider(program.ethereumPk, chainId)
+  )
+  engine.addProvider(new WebsocketSubprovider({ rpcUrl: program.ethereumNode }))
 
-engine.start()
+  const web3 = new Web3(engine)
+
+  engine.start()
+
+  return web3
+}
 
 async function run() {
+  const web3 = await initWeb3()
+
   // Set first account as the default account.
   web3.eth.defaultAccount = (await web3.eth.getAccounts())[0]
 
@@ -246,6 +259,8 @@ async function run() {
 }
 
 async function createDeposit(tbtc, satoshiLotSize, keyRing) {
+  const { web3 } = tbtc.config
+
   const deposit = await tbtc.Deposit.withSatoshiLotSize(
     web3.utils.toBN(satoshiLotSize)
   )
