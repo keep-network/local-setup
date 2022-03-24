@@ -256,6 +256,12 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
 * If you pressed "Deposit" and got Unhandled Rejection error from dApp, make sure
   the wallet is connected to your local ethereum network (in metamask go to
   My Accounts->Settings->Networks, Chain Id for localhost:8545 should be 1101).
+* If you see `The unauthenticated git protocol on port 9418 is no longer
+  supported` error or erors like  `ENOENT: no such file or directory, open
+  '/home/runner/work/local-setup/local-setup/e2e/node_modules/.staging/...'`,
+  you can change Git configuration on your local enviroment to always use
+  `https://` protocol instaed of `git://` to download files. This can be done by
+  executing command: `git config --global url."https://".insteadOf git://`
 
 === E2E tests
 

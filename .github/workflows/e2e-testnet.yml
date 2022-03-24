@@ -20,6 +20,14 @@ jobs:
           cache: "npm"
           cache-dependency-path: e2e/package-lock.json
 
+      # We need this step because the `@keep-network/tbtc.js` which we update in
+      # next step has an indirect dependency to `@summa-tx/relay-sol@2.0.2`
+      # package, which downloads one of its sub-dependencies via unathenticated
+      # `git://` protocol. That protocol is no longer supported. Thanks to this
+      # step `https://` is used instead of `git://`.
+      - name: Configure git to don't use unauthenticated protocol
+        run: git config --global url."https://".insteadOf git://
+
       - run: npm install --save-exact @keep-network/tbtc.js@ropsten
 
       - name: Run e2e tests
