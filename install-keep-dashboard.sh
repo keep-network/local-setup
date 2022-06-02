@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -13,7 +13,7 @@ printf "${LOG_START}Starting Keep Dashboard deployment...${LOG_END}"
 
 printf "${LOG_START}Preparing keep-core artifacts...${LOG_END}"
 
-cd $WORKDIR/keep-core/solidity
+cd $WORKDIR/keep-core/solidity-v1
 ln -sf build/contracts artifacts
 
 printf "${LOG_START}Preparing keep-ecdsa artifacts...${LOG_END}"
@@ -28,13 +28,13 @@ ln -sf build/contracts artifacts
 
 printf "${LOG_START}Install Keep Dashboard dependencies...${LOG_END}"
 
-cd $WORKDIR/keep-core/solidity/dashboard
+cd $WORKDIR/keep-core/solidity-v1/dashboard
 
 npm install
 
 printf "${LOG_START}Updating Keep Dashboard dependencies...${LOG_END}"
 
-cd $WORKDIR/keep-core/solidity
+cd $WORKDIR/keep-core/solidity-v1
 npm link
 
 cd $WORKDIR/keep-ecdsa/solidity
@@ -45,7 +45,7 @@ npm link
 
 printf "${LOG_START}Updating Keep Dashboard configuration...${LOG_END}"
 
-cd $WORKDIR/keep-core/solidity/dashboard
+cd $WORKDIR/keep-core/solidity-v1/dashboard
 npm link @keep-network/keep-core @keep-network/keep-ecdsa @keep-network/tbtc
 
 printf "${DONE_START}Keep Dashboard initialized successfully!${DONE_END}"

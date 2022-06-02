@@ -10,7 +10,7 @@ while true; do
   if [ -z "$ETH_BLOCK" ] || [ "$ETH_BLOCK" == "0x0" ]; then
     echo "Geth still not initialized - waiting..."
     sleep 30
-    continue;
+    continue
   fi
 
   echo "Geth initialized!"
@@ -26,11 +26,10 @@ while true; do
   if [ -z "$BTC_BLOCK" ] || [ "$BTC_BLOCK" == "0" ]; then
     echo "Bitcoin Core still not initialized - waiting..."
     sleep 30
-    continue;
+    continue
   fi
 
   echo "Bitcoin Core initialized!"
 
   break
 done
-

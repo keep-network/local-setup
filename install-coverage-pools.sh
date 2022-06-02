@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -13,7 +13,7 @@ printf "${LOG_START}Starting coverage-pools deployment...${LOG_END}"
 
 printf "${LOG_START}Linking dependencies...${LOG_END}"
 
-cd "$WORKDIR/keep-core/solidity"
+cd "$WORKDIR/keep-core/solidity-v1"
 yarn link
 
 cd "$WORKDIR/tbtc/solidity"

@@ -78,11 +78,16 @@ module.exports = async function () {
       const { memberIndex, misbehaved } = dkgSubmittedEvent.returnValues
 
       const submitDKGTransactionHash = dkgSubmittedEvent.transactionHash
-      const submitDKGTransaction = await web3.eth.getTransaction(submitDKGTransactionHash)
+      const submitDKGTransaction = await web3.eth.getTransaction(
+        submitDKGTransactionHash
+      )
       const submitDKGInput = abiDecoder.decodeMethod(submitDKGTransaction.input)
-      const signatures = submitDKGInput.params.find(p => p.name === "signatures").value
+      const signatures = submitDKGInput.params.find(
+        (p) => p.name === "signatures"
+      ).value
       const signatureLength = 65
-      const signaturesCount = Buffer.from(signatures.slice(2), "hex").length / signatureLength
+      const signaturesCount =
+        Buffer.from(signatures.slice(2), "hex").length / signatureLength
 
       console.log(`Group ${groupPubKey}:`)
       console.log(` - has index ${i}`)

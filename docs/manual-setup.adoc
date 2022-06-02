@@ -21,20 +21,30 @@ Regardless you use `macos-setup.sh` or not, you should also install:
 
 == Node.js version notice
 
-Please use Node `v15.8.0` for everything but E2E test script.
-To run the test script, please use Node `v14.17.0`.
+All modules work with Node `v14`.
 
 We recommend using https://github.com/nvm-sh/nvm[nvm] to manage node versions easily.
-You can install both versions by doing:
+
+=== nvm
+
+You can install a specific node version by doing:
 ```
-$ nvm install 11.15.0
-$ nvm install 14.17.0
+$ nvm install 14
 ```
 And use the specific version:
 ```
-$ nvm use 11.15.0
-$ nvm use 14.17.0
+$ nvm use 14
 ```
+
+To change the default node version globally run:
+```
+$ nvm alias default 14 
+```
+
+=== brew
+
+On macOS, you can also use `brew install node@14` to install Node 14, and use
+`brew link --force node@14` to make it your default local install.
 
 == Installing the system
 . Initialize local `geth` using:
@@ -246,6 +256,12 @@ Confirm all of the transactions and verify that the TBTC has left your wallet. Y
 * If you pressed "Deposit" and got Unhandled Rejection error from dApp, make sure
   the wallet is connected to your local ethereum network (in metamask go to
   My Accounts->Settings->Networks, Chain Id for localhost:8545 should be 1101).
+* If you see `The unauthenticated git protocol on port 9418 is no longer
+  supported` error or erors like  `ENOENT: no such file or directory, open
+  '/home/runner/work/local-setup/local-setup/e2e/node_modules/.staging/...'`,
+  you can change Git configuration on your local enviroment to always use
+  `https://` protocol instaed of `git://` to download files. This can be done by
+  executing command: `git config --global url."https://".insteadOf git://`
 
 === E2E tests
 

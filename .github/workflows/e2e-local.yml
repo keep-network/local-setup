@@ -2,7 +2,7 @@ name: E2E tests / Locally
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -18,22 +18,11 @@ jobs:
         working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-commons.sh
 
-      - name: Use Node.js 12
+      - name: Use Node.js 14
         uses: actions/setup-node@v2
         with:
-          node-version: '12'
-
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-solidity-node-modules
-        with:
-          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          node-version: "14"
+          cache: "npm"
 
       - name: Set up Go 1.16
         uses: actions/setup-go@v1
@@ -44,7 +33,7 @@ jobs:
         run: |
           echo "GOPATH=$HOME/go" >> $GITHUB_ENV
           echo "$HOME/go/bin" >> $GITHUB_PATH
-         
+
       - name: Install Geth
         working-directory: ./deployments/local-setup-environment/provisioning/
         run: ./install-geth.sh
@@ -82,11 +71,14 @@ jobs:
           ./run-ecdsa-2.sh &
           ./run-ecdsa-3.sh &
 
-      - name: Use Node.js 14.17.0
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14.17.0'
-
+      # We need this step because the `@keep-network/tbtc.js` which we update in
+      # next step has an indirect dependency to `@summa-tx/relay-sol@2.0.2`
+      # package, which downloads one of its sub-dependencies via unathenticated
+      # `git://` protocol. That protocol is no longer supported. Thanks to this
+      # step `https://` is used instead of `git://`.
+      - name: Configure git to don't use unauthenticated protocol
+        run: git config --global url."https://".insteadOf git://
+        
       - name: Prepare environment for running E2E test scripts
         run: ./install-e2e-test.sh
 

@@ -2,7 +2,7 @@
   URL = "ws://127.0.0.1:8546"
 
 [ethereum.account]
-  KeyFile = "WORKDIR/ethereum/data/keystore/UTC--2019-08-01T13-19-44.188278000Z--b7021acafecf289fa345ecc95ecab18077530841"
+  KeyFile = "WORKDIR/ethereum/.data/keystore/UTC--2019-08-01T13-19-44.188278000Z--b7021acafecf289fa345ecc95ecab18077530841"
 
 [ethereum.ContractAddresses]
   BondedECDSAKeepFactory = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"

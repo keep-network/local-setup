@@ -2,8 +2,8 @@
 
 set -e
 
-LOG_START='\n\e[1;36m' # new line + bold + color
-LOG_END='\n\e[0m' # new line + reset color
+LOG_START='\n\e[1;36m'  # new line + bold + color
+LOG_END='\n\e[0m'       # new line + reset color
 DONE_START='\n\e[1;32m' # new line + bold + green
 DONE_END='\n\n\e[0m'    # new line + reset
 
@@ -13,8 +13,8 @@ BTC_NETWORK="regtest"
 
 while getopts n: option; do
   case "${option}" in
-  n) BTC_NETWORK=${OPTARG};;
-  *) echo "invalid option";;
+  n) BTC_NETWORK=${OPTARG} ;;
+  *) echo "invalid option" ;;
   esac
 done
 
@@ -30,20 +30,20 @@ if [ "$BTC_NETWORK" == "testnet" ]; then
   printf "${LOG_START}Updating testnet relay configuration...${LOG_END}"
 
   cd "$WORKDIR/tbtc/solidity/migrations"
-  jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+  jq --arg forceRelay TestnetRelay '. + {forceRelay: $forceRelay}' relay-config.json >relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 
   bitcoinTest=$(node "$WORKDIR/relay-genesis/relay-genesis.js")
   BITCOIN_TEST=$(echo "$bitcoinTest" | tail -1)
 
-  jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
-  jq '.init.bitcoinTest |= fromjson' relay-config.json > relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+  jq --arg bitcoinTest ${BITCOIN_TEST} '.init.bitcoinTest = $bitcoinTest' relay-config.json >relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
+  jq '.init.bitcoinTest |= fromjson' relay-config.json >relay-config.json.tmp && mv relay-config.json.tmp relay-config.json
 fi
 
 printf "${LOG_START}Running install script...${LOG_END}"
 
 printf "${LOG_START}Linking dependencies...${LOG_END}"
 
-cd "$WORKDIR/keep-core/solidity"
+cd "$WORKDIR/keep-core/solidity-v1"
 npm link
 
 cd "$WORKDIR/keep-ecdsa/solidity"

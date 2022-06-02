@@ -1,0 +1,9 @@
+# Following directories have their own formatting configuration:
+common.js/
+coverage-pools/
+keep-core/
+keep-ecdsa/
+tbtc/
+tbtc-dapp/
+tbtc.js/
+relays/
