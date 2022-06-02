@@ -17,7 +17,7 @@ const cli = meow(`
   Commands
     sendToAddress         <address> <btc> Send btc to an address
     getNewAddress         [address_type] Get an address to receive btc
-                            Values: legacy, p2sh-segwit, bech32 (default)
+                            Values: legacy, p2sh-segwit, bech32 (default), p2wsh.
     sendRawTransaction    <transaction> Broadcast a raw transaction
     getBalance            <address> Get the balance of an address
 `)
