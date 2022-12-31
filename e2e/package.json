@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@keep-network/tbtc.js": "file:../tbtc.js",
-    "@0x/subproviders": "^6.6.1",
+    "@0x/subproviders": "^7.0.0",
     "web3": "^1.5.3",
     "web3-provider-engine": "^16.0.3",
     "bcoin": "git+https://github.com/bcoin-org/bcoin.git#8851582",
