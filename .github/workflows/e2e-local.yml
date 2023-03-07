@@ -1,8 +1,6 @@
 name: E2E tests / Locally
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
