@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bitcoind
+  namespace: local-setup
+  labels:
+    app: bitcoind
+    type: local
+spec:
+  ports:
+    - port: 18332
+      targetPort: 18332
+      name: tcp-18332
+  selector:
+    app: bitcoind
+    type: local

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: electrumx
+  namespace: local-setup
+spec:
+  replicas: 1
+  serviceName: electrumx
+  selector:
+    matchLabels:
+      app: electrumx
+      type: local
+  template:
+    metadata:
+      labels:
+        app: electrumx
+        type: local
+    spec:
+      containers:
+        - name: electrumx
+          image: gcr.io/keep-dev-fe24/electrumx-local
+          ports:
+            - containerPort: 50001
+            - containerPort: 50002
+            - containerPort: 50003
+            - containerPort: 50004
+            - containerPort: 8000
+          env:
+            - name: DAEMON_URL
+              value: "http://user:password@bitcoind.local-setup.svc.cluster.local:18332"
+            - name: COIN
+              value: "BitcoinSegwit"
+            - name: NET
+              value: "regtest"
+            - name: SERVICES
+              value: "tcp://0.0.0.0:50001,ssl://0.0.0.0:50002,ws://0.0.0.0:50003,wss://127.0.0.1:50004,rpc://0.0.0.0:8000"
+            - name: COST_SOFT_LIMIT
+              value: "0"
+            - name: COST_HARD_LIMIT
+              value: "0"
+
