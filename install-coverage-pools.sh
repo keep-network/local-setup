@@ -24,6 +24,10 @@ cd "$WORKDIR/coverage-pools"
 # Remove node modules for clean installation
 rm -rf ./node_modules
 
+# Remove deployment artifacts for clean deployment
+rm -rf ./artifacts
+rm -rf ./deployments
+
 printf "${LOG_START}Running install script...${LOG_END}"
 
 # Run coverage-pools install script.
