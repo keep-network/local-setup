@@ -134,6 +134,28 @@ vagrant destroy
 ```
 and run it again.
 
+=== Sharing folders between Host and Guest OS in Virtual Box
+
+If you wish editing code on your local machine, follow these steps:
+
+- open VirtualBox, navigate to Settings -> Shared Folders. Click `add` new folder
+
+- provide the path of folder that you want to share, e.g. `{path}/local-setup/e2e`
+
+- in Mount Point type `/media/` and check `Make Permanent`
+
+- reload VB `vagrant reload`
+
+- ssh to your guest OS `vagrant ssh` and navigate to `/media`
+
+- you should see your shared folder there with the `sf_` prefix e.g. `sf_e2e`
+
+- copy your file to a destination folder, e.g. `sudo cp sf_e2e/e2e-test.js /home/vagrant/local-setup/e2e`
+
+- you *might* need to change owner of your file, e.g. `sudo chown vagrant e2e-test.js`
+
+All of the steps above need to be executed once except copying file(s) to a destination 
+folder after each update to a file.
 
 == Troubleshooting
 
