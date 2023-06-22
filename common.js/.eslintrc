@@ -1,6 +1,0 @@
-{
-  "extends": ["eslint-config-keep", "prettier"],
-  "parserOptions": {
-    "ecmaVersion": 2017
-  }
-}
