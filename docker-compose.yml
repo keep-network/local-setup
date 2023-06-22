@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  geth:
+    container_name: geth
+    build:
+      context: .
+      dockerfile: Dockerfile.geth
+    volumes:
+      - ./docker/geth/.data:/ethereum/data
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+
+  bitcoind:
+    container_name: bitcoind
+    build: ./docker/bitcoin/bitcoind
+    ports:
+      - 18332:18332
+    volumes:
+      - ./docker/bitcoin/.data/bitcoind:/workdir/datadir
+
+  electrs:
+    container_name: electrs
+    build: ./docker/bitcoin/electrs
+    ports:
+      # esplora image expects that electrs API is exposed at port 3002
+      - 3002:3002
+    volumes:
+      - ./docker/bitcoin/.data/electrs:/workdir/data
+      - ./docker/bitcoin/.data/bitcoind:/workdir/bitcoin-data
+    environment:
+      - DAEMON_RPC_ADDR=bitcoind:18332
+      - NETWORK=regtest
+    depends_on:
+      - bitcoind
+
+  esplora:
+    container_name: esplora
+    build:
+      context: ./docker/bitcoin/esplora
+      args:
+        API_URL: http://localhost:3002/ # electrs
+    ports:
+      - 8094:80
+    depends_on:
+      - electrs
+
+  explorer:
+    container_name: b-explorer
+    image: appliedblockchain/b-explorer
+    ports:
+      - 8095:3000
+    environment:
+      - ETHEREUM_JSONRPC_ENDPOINT=http://geth:8545/
+    depends_on:
+      - geth
