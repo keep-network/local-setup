@@ -1,1 +1,9 @@
 [submodule "keep-core"]
+  path = keep-core
+  url = https://github.com/keep-network/keep-core.git
+[submodule "solidity-contracts"]
+	path = solidity-contracts
+	url = https://github.com/threshold-network/solidity-contracts
+[submodule "tbtc-v2"]
+	path = tbtc-v2
+	url = https://github.com/keep-network/tbtc-v2
