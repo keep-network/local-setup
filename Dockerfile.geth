@@ -12,7 +12,7 @@ COPY --from=node /usr/local/lib /usr/local/lib
 COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
 
-ENV GETH_DATA_DIR=/ethereum/data/
+ENV GETH_DATA_DIR=/ethereum/data
 ENV GETH_ETHEREUM_ACCOUNT=0x944466f81e70c74c0f6b736ba72c7a69e475735a
 ENV KEEP_ETHEREUM_PASSWORD=password
 ENV NETWORK=development
