@@ -68,4 +68,4 @@ WORKDIR /
 
 ADD ./docker/geth/entrypoint.sh .
 
-CMD /entrypoint.sh
+CMD ["/entrypoint.sh"]
