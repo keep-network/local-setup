@@ -25,7 +25,7 @@ RUN apk add --update --no-cache bash git geth make gcc g++ && \
 # See: https://github.com/keep-network/tbtc-v2/blob/f53cb9ced50eaa8cfabcdf12cdcdc24a81a0ae11/.github/workflows/contracts.yml#L76-L80
 RUN git config --global url."https://".insteadOf git://
 
-COPY ./solidity-contracts /solidity-contracts
+COPY ./threshold-network/solidity-contracts /solidity-contracts
 WORKDIR /solidity-contracts
 RUN git init
 RUN yarn install
@@ -33,7 +33,7 @@ RUN yarn build
 RUN yarn link
 RUN yarn prepack
 
-COPY ./keep-core /keep-core
+COPY ./keep-network/keep-core /keep-core
 WORKDIR /keep-core
 RUN git init
 
@@ -53,7 +53,7 @@ RUN yarn build
 RUN yarn link
 RUN yarn prepack
 
-COPY ./tbtc-v2 /tbtc-v2
+COPY ./keep-network/tbtc-v2 /tbtc-v2
 WORKDIR /tbtc-v2
 RUN git init
 WORKDIR /tbtc-v2/solidity
