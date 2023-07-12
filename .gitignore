@@ -1,6 +1,7 @@
 .idea
-/ethereum/.data/
-/bitcoin/.data/
+/docker/bitcoin/.data/
+/docker/ethereum/.data/
+/docker/geth/.data/
 /storage/
 node_modules
 vagrant-box
