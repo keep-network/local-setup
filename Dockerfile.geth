@@ -22,6 +22,7 @@ RUN apk add --update --no-cache bash git geth make gcc g++ && \
   npm install --global yarn --force
 
 # There's a transitive git problem that this fixes
+# See: https://github.com/keep-network/tbtc-v2/blob/f53cb9ced50eaa8cfabcdf12cdcdc24a81a0ae11/.github/workflows/contracts.yml#L76-L80
 RUN git config --global url."https://".insteadOf git://
 
 COPY ./solidity-contracts /solidity-contracts
