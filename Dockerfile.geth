@@ -27,15 +27,12 @@ RUN git config --global url."https://".insteadOf git://
 
 COPY ./threshold-network/solidity-contracts /solidity-contracts
 WORKDIR /solidity-contracts
-RUN git init
 RUN yarn install
 RUN yarn build
 RUN yarn link
 RUN yarn prepack
 
 COPY ./keep-network/keep-core /keep-core
-WORKDIR /keep-core
-RUN git init
 
 WORKDIR /keep-core/solidity/random-beacon
 RUN yarn install
@@ -55,7 +52,6 @@ RUN yarn prepack
 
 COPY ./keep-network/tbtc-v2 /tbtc-v2
 WORKDIR /tbtc-v2
-RUN git init
 WORKDIR /tbtc-v2/solidity
 RUN yarn install --network-timeout 1000000 && \
   yarn build || true
