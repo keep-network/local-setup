@@ -53,6 +53,9 @@ RUN yarn prepack
 COPY ./keep-network/tbtc-v2 /tbtc-v2
 WORKDIR /tbtc-v2
 WORKDIR /tbtc-v2/solidity
+# Need to run `yarn build || true` expecting a failure so that the *next* one
+# succeeds. Without it, we get Error HH501: Couldn't download compiler version
+# 0.8.17+commit.8df45f5f.
 RUN yarn install --network-timeout 1000000 && \
   yarn build || true
 RUN yarn link @threshold-network/solidity-contracts
