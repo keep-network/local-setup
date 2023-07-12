@@ -5,6 +5,8 @@ RUN rustup component add rustfmt
 WORKDIR /workdir
 RUN git clone --no-checkout https://github.com/Blockstream/electrs.git
 WORKDIR electrs
+# Use the most recent commit from `202305-fix-mempool-batching`.
+# This is the most recently worked on stable branch.
 RUN git checkout 20e42862a57f0d45ce48a9956a361e7193b9e97d
 ENV RUSTFLAGS -Ctarget-feature=-crt-static
 RUN cargo build --release --locked --bin electrs
