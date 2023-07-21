@@ -1,0 +1,26 @@
+[ethereum]
+  URL = "ws://127.0.0.1:8546"
+  KeyFile = "{ethereum_keyfile}"
+
+[network]
+  Port = {network_port}
+  {peers}
+
+[storage]
+  Dir = "{storage_dir}"
+
+[clientinfo]
+  Port = {client_port}
+
+[tbtc]
+  KeyGenerationConcurrency = 2
+
+[developer]
+  WalletCoordinatorAddress = "{wallet_coordinator_address}"
+  BridgeAddress = "{bridge_address}"
+  RandomBeaconAddress = "{random_beacon_address}"
+  WalletRegistryAddress = "{wallet_registry_address}"
+  TokenStakingAddress = "{token_staking_address}"
+
+[bitcoin.electrum]
+  URL = "tcp://127.0.0.1:60401"

@@ -19,6 +19,7 @@ COPY --from=electrsbuild /workdir/electrs/target/release/electrs .
 
 CMD ./electrs --cookie 'user:password' \
   --http-addr 0.0.0.0:3002 \
+  --electrum-rpc-addr 0.0.0.0:60401 \
   --db-dir /workdir/data \
   --daemon-rpc-addr $DAEMON_RPC_ADDR \
   --daemon-dir /workdir/bitcoin-data/ \
