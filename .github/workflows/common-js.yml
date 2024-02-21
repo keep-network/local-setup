@@ -19,9 +19,9 @@ jobs:
     outputs:
       path-filter: ${{ steps.filter.outputs.path-filter }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         if: github.event_name == 'pull_request'
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         if: github.event_name == 'pull_request'
         id: filter
         with:
@@ -36,9 +36,9 @@ jobs:
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
           node-version: "12.x"
 
@@ -56,9 +56,9 @@ jobs:
         || needs.common-js-detect-changes.outputs.path-filter == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
           node-version: "12.x"
 
@@ -82,9 +82,9 @@ jobs:
   #       && github.event_name != 'pull_request'
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
 
-  #     - uses: actions/setup-node@v2
+  #     - uses: actions/setup-node@v4
   #       with:
   #         node-version: "12.x"
 
